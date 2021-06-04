@@ -1,0 +1,19 @@
+預估進度
+1. home page 完成、新增活動page、個人數據page
+    帳戶登入，使用者profile (後端也要存使用者資料Ex. lv, exp, name, 頭貼)
+    建立firebase storage，塞活動的測試用資料 (房間號碼, 名稱, 地點, 時間...?)
+    從firebase storage取活動列出來
+    新增活動並回傳後端
+    用房間號碼加活動
+    看自己的歷史活動和統計紀錄
+
+2. 房間詳細資訊page
+    
+    點活動可以看詳細資訊(房間號碼, 名稱, 地點, 時間, 參與者)(用新增活動的page來改?)
+    退出活動
+    點參與者可以看他人的profile
+    活動留言板
+
+3. Google map 整合
+    在Home page列出預計到達時間、出發時間(client 直接去google map api要時間再回傳server?)
+    房間詳細資訊page 顯示其他人的預估時間、選交通方式、連到google map app作路線導航
