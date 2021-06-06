@@ -1,2 +1,14 @@
 (列出server要提供的服務和api的運作方式)
+每個使用者用username來區別? 還是要有api token?
+那每場活動識別用uuid來弄就好?
+getMeeting傳username給server，server回傳目前使用者的所有未參加活動
+
+getMeetingHistory的api負責回傳近期十筆的活動紀錄，以及平均的遲到時間?
+遲到時間計算應該在server端進行，可能要用到cloud function?
+(又或是已完成的Meeting資訊在結束後直接存在local，並利用api回傳給server local端計算的平均遲到時間，server僅記錄各使用者的平均遲到時間?)
+
+按下+號 若是新增活動 則跳出一個空白的Meeting(僅限前端的畫面)給使用者輸入基本資訊後按下儲存後才利用modifyMeeting回傳給server
+	若輸入房間號碼，則將房間號碼與username以joinMeeting回傳給server，server加入新的meeting，前端利用getMeeting去拿所有未參加活動更新
+
+
 
