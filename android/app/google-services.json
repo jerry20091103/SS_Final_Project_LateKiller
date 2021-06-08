@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "772463334907",
+    "project_id": "finalproject900",
+    "storage_bucket": "finalproject900.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:772463334907:android:d95e9f4b4289ae4a0d675e",
+        "android_client_info": {
+          "package_name": "com.latekiller"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "772463334907-lidqtr06f73cbgstqvgdonegn3k064e3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBdqkijIGJ9nj39vGpCbSVKtm_17spOtJ8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "772463334907-lidqtr06f73cbgstqvgdonegn3k064e3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
