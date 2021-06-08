@@ -22,6 +22,7 @@
  import { createAppContainer } from 'react-navigation';
  import { createStackNavigator } from 'react-navigation-stack';
  import HomeScreen from './components/HomeScreen';
+
  
  const Section = ({children, title}): Node => {
    const isDarkMode = useColorScheme() === 'dark';
@@ -48,8 +49,7 @@
      </View>
    );
  };
- 
- 
+
    
  
  const AppNavigator = createStackNavigator ({
@@ -62,6 +62,7 @@
  const AppContainer = createAppContainer(AppNavigator);
  
  class App extends React.Component{
+
    render(){
      return (
          <AppContainer/>

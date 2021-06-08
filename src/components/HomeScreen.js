@@ -1,9 +1,20 @@
 import React  from 'react';
 import{Text} from 'react-native'
 import { Container, Header, View, Button, Icon, Fab ,Content} from 'native-base';
+
+
+import firebase from 'firebase';
+import config from '../config';
+const firebaseApp = firebase.initializeApp(config);
+const rootRef = firebaseApp.database().ref();
+const itemsRef = rootRef.child('/test');
+
 export default class HomeScreen extends React.Component {
     constructor(props) {
         super(props)
+        this.state = {
+            text: 'test',
+          };
       }
     render() {
     const {navigate} = this.props.navigation;
@@ -11,7 +22,7 @@ export default class HomeScreen extends React.Component {
         <Container>
             <Content>
                 <Text>
-                    HomeScreen
+                   {this.state.text}
                 </Text>
         </Content>
             <View style={{ flex: 1 }}>    
@@ -29,4 +40,9 @@ export default class HomeScreen extends React.Component {
 
     );
     }
+    componentDidMount() 
+    {
+        itemsRef.on(('value'), (data)=>{this.setState({text : data.val()})});
+    }
+ 
   }
