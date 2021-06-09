@@ -3,11 +3,8 @@ import{Text} from 'react-native'
 import { Container, Header, View, Button, Icon, Fab ,Content} from 'native-base';
 
 
-import firebase from 'firebase';
-import config from '../config';
-const firebaseApp = firebase.initializeApp(config);
-const rootRef = firebaseApp.database().ref();
-const itemsRef = rootRef.child('/test');
+import firestore from '@react-native-firebase/firestore';
+
 
 export default class HomeScreen extends React.Component {
     constructor(props) {
@@ -42,7 +39,18 @@ export default class HomeScreen extends React.Component {
     }
     componentDidMount() 
     {
-        itemsRef.on(('value'), (data)=>{this.setState({text : data.val()})});
+
+        firestore().collection('testcollection').doc('test').get().then((testdata)=>{
+             dataset = testdata.data();
+           
+            console.log(dataset["testcolumn"]);
+            this.setState(
+                { text: dataset["testcolumn"] }
+            )
+        })
+
+      
     }
+      
  
   }
