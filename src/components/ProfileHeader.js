@@ -53,7 +53,6 @@ export default class ProfileHeader extends React.Component {
         else
             str += ' - ';
         time = Math.abs(time);
-        console.log(time);
         if(time < 60)
             str += (time + ' min');
         else   
