@@ -56,7 +56,8 @@
    Home: {screen: HomeScreen}
    },  
    {
-     initialRouteName: 'Home' //設定預設顯示的page
+     initialRouteName: 'Home', //設定預設顯示的page
+     headerMode: 'none' // don't display page titles
    });
  
  const AppContainer = createAppContainer(AppNavigator);
