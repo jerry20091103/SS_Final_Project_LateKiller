@@ -1,5 +1,9 @@
 /*
 This file deal with user profile.
+These functions need userId.
+You may get userId with getUid() 
+(getUid() can be imported from 'src/utilities/User.js')
+
 profile: { 
     name,
     img,
@@ -10,13 +14,24 @@ profile: {
 }
 */
 
-// Webpage URL
-// To be determined.
-const webpageUrl = 'https://localhost:8080/';
+var database = firebase.database();
 
-export function getProfile(uid) {
-    // TODO.
-    // Read data from database.
+// Get user profile from database.
+// Need userId.
+export function getProfile(userId) {
+    var profile = undefined;
+    database.ref('users/' + userId + '/profile').get().then((snapshot) => {
+        if (snapshot.exists()) {
+            console.log(snapshot.val());
+            profile = snapshot.val();
+        } else {
+            console.log("No data available");
+        }
+    }).catch((error) => {
+        console.log(error);
+    });
+    return profile;
+
     /*
     let url = `${webpageUrl}/profile`;
     
@@ -37,9 +52,14 @@ export function getProfile(uid) {
     */
 }
 
-export function storeProfile(uid, profile) {
-    // TODO
-    // Write data to database.
+// Store user profile to database.
+// Need userId and profile.
+export function storeProfile(userId, profile) {
+    database.ref('users/' + userId + '/profile').set({
+        uid: userId,
+        profile: profile
+    });
+
     /*
     let url = `${webpageUrl}/profile`;
 

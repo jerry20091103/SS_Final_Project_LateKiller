@@ -1,5 +1,5 @@
 /*
-This file deal with user sign in and user info.
+This file deal with "user sign in" and "get user info".
 Only support Google sign in currently.
 Note: Function Not Tested Yet. It may not work.
 */
@@ -7,8 +7,8 @@ Note: Function Not Tested Yet. It may not work.
 // Let user sign in with google and return the result(user info).
 // Using popup window, not redirected page.
 export function signInWithGoogle() {
-    var provider = new firebase.auth.GoogleAuthProvider();
     let info = undefined;
+    var provider = new firebase.auth.GoogleAuthProvider();
     firebase.auth().signInWithPopup(provider).then(function(result) {
         console.log(result);
         info = result;
@@ -34,7 +34,7 @@ export function signInWithGoogle() {
     return info;
 }
 
-// Return the current user info, it maybe undefined.
+// Get current user info, it maybe undefined.
 export function getUser() {
     let user = firebase.auth().currentUser;
     if(user) {
@@ -45,4 +45,13 @@ export function getUser() {
         console.log("No user signed in.");
     }
     return user;
+}
+
+// Get userId.
+export function getUid() {
+    var user = getUser();
+    if(user) {
+        return user.uid;
+    }
+    return undefined;
 }
