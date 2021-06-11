@@ -5,7 +5,7 @@ export default appColors = {
     textRed: '#de001e',
     textBlack: '#606060',
     textGray: '#8a8a8a',
-    backgroundBlue:'#e0ffff',
+    backgroundBlue:'#d4ffff',
     backgroundLightBlue: '#f4ffff',
     appBlue:'#1bcade'
     

@@ -59,7 +59,7 @@ import MeetingScreen from './components/MeetingScreen'
     Meet: {screen: MeetingScreen}
   },  
   {
-    initialRouteName: 'Meet', //設定預設顯示的page
+    initialRouteName: 'Home', //設定預設顯示的page
 
     headerMode: 'none' // don't display page titles
   }
