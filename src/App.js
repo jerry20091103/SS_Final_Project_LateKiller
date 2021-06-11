@@ -22,6 +22,7 @@
  import { createAppContainer } from 'react-navigation';
  import { createStackNavigator } from 'react-navigation-stack';
  import HomeScreen from './components/HomeScreen';
+import MeetingScreen from './components/MeetingScreen'
 
  
  const Section = ({children, title}): Node => {
@@ -52,13 +53,17 @@
 
    
  
- const AppNavigator = createStackNavigator ({
-   Home: {screen: HomeScreen}
-   },  
-   {
-     initialRouteName: 'Home', //設定預設顯示的page
-     headerMode: 'none' // don't display page titles
-   });
+ const AppNavigator = createStackNavigator (
+  {
+    Home: {screen: HomeScreen},
+    Meet: {screen: MeetingScreen}
+  },  
+  {
+    initialRouteName: 'Meet', //設定預設顯示的page
+
+    headerMode: 'none' // don't display page titles
+  }
+);
  
  const AppContainer = createAppContainer(AppNavigator);
  
