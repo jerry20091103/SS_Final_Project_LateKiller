@@ -49,15 +49,15 @@ export default class HomeScreen extends React.Component {
     }
     componentDidMount() 
     {
-
-        firestore().collection('testcollection').doc('test').get().then((testdata)=>{
-             dataset = testdata.data();
+        // Firestore Example (commented to prevent overuse)
+        // firestore().collection('testcollection').doc('test').get().then((testdata)=>{
+        //      dataset = testdata.data();
            
-            console.log(dataset["testcolumn"]);
-            this.setState(
-                { text: dataset["testcolumn"] }
-            )
-        })      
+        //     console.log(dataset["testcolumn"]);
+        //     this.setState(
+        //         { text: dataset["testcolumn"] }
+        //     )
+        // })      
     }      
 
   }
