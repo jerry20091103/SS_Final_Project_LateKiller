@@ -34,6 +34,18 @@ export function signInWithGoogle() {
     return info;
 }
 
+// Let user sign out. Return undefined if success, else return error.
+export function signOut() {
+    let info = undefined;
+    firebase.auth().signOut().then(() => {
+        console.log("Sign out successfully.");
+    }).catch((error) => {
+        console.log("Sign out failed.");
+        info = error;
+    });
+    return info;
+}
+
 // Get current user info, it maybe undefined.
 export function getUser() {
     let user = firebase.auth().currentUser;
