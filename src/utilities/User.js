@@ -24,7 +24,7 @@ export async function signInWithGoogle() {
     try {
         await GoogleSignin.hasPlayServices();
         userInfo = await GoogleSignin.signIn();
-        //this.setState({ userInfo });
+        // this.setState({ userInfo });
     } catch (error) {
         if (error.code === statusCodes.SIGN_IN_CANCELLED) {
             // user cancelled the login flow
@@ -74,13 +74,13 @@ export async function getUserInfo() {
     return userInfo;
 }
 
-// Get userId. Return -1 if failed.
+// Get userId. Return 0 if failed.
 export async function getUid() {
     var userInfo = await getUserInfo();
     if(userInfo) {
         return userInfo.user.id;
     }
-    return -1;
+    return 0;
 }
 
 // This function is used to check if some user is currently signed in.
