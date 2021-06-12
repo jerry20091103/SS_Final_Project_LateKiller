@@ -19,6 +19,7 @@ export default class HomeScreen extends React.Component {
             text: 'test',
           };
       }
+
     render() {
     const {navigate} = this.props.navigation;
     return (
@@ -56,7 +57,7 @@ export default class HomeScreen extends React.Component {
                     <View style={{flex: 1, backgroundColor: appColors.backgroundBlue, borderTopLeftRadius: 15, borderTopRightRadius: 15}}>
                         <Text 
                             style={styles.bottomSheetText}
-                            onPress={() => {navigate('Meet')}}           >新增活動</Text>
+                            onPress={() => {navigate('Meet', {newEvent: true})}}>新增活動</Text>
                         <Text style={styles.bottomSheetText}>輸入活動號碼</Text>
                     </View>
                     
