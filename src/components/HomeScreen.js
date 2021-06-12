@@ -31,7 +31,7 @@ export default class HomeScreen extends React.Component {
                 </Text>
             </Content> */}
             <View style={{ flex: 1, backgroundColor: appColors.backgroundBlue, borderBottomLeftRadius: 15, borderBottomRightRadius: 15}}>
-                <ProfileHeader user={'Username'} image={require('../../assets/test_profile_pic_01.png')} avgTime={-150} level={87} exp={700} expFull={1000}/>
+                <ProfileHeader user={'Username'} image={require('../../assets/test_profile_pic_01.png')} avgLateTime={-150} level={87} exp={700} expFull={1000}/>
             </View>
             <View style={{ flex: 3, backgroundColor: appColors.backgroundLightBlue, borderTopLeftRadius: 15, borderTopRightRadius: 15}}>
                 {/* show list of upcoming events */}

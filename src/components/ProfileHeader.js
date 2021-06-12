@@ -9,7 +9,7 @@ export default class ProfileHeader extends React.Component {
     static propTypes = {
         user: PropTypes.string, // username
         image: PropTypes.any, // link to profile pic
-        avgTime: PropTypes.number, // average late time (min)
+        avgLateTime: PropTypes.number, // average late time (min)
         level: PropTypes.number,
         expFull: PropTypes.number, // Max exp of this level
         exp: PropTypes.number, // current exp
@@ -22,14 +22,14 @@ export default class ProfileHeader extends React.Component {
                 <View style={{ flex: 1, padding: 20 }}>
                     <Image source={this.props.image} style={styles.profilePic} />
                     {
-                        (this.props.avgTime>0) ?
+                        (this.props.avgLateTime>0) ?
                             (
                                 <Button rounded block style={styles.redButton}>
-                                    <Text style={{color: appColors.textRed}}>{this.getLateTime(this.props.avgTime)}</Text>
+                                    <Text style={{color: appColors.textRed}}>{this.getLateTime(this.props.avgLateTime)}</Text>
                                 </Button>) :
                             (
                                 <Button rounded block style={styles.greenButton}>
-                                    <Text style={{color: appColors.textGreen}}>{this.getLateTime(this.props.avgTime)}</Text>
+                                    <Text style={{color: appColors.textGreen}}>{this.getLateTime(this.props.avgLateTime)}</Text>
                                 </Button>
                             )
                     }
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
         margin: 10
     },
 
-    avgTimeStyle: {
+    avgLateTimeStyle: {
         margin: 'auto'
     },
 
