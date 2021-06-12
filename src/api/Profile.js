@@ -1,86 +1,94 @@
 /*
 This file deal with user profile.
-These functions need userId.
-You may get userId with getUid() 
-(getUid() can be imported from 'src/utilities/User.js')
+Since we use Google signin, username may not be unique.
+Therefore, I implement these function with userId.
+You may get userId with getUid() in 'src/utilities/User.js'
+Note that getUid() returns 0 if failed.
 
 profile: { 
-    name,
+    username,
     img,
-    avgTime,
+    avgLateTime,
     level,
     expFull,
     exp
 }
+
+WARNING: NOT TESTED YET. CODE MAY NOT WORK.
 */
+import firestore from '@react-native-firebase/firestore';
 
-var database = firebase.database();
-
-// Get user profile from database.
-// Need userId.
+// Get user doc from database.
+// It may fail when server is offline.
 export function getProfile(userId) {
-    var profile = undefined;
-    database.ref('users/' + userId + '/profile').get().then((snapshot) => {
-        if (snapshot.exists()) {
-            console.log(snapshot.val());
-            profile = snapshot.val();
-        } else {
-            console.log("No data available");
-        }
+    let profile = [];
+    firestore().collection('users').doc(userId.toString()).get().then((userData)=>{
+        profile = userData;
+        // console.log(userData);
     }).catch((error) => {
         console.log(error);
     });
     return profile;
+};
 
-    /*
-    let url = `${webpageUrl}/profile`;
-    
-    url += `?user=${name}`;
-
-    console.log(`Making GET request to: ${url}`);
-
-    return fetch(url, {
-        headers: {
-            'Accept': 'application/json'
-        }
-    }).then(res => {
-        if (res.status !== 200)
-            throw new Error(`Unexpected response code: ${res.status}`);
-
-        return res.json();
+// Add user profile to database.
+// Return true if add success, and return false when failed.
+function addProfile(userId, profile) {
+    let success = false;
+    firestore().collection('users').doc(userId.toString()).set({
+        username: profile.username,
+        img: profile.img,
+        avgLateTime: profile.avgLateTime,
+        level: profile.level,
+        expFull: profile.expFull,
+        exp: profile.exp
+    }).then(() => {
+        success = true;
+        // console.log('User added!');
+    }).catch((error) => {
+        console.log(error);
     });
-    */
-}
+    return success;
+};
+
+// Update user profile in database.
+// Return true if add success, and return false when failed.
+function updateProfile(userId, profile) {
+    let success = false;
+    firestore().collection('users').doc(userId.toString()).update({
+        username: profile.username,
+        img: profile.img,
+        avgLateTime: profile.avgLateTime,
+        level: profile.level,
+        expFull: profile.expFull,
+        exp: profile.exp
+    }).then(() => {
+        success = true;
+        // console.log('User updated!');
+    }).catch((error) => {
+        console.log(error);
+    });
+    return success;
+};
 
 // Store user profile to database.
-// Need userId and profile.
+// Return true if add success, and return false when failed.
 export function storeProfile(userId, profile) {
-    database.ref('users/' + userId + '/profile').set({
-        uid: userId,
-        profile: profile
-    });
+    if(isProfileAvailable(userId)) {
+        return updateProfile(userId, profile);
+    } else {
+        return addProfile(userId, profile);
+    }
+    // return false;
+};
 
-    /*
-    let url = `${webpageUrl}/profile`;
+// Check if profile available.
+// This may fail due to server offline.
+export function isProfileAvailable(userId) {
+    let profile = getProfile(userId);
+    return profile ? true : false;
+};
 
-    console.log(`Making POST request to: ${url}`);
-    
-    return fetch(url, {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            profile
-        })
-    }).then(function(res) {
-        if (res.status !== 200)
-            throw new Error(`Unexpected response code: ${res.status}`);
 
-        return res.json();
-    });
-    */
-}
 
 
