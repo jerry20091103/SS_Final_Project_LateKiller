@@ -15,7 +15,7 @@ export default class MeetingScreen extends Component {
                             <Left><TouchableHighlight
                                 activeOpacity={0.6}
                                 underlayColor="#DDDDDD"
-                                onPress={() => this.props.navigation.pop()}>
+                                onPress={() => this.props.navigation.replace('Home')}>
                                 <Icon style={{ color: "black" }} name='chevron-back' />
                             </TouchableHighlight></Left>
 
