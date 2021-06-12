@@ -7,7 +7,12 @@ import BottomSheet from 'react-native-raw-bottom-sheet';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 
-// import Icon  from 'react-native-vector-icons';
+/* Event Screen
+    Event details are stored in this.state .
+    Every time the user edits event details, this.state will be up to date,
+    Once the "儲存" button is pressed, handleTopButtonPress() will be called, then
+    use this.state.newEvent or eventID, and states to communicate with server. 
+*/
 
 export default class EventScreen extends Component {
     constructor(props) {
@@ -19,15 +24,16 @@ export default class EventScreen extends Component {
             newEvent: false, // if you are creating a new event or not
             date: null, // the event date
             time: null, // the event time
+            title: "", // the event title
             showPickDate: false, // control popup date picker
             showPickTime: false // control popup time picker
         };
-        this._unsubscribe = undefined;
     }
 
     componentDidMount() {
         // prevent the OS back control from going back
         this.backHandler = BackHandler.addEventListener("hardwareBackPress", () => this.backAction());
+        // get data from home screen
         this.setState({
             eventId: this.props.navigation.getParam('eventId', undefined),
             newEvent: this.props.navigation.getParam('newEvent', false)
@@ -63,7 +69,8 @@ export default class EventScreen extends Component {
                             <Body style={{ flex: 3 }}>
                                 {this.state.edit || this.state.newEvent ? (
                                     <Item underline style={{ marginBottom: 5 }}>
-                                        <Input allowFontScaling={true} maxFontSizeMultiplier={0} placeholder='新增標題' placeholderTextColor={appColors.textGray} style={styles.titleInput} />
+                                        <Input allowFontScaling={true} maxFontSizeMultiplier={0} placeholder='新增標題' placeholderTextColor={appColors.textGray} style={styles.titleInput}
+                                        onChangeText={this.onChangeTitle} />
                                     </Item>
 
                                 ) : (
@@ -204,7 +211,6 @@ export default class EventScreen extends Component {
             showPickDate: false,
             date: selectedDate || this.state.date
         });
-        console.log(selectedDate);
     }
 
     handlePickTime() {
@@ -219,6 +225,13 @@ export default class EventScreen extends Component {
             showPickTime: false,
             time: selectedTime || this.state.time
         });
+    }
+
+    onChangeTitle = (newTitle) => {
+        this.setState({
+            title: newTitle
+        });
+        console.log(newTitle);
     }
 
     handleGoBack() {
