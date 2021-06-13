@@ -2,7 +2,6 @@ import React  from 'react';
 import{StyleSheet, Text, Image} from 'react-native'
 import { Container, Header, View, Button, Icon, Fab ,Content, Body, Thumbnail} from 'native-base';
 import BottomSheet from 'react-native-raw-bottom-sheet';
-
 import ProfileHeader from './ProfileHeader.js';
 import appColors from '../styles/colors.js';
 import EventList from './EventList.js';
@@ -67,7 +66,7 @@ export default class HomeScreen extends React.Component {
                     containerStyle={{ }}
                     style={{ backgroundColor: appColors.appBlue }}
                     position="bottomRight"
-                    onPress={()=>{this.BottomSheet.open()}}>
+                    onPress={()=>{this.BottomSheet.open() }}>
                     <Icon name="add" />
                 </Fab>
             </View>

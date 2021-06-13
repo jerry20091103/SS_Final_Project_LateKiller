@@ -6,6 +6,7 @@ import { Container, Header, Title, Button, Left, Right, Body, Icon, Text, View, 
 import BottomSheet from 'react-native-raw-bottom-sheet';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
+import {creatEvent, attendEvent} from '../api/Event.js'
 
 // import Icon  from 'react-native-vector-icons';
 
@@ -20,7 +21,10 @@ export default class EventScreen extends Component {
             date: null, // the event date
             time: null, // the event time
             showPickDate: false, // control popup date picker
-            showPickTime: false // control popup time picker
+            showPickTime: false, // control popup time picker
+
+            
+            title: "我找不到title"//我找不到title
         };
         this._unsubscribe = undefined;
     }
@@ -180,9 +184,11 @@ export default class EventScreen extends Component {
         );
     }
 
-    handleTopButtonPress() {
+async   handleTopButtonPress() {
         if (this.state.newEvent) {
             // Send new event to firebase!!!
+            creatEvent({'title': this.state.title,'time':this.state.time,'location':this.state.location});
+            
         }
         else if (this.state.modified) {
             // modify event in firebase

@@ -4,7 +4,7 @@ import { StyleSheet, Text, Image, FlatList, RefreshControl } from 'react-native'
 import { Container, Header, View, Button, Icon, Fab, Content, Body, Thumbnail, TabHeading } from 'native-base';
 import appColors from '../styles/colors.js';
 import moment from 'moment';
-
+import {listEvent} from '../api/Event.js' 
 export default class EventList extends React.Component {
     static propTypes = {
     };
@@ -12,7 +12,8 @@ export default class EventList extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            loading: false
+            loading: false,
+            testdata : []
         };
 
         this.onRefresh = this.onRefresh.bind(this);
@@ -36,7 +37,7 @@ export default class EventList extends React.Component {
         return (
             <View style={{ margin: 10 }}>
                 <FlatList
-                    data={sampleData} // <== put data here, and it will appear like magic (I hope so).
+                    data={this.state.testdata} // <== put data here, and it will appear like magic (I hope so).
                     renderItem={this.renderItem}
                     ListHeaderComponent={<Text style={styles.smallText}> 活動清單</Text>}
                     refreshControl={
@@ -48,6 +49,21 @@ export default class EventList extends React.Component {
             </View>
         );
     }
+
+    componentDidMount()
+    {
+        
+       this.getData();
+    }
+
+    async getData() {
+        const data = await  listEvent();
+        this.setState({
+            loading : false,
+            testdata : data
+        })
+    }
+
 
 }
 
@@ -140,3 +156,4 @@ const sampleData = [
     },
 
 ];
+

@@ -1,7 +1,7 @@
 import firestore from '@react-native-firebase/firestore';
 import { getUid } from '../utilities/User';
-
-const userUid =  await getUid ();
+import moment from 'moment';
+const userUid = 'uid_user1234543243';
 
 
 export  async function creatEvent(eventInfo)
@@ -16,34 +16,38 @@ export  async function creatEvent(eventInfo)
        #tentative 
     */
 
+     console.log(eventInfo);
 
-
-    
+    let emptyArr = [];
+    let emptyMap = {};
     if(userUid)
     {
+        let code = _CodeGen();
+
         try{
-           await firestore().collection('event').doc()
+           await firestore().collection('event').doc(code)
             .set({
-                title : eventInfo.title,
-                location: eventInfo.location,
-                time: eventInfo.time,
-                attendee:[],
+                id: [code],
+                title : [eventInfo.title],
+                location: [eventInfo.location],
+                time: [eventInfo.time],
+                attendee: [],
+                attendee_status: {},
               })
 
-              attendEvent( code );  
+             attendEvent( code );  
               return;
                
         }
         catch
         {
-            console.log("cannot create an event");
-            throw new Error(-1);
+
+            throw new Error("cannot create an event");
         }
     }
     else
     {
-        console.log("not existed user");
-        throw new Error(-2);
+        throw new Error("not existed user");
     }
    
 
@@ -73,23 +77,37 @@ export async function attendEvent( code )
     if(userUid)
     {
         try{
-            await firestore().collection('event').doc(String(code))
+
+
+            let p1 = firestore().collection('event').doc(String(code))
             .update({
-                "attendee":firestore.FieldValue.arrayUnion(userUid)
+                "attendee":firestore.FieldValue.arrayUnion(userUid),
               })
+
+            let p2 = firestore().collection('event').doc(String(code))
+            .set({
+                "attendee_status": {
+                    [userUid]: false
+                  }
+                },  {merge:true});   
+
+            
+            let p3 = firestore().collection('users').doc(userUid)
+            .update({
+                "my_events":firestore.FieldValue.arrayUnion(code)
+            })    
               
-              return;
+           await Promise.all([p1,p2,p3]); 
+            return;
         }
         catch
         {
-            console.log("cannot attend event");
-            throw new Error(-1);
+            throw new Error("cannot attend event");
         }
     }
-    else
-    {
-        console.log("not existed user");
-        throw new Error(-2);
+    else{
+
+        throw new Error("not existed user");
     }
 
 }
@@ -120,14 +138,13 @@ export async function leaveEvent(code)// 待完成 尚未完成empty event 刪�
         }
         catch
         {
-            console.log("cannot leave event");
-            throw new Error(-1);
+
+            throw new Error("cannot leave event");
         }
     }
     else
     {
-        console.log("not existed user");
-        throw new Error(-2);
+        throw new Error("not existed user");
     }
 
 
@@ -138,43 +155,43 @@ export async function listEvent()
     if(userUid)
     {
         try{
-            const  userProfile = await firestore().collection('users').doc(userUid).get();
-            infoList = await _getEventInfo(userProfile["my_events"])
+            const  userProfileSet = await firestore().collection('users').doc(userUid).get();
+            const userProfile = userProfileSet.data();
+            infoList = await getEventInfo(userProfile["my_events"])
             return infoList;
         }
-        catch
+        catch(err)
         {
-            console.log("damaged userProfile");
-            throw new Error(-1);
+            throw new Error("damaged userProfile");
         }
     }
     else
     {
-        console.log("not existed user");
-        throw new Error(-2);
+        throw new Error("not existed user");
     }
    
 }
 
-async function _getEventInfo(eventIDList)
+export async function getEventInfo(eventIDList)
 {   
-    let promises = [];
+   let eventList = [];
 
     try{
-        for (eventID of eventIDList)
-        {
-            let promise =  firestore().collection('event').doc(eventID);
-            promises.push(promise);
-        }
-        let eventList = await Promise.all(promises);
-        console.log(eventList);
-        return eventList;
+           let  querySnapshot = await firestore().collection('event').where(firestore.FieldPath.documentId(),'in',eventIDList).get()
+            querySnapshot.forEach((doc) => {
+            let data = doc.data();    
+            let timestamp = data["time"];
+             timestamp = moment.unix(parseInt(timestamp)).calendar();
+             data["time"] = timestamp;
+             eventList.push(data);
+            });
+
+             return eventList;
 
     }
     catch
     {
-        console.log("error when get eventInfo")
-        throw new Error(-1);
+        throw new Error("error when get eventInfo");
     }
 
 
@@ -182,7 +199,7 @@ async function _getEventInfo(eventIDList)
 
 
 
-async function _CodeGen()
+function _CodeGen()
 {
-
+    return String(123456);
 }
