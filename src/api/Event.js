@@ -16,10 +16,6 @@ export  async function creatEvent(eventInfo)
        #tentative 
     */
 
-     console.log(eventInfo);
-
-    let emptyArr = [];
-    let emptyMap = {};
     if(userUid)
     {
         let code = _CodeGen();
@@ -55,27 +51,28 @@ export  async function creatEvent(eventInfo)
 }
 
 
-export function editEvent(eventInfo, code)//待完成
+export function editEvent(eventInfo, code)
 {
-    /*
-     EventInfo should be:
-     {
-         title:
-         location:
-         time:
-     }
-       #tentative 
-    */
+    try{
+        await firestore().collection('event').doc(code)
+         .update({
+             'title' : [eventInfo.title],
+             'location': [eventInfo.location],
+             'time': [eventInfo.time]
+           })
+           return;
 
-
+    }  
+    catch{
+              throw new Error("cannot edit the event");
+    }
 }
 
 
 export async function attendEvent( code )
 {
 
-    if(userUid)
-    {
+    if(userUid){
         try{
 
 
@@ -100,8 +97,7 @@ export async function attendEvent( code )
            await Promise.all([p1,p2,p3]); 
             return;
         }
-        catch
-        {
+        catch{
             throw new Error("cannot attend event");
         }
     }
@@ -199,7 +195,7 @@ export async function getEventInfo(eventIDList)
 
 
 
-function _CodeGen()
+function _CodeGen()//未完成
 {
     return String(123456);
 }
