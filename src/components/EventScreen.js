@@ -28,9 +28,6 @@ export default class EventScreen extends Component {
             title: "", // the event title
             showPickDate: false, // control popup date picker
             showPickTime: false, // control popup time picker
-
-            
-            title: "我找不到title"//我找不到title
         };
     }
 
@@ -194,7 +191,7 @@ export default class EventScreen extends Component {
 async   handleTopButtonPress() {
         if (this.state.newEvent) {
             // Send new event to firebase!!!
-            creatEvent({'title': this.state.title,'time':this.state.time,'location':this.state.location});
+            creatEvent({'title': this.state.title,'time':this.state.time,'location':this.state.location});//測試用
             
         }
         else if (this.state.modified) {

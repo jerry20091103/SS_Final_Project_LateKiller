@@ -13,7 +13,7 @@ export default class EventList extends React.Component {
         super(props);
         this.state = {
             loading: false,
-            testdata : []
+            testdata : []//測試用
         };
 
         this.onRefresh = this.onRefresh.bind(this);
@@ -61,7 +61,7 @@ export default class EventList extends React.Component {
         this.setState({
             loading : false,
             testdata : data
-        })
+        })//測試用
     }
 
 
