@@ -4,7 +4,7 @@ import moment from 'moment';
 const userUid = 'uid_user1234543243';
 
 
-export  async function creatEvent(eventInfo)
+export async function creatEvent(eventInfo)
 {
     /*
      EventInfo should be:
@@ -51,7 +51,7 @@ export  async function creatEvent(eventInfo)
 }
 
 
-export function editEvent(eventInfo, code)
+export async function editEvent(eventInfo, code)
 {
     try{
         await firestore().collection('event').doc(code)
