@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, TouchableHighlight, BackHandler } from 'react-native';
+import { StyleSheet, TouchableHighlight, BackHandler, Alert, TouchableWithoutFeedback, Keyboard  } from 'react-native';
 import appColors from '../styles/colors.js';
 import PropTypes from 'prop-types';
 import { Container, Header, Title, Button, Left, Right, Body, Icon, Text, View, Item, Input } from 'native-base';
@@ -54,7 +54,7 @@ export default class EventScreen extends Component {
     render() {
         const { navigate } = this.props.navigation;
         return (
-            <Container>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}><Container>
                 <View style={styles.container}>
                     {/* header area */}
                     <View style={{ backgroundColor: appColors.backgroundBlue, borderBottomLeftRadius: 15, borderBottomRightRadius: 15 }}>
@@ -78,6 +78,7 @@ export default class EventScreen extends Component {
                                     <Title style={styles.titleText}>這裡是標題123132</Title>
                                 )
                                 }
+                                
                             </Body>
                             <Right style={{ paddingLeft: 0, flex: 1 }}>
                                 <View style={{ padding: 0 }}>
@@ -184,15 +185,19 @@ export default class EventScreen extends Component {
                         onChange={this.onChnageTime}
                     />
                 )}
-            </Container>
+                
+            </Container></TouchableWithoutFeedback>
         );
     }
 
 async   handleTopButtonPress() {
         if (this.state.newEvent) {
             // Send new event to firebase!!!
-            creatEvent({'title': this.state.title,'time':this.state.time,'location':this.state.location});//測試用
-            
+            if(this.state.title==="" || this.state.time===null)
+                Alert.alert("Please fill in all the required fields!!!");
+            else
+                creatEvent({'title': this.state.title,'time':this.state.time,'location':this.state.location});//測試用
+
         }
         else if (this.state.modified) {
             // modify event in firebase

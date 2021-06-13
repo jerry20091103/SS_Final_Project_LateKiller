@@ -23,8 +23,7 @@
  import { createStackNavigator } from 'react-navigation-stack';
  import HomeScreen from './components/HomeScreen';
 import EventScreen from './components/EventScreen'
-
- 
+import RecordScreen from './components/RecordScreen'
  const Section = ({children, title}): Node => {
    const isDarkMode = useColorScheme() === 'dark';
    return (
@@ -56,7 +55,8 @@ import EventScreen from './components/EventScreen'
  const AppNavigator = createStackNavigator (
   {
     Home: {screen: HomeScreen},
-    Meet: {screen: EventScreen}
+    Meet: {screen: EventScreen},
+    Record: {screen: RecordScreen}
   },  
   {
     initialRouteName: 'Home', //設定預設顯示的page

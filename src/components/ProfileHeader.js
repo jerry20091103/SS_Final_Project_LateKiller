@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { StyleSheet, Text, Image } from 'react-native'
+import { StyleSheet, Text, Image, TouchableHighlight } from 'react-native'
 import { Container, Header, View, Button, Icon, Fab, Content, Body, Thumbnail, TabHeading } from 'native-base';
 import * as Progress from 'react-native-progress';
 import appColors from '../styles/colors.js'
@@ -37,7 +37,12 @@ export default class ProfileHeader extends React.Component {
                 </View>
                 {/* Right side (name, lv, exp, bar) */}
                 <View style={{ flex: 2 }}>
-                    <Text style={styles.username} >{this.props.user}</Text>
+                    <TouchableHighlight
+                            activeOpacity={0.6}
+                            underlayColor="#DDDDDD"
+                            onPress={() => {this.props.navigation.navigate('Record')}}>
+                        <Text style={styles.username} >{this.props.user}</Text>
+                    </TouchableHighlight>
                     <Text style={styles.levelText}>{'LV. ' + this.props.level}</Text>
                     <Text style={styles.expText}>{'exp. ' + this.props.exp + ' / ' + this.props.expFull} </Text>
                     <Progress.Bar progress={this.props.exp/this.props.expFull} width={200} borderWidth={2} color={appColors.appBlue} style={{marginVertical: 10}} />
