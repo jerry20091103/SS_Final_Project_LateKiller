@@ -16,51 +16,39 @@ export default class ProfileHeader extends React.Component {
     };
 
     render() {
+        const TextColor = (this.props.avgLateTime > 0 ? appColors.textRed : appColors.textGreen);
+        const BtnColor = (this.props.avgLateTime > 0 ? appColors.btnRed : appColors.btnGreen);
         return (
             <View style={{ flex: 1, flexDirection: "row", alignItems: 'center' }}>
                 {/* Left side (photo and Button) */}
                 <View style={{ flex: 1, padding: 20 }}>
                     <Image source={this.props.image} style={styles.profilePic} />
-                    {
-                        (this.props.avgLateTime>0) ?
-                            (
-                                <Button rounded block style={styles.redButton}>
-                                    <Text style={{color: appColors.textRed}}>{this.getLateTime(this.props.avgLateTime)}</Text>
-                                </Button>) :
-                            (
-                                <Button rounded block style={styles.greenButton}>
-                                    <Text style={{color: appColors.textGreen}}>{this.getLateTime(this.props.avgLateTime)}</Text>
-                                </Button>
-                            )
-                    }
-                    
+
+                    <Button rounded block style={{ backgroundColor: BtnColor,width: 90,margin: 10 }} onPress={() => { this.props.navigation.navigate('Record') }}>
+                        <Text style={{ color: TextColor }}>{this.getLateTime(this.props.avgLateTime)}</Text>
+                    </Button>
                 </View>
                 {/* Right side (name, lv, exp, bar) */}
                 <View style={{ flex: 2 }}>
-                    <TouchableHighlight
-                            activeOpacity={0.6}
-                            underlayColor="#DDDDDD"
-                            onPress={() => {this.props.navigation.navigate('Record')}}>
-                        <Text style={styles.username} >{this.props.user}</Text>
-                    </TouchableHighlight>
+                    <Text style={styles.username} >{this.props.user}</Text>
                     <Text style={styles.levelText}>{'LV. ' + this.props.level}</Text>
                     <Text style={styles.expText}>{'exp. ' + this.props.exp + ' / ' + this.props.expFull} </Text>
-                    <Progress.Bar progress={this.props.exp/this.props.expFull} width={200} borderWidth={2} color={appColors.appBlue} style={{marginVertical: 10}} />
+                    <Progress.Bar progress={this.props.exp / this.props.expFull} width={200} borderWidth={2} color={appColors.appBlue} style={{ marginVertical: 10 }} />
                 </View>
             </View>
         );
     }
     getLateTime(time) {
         var postive = (time >= 0);
-        var str= '';
-        if(postive)
+        var str = '';
+        if (postive)
             str += ' + ';
         else
             str += ' - ';
         time = Math.abs(time);
-        if(time < 60)
+        if (time < 60)
             str += (time + ' min');
-        else   
+        else
             str += ((time / 60).toFixed(1) + ' hr');
         return str;
     }
@@ -77,17 +65,12 @@ const styles = StyleSheet.create({
         marginBottom: 5
     },
 
-    redButton: {
-        backgroundColor: appColors.btnRed,
-        width: 90,
-        margin: 10
-    },
+    // Button: {
+    //     // backgroundColor: '{COLOR}',
+    //     width: 90,
+    //     margin: 10
+    // },
 
-    greenButton: {
-        backgroundColor: appColors.btnGreen,
-        width: 90,
-        margin: 10
-    },
 
     avgLateTimeStyle: {
         margin: 'auto'
