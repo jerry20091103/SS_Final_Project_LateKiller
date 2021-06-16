@@ -15,6 +15,7 @@ import {
 export function prepareSignInWithGoogle() {
     GoogleSignin.configure({
         webClientId: '1052555520682-q8ji8mkah1566r9v3eeuifn5jvjudlvr.apps.googleusercontent.com'
+
     });
 }
 

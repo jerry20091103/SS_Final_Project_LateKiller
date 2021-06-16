@@ -19,11 +19,12 @@
  } from 'react-native';
  
  
- import { createAppContainer } from 'react-navigation';
+ import { createAppContainer , createSwitchNavigator} from 'react-navigation';
  import { createStackNavigator } from 'react-navigation-stack';
  import HomeScreen from './components/HomeScreen';
 import EventScreen from './components/EventScreen'
 import RecordScreen from './components/RecordScreen'
+import SignInScreen from'./components/SignInScreen.js'
  const Section = ({children, title}): Node => {
    const isDarkMode = useColorScheme() === 'dark';
    return (
@@ -57,15 +58,30 @@ import RecordScreen from './components/RecordScreen'
     Home: {screen: HomeScreen},
     Meet: {screen: EventScreen},
     Record: {screen: RecordScreen}
-  },  
+  },
   {
     initialRouteName: 'Home', //設定預設顯示的page
 
     headerMode: 'none' // don't display page titles
   }
 );
+
+const AuthNavigator = createStackNavigator({ SignIn: SignInScreen }); 
  
- const AppContainer = createAppContainer(AppNavigator);
+ const AppContainer = createAppContainer(
+  createSwitchNavigator(
+    {
+      //AuthLoading: AuthLoadingScreen,
+      App: AppNavigator,
+      Auth:  AuthNavigator,
+    },
+    {
+      initialRouteName: 'Auth',
+      headerMode: 'none'
+    }
+  )
+   
+);
  
  class App extends React.Component{
 
