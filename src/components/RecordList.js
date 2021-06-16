@@ -6,6 +6,7 @@ import moment from 'moment';
 export default class RecordList extends Component {
     constructor(props) {
         super(props);
+        
         this.state = {
             loading: false,
             testdata: sampleData// after api done, this would be replace as []
