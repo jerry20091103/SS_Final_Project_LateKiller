@@ -1,11 +1,11 @@
-import React  from 'react';
-import{StyleSheet, Text, Image} from 'react-native'
-import { Container, Header, View, Button, Icon, Fab ,Content, Body, Thumbnail} from 'native-base';
+import React from 'react';
+import{StyleSheet, Text, Image, Alert, Button, TouchableHighlight} from 'react-native'
+import { Container, Header, View, Icon, Fab ,Content, Body, Thumbnail, Input} from 'native-base';
 import BottomSheet from 'react-native-raw-bottom-sheet';
 import ProfileHeader from './ProfileHeader.js';
 import appColors from '../styles/colors.js';
 import EventList from './EventList.js';
-
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import firestore from '@react-native-firebase/firestore';
 import { rgb } from 'color';
@@ -22,13 +22,8 @@ export default class HomeScreen extends React.Component {
     render() {
     const {navigate} = this.props.navigation;
     return (
-        <Container>
-            
-            {/* <Content>
-                <Text>
-                   {this.state.text}
-                </Text>
-            </Content> */}
+        <Container><SafeAreaView style={{flex:1}} forceInset="top">
+
             <View style={{ flex: 1, backgroundColor: appColors.backgroundBlue, borderBottomLeftRadius: 15, borderBottomRightRadius: 15}}>
                 <ProfileHeader navigation={this.props.navigation} user={'Username'} image={require('../../assets/test_profile_pic_01.png')} avgLateTime={-150} level={87} exp={700} expFull={1000}/>
             </View>
@@ -57,7 +52,18 @@ export default class HomeScreen extends React.Component {
                         <Text 
                             style={styles.bottomSheetText}
                             onPress={() => {navigate('Meet', {newEvent: true})}}>新增活動</Text>
-                        <Text style={styles.bottomSheetText}>輸入活動號碼</Text>
+                        <View style={{flexDirection:'row'}}>
+                            <Text style={styles.bottomSheetText}>輸入房間號碼:</Text>
+                            <Input style={{fontSize:22}} placeholder="room ID" />
+
+                            <TouchableHighlight
+                                activeOpacity={0.6}
+                                style={{}}
+                                underlayColor="#DDDDDD"
+                                onPress={() => this.handleSubmitRoomID()}>
+                                <Text style={styles.sureButton}>確定</Text>
+                            </TouchableHighlight>
+                        </View>
                     </View>
                     
                 </BottomSheet>
@@ -71,9 +77,12 @@ export default class HomeScreen extends React.Component {
                 </Fab>
             </View>
             
-        </Container>
+            </SafeAreaView></Container>
 
-    );
+    );}
+    handleSubmitRoomID(){
+        alert('submission test');
+        return;
     }
     componentDidMount() 
     {
@@ -95,5 +104,16 @@ const styles = StyleSheet.create({
         fontSize: 22,
         marginHorizontal: 15,
         marginVertical: 10
+    },
+    sureButton:{
+        color: appColors.textGreen,
+        fontSize: 22,
+        marginHorizontal: 5,
+        marginVertical: 10,
+        // marginTop:3,
+        paddingLeft: 3,
+        borderWidth:2, 
+        borderRadius: 5,
+        borderColor:appColors.textGreen
     }
 });

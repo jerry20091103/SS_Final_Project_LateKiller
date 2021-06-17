@@ -78,7 +78,6 @@ export default class EventScreen extends Component {
                                     <Title style={styles.titleText}>這裡是標題123132</Title>
                                 )
                                 }
-                                
                             </Body>
                             <Right style={{ paddingLeft: 0, flex: 1 }}>
                                 <View style={{ padding: 0 }}>
