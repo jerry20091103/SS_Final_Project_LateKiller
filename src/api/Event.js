@@ -1,8 +1,8 @@
 import firestore from '@react-native-firebase/firestore';
 import { getUid } from '../utilities/User';
 import moment from 'moment';
-const userUid = 'uid_user1234543243';
 
+let userUid = '';
 
 export async function creatEvent(eventInfo)
 {
@@ -148,8 +148,10 @@ export async function leaveEvent(code)// 待完成 尚未完成empty event 刪�
 
 export async function listEvent()
 {
+
     if(userUid)
     {
+       // console.log(userUid);
         try{
             const  userProfileSet = await firestore().collection('users').doc(userUid).get();
             const userProfile = userProfileSet.data();
@@ -191,6 +193,12 @@ export async function getEventInfo(eventIDList)
     }
 
 
+}
+
+export async function EventApiInit() {
+    userUid = await getUid();
+  // console.log(userUid);
+    return;
 }
 
 
