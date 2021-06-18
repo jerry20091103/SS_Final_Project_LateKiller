@@ -4,7 +4,7 @@ Only support Google sign in currently.
 You should make sure prepareSignInWithGoogle() is called before google sign in.
 Also, prepareSignInWithGoogle() should only be called once after app starts.
 */
-
+import auth from '@react-native-firebase/auth';
 import {
     GoogleSignin,
     GoogleSigninButton,
@@ -62,6 +62,7 @@ export async function getUserInfo() {
     let userInfo = undefined;
     try {
         userInfo = await GoogleSignin.signInSilently();
+       
         // this.setState({ userInfo });
     } catch (error) {
         if (error.code === statusCodes.SIGN_IN_REQUIRED) {
@@ -75,13 +76,30 @@ export async function getUserInfo() {
     return userInfo;
 }
 
-// Get userId. Return 0 if failed.
+
+//不可直接拿來用 須經由傳送id_token驗證才行!!!!!
 export async function getUid() {
-    var userInfo = await getUserInfo();
-    if(userInfo) {
-        return userInfo.user.id;
+    try 
+    {
+        const { idToken } = await getUserInfo();
+        const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+        await auth().signInWithCredential(googleCredential);
+        user = auth().currentUser;
+        if (user) {
+            //console.log(user.uid);
+             return user.uid;
+        }
+        else
+        {
+            throw new Error;
+        }
     }
-    return 0;
+    catch
+    {
+        throw new Error;
+    }
+   
+   
 }
 
 // This function is used to check if some user is currently signed in.

@@ -26,22 +26,23 @@ export function getProfile(userId) {
         profile = userData;
         // console.log(userData);
     }).catch((error) => {
-        console.log(error);
+        throw Error;
+        //console.log(error);
     });
     return profile;
 };
 
 // Add user profile to database.
 // Return true if add success, and return false when failed.
-function addProfile(userId, profile) {
+function addProfile(userId) {
     let success = false;
     firestore().collection('users').doc(userId.toString()).set({
-        username: profile.username,
-        img: profile.img,
-        avgLateTime: profile.avgLateTime,
-        level: profile.level,
-        expFull: profile.expFull,
-        exp: profile.exp
+        //username: profile.username,
+        img: '',
+        avgLateTime: 0,
+        level: 0,
+        expFull: 100,
+        exp: 10
     }).then(() => {
         success = true;
         // console.log('User added!');
