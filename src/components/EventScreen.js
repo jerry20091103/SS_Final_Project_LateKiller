@@ -126,7 +126,7 @@ export default class EventScreen extends Component {
                                 <Text style={styles.detailText}>地點: </Text>
                                 {this.state.edit || this.state.newEvent ? (
                                     // location picker
-                                    <Text style={styles.detailTextGray} onPress={navigate("PlaceSelect")}>新增地點</Text>
+                                    <Text style={styles.detailTextGray} onPress={() => navigate("PlaceSelect")}>新增地點</Text>
                                 ) : (
                                     // show data from server
                                     <Text>
