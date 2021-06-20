@@ -13,18 +13,19 @@ export default class ProfileHeader extends React.Component {
         level: PropTypes.number,
         expFull: PropTypes.number, // Max exp of this level
         exp: PropTypes.number, // current exp
+        enableNavigation: PropTypes.bool, //The ProfileHeader in eventScreen don't need navigatiton
     };
 
     render() {
         const TextColor = (this.props.avgLateTime > 0 ? appColors.textRed : appColors.textGreen);
         const BtnColor = (this.props.avgLateTime > 0 ? appColors.btnRed : appColors.btnGreen);
         return (
-            <View style={{ flex: 1, flexDirection: "row", alignItems: 'center' }}>
+            <View style={{ flex: 1, flexDirection: "row", alignItems: 'center',position:'absolute' }}>
                 {/* Left side (photo and Button) */}
-                <View style={{ flex: 1, padding: 20 }}>
+                <View style={{ flex: 1,paddingLeft: 20 }}>
                     <Image source={this.props.image} style={styles.profilePic} />
 
-                    <Button rounded block style={{ backgroundColor: BtnColor,width: 90,margin: 10 }} onPress={() => { this.props.navigation.navigate('Record') }}>
+                    <Button rounded block style={{ backgroundColor: BtnColor,width: 90,margin: 10 }} onPress={() => { (this.props.enableNavigation)?this.props.navigation.navigate('Record'):{} }}>
                         <Text style={{ color: TextColor }}>{this.getLateTime(this.props.avgLateTime)}</Text>
                     </Button>
                 </View>

@@ -11,14 +11,14 @@ export default class RecordScreen extends Component {
     };
   }
   render() {
-    const BtnColor=(this.state.avgLateTime>=0?appColors.btnRed :appColors.btnGreen);
-    const TextColor=(this.state.avgLateTime>=0?appColors.textRed :appColors.textGreen);
-    const LateMins=((this.state.avgLateTime>0?'+ ':'')+this.state.avgLateTime+' Min');
+    const BtnColor = (this.state.avgLateTime >= 0 ? appColors.btnRed : appColors.btnGreen);
+    const TextColor = (this.state.avgLateTime >= 0 ? appColors.textRed : appColors.textGreen);
+    const LateMins = ((this.state.avgLateTime > 0 ? '+ ' : '') + this.state.avgLateTime + ' Min');
     return (
       <Container>
         {/* <View style={{flex:1}}> */}
         <View style={{ flex: 1, backgroundColor: BtnColor, borderBottomLeftRadius: 15, borderBottomRightRadius: 15 }}>
-          <Header transparent style={{backgroundColor: BtnColor}}>
+          <Header transparent style={{ backgroundColor: BtnColor }}>
             <Left>
               <TouchableHighlight
                 activeOpacity={0.6}
@@ -28,18 +28,18 @@ export default class RecordScreen extends Component {
               </TouchableHighlight>
             </Left>
             <Body style={{ flex: 3 }}>
-              <Text style={{fontSize: 25}}>平均抵達時間</Text>
+              <Text style={{ fontSize: 25 }}>平均抵達時間</Text>
             </Body>
           </Header>
-          
-          <View style={{flex: 1,alignItems: 'center',}}>
-            <Text style={{fontSize: 50, margin: 35,color:TextColor}}>{LateMins}</Text>
+
+          <View style={{ flex: 1, alignItems: 'center', }}>
+            <Text style={{ fontSize: 50, margin: 35, color: TextColor }}>{LateMins}</Text>
           </View>
 
-          <View style={{flex: 4}}>
-            <RecordList/>{/* 待完成 */}
+          <View style={{ flex: 4 }}>
+            <RecordList />
           </View>
-          
+
         </View>
 
       </Container>
