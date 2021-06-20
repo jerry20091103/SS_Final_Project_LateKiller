@@ -23,12 +23,14 @@ import HomeScreen from './components/HomeScreen';
 import EventScreen from './components/EventScreen'
 import RecordScreen from './components/RecordScreen'
 import SignInScreen from './components/SignInScreen.js'
+import PlaceSelectScreen from './components/PlaceSelectScreen.js'
 
 const AppNavigator = createStackNavigator(
   {
     Home: { screen: HomeScreen },
     Meet: { screen: EventScreen },
-    Record: { screen: RecordScreen }
+    Record: { screen: RecordScreen },
+    PlaceSelect: { screen: PlaceSelectScreen}
   },
   {
     initialRouteName: 'Home', //設定預設顯示的page

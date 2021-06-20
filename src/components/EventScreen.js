@@ -124,11 +124,9 @@ export default class EventScreen extends Component {
                             </View>
                             <View style={{flexDirection: 'row',alignItems: 'center'}}>
                                 <Text style={styles.detailText}>地點: </Text>
-                                
                                 {this.state.edit || this.state.newEvent ? (
-                                    //set this.state.place as textInput
-                                    <TextInput  allowFontScaling={true} maxFontSizeMultiplier={0} placeholder='新增地點' placeholderTextColor={appColors.textGray}
-                                    style={[styles.detailTextGray, {padding:0}] } onChangeText={(newplace) => {this.onChangePlace(newplace)}} />
+                                    // location picker
+                                    <Text style={styles.detailTextGray} onPress={navigate("PlaceSelect")}>新增地點</Text>
                                 ) : (
                                     // show data from server
                                     <Text>

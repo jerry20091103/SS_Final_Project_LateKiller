@@ -59,4 +59,4 @@ buck-out/
 /ios/Pods/
 
 android/app/google-services.json
-package-lock.json
+src/api/google-web-api-key.json
