@@ -25,7 +25,7 @@ export default class HomeScreen extends React.Component {
         <Container><SafeAreaView style={{flex:1}} forceInset="top">
 
             <View style={{ flex: 1, backgroundColor: appColors.backgroundBlue, borderBottomLeftRadius: 15, borderBottomRightRadius: 15}}>
-                <ProfileHeader navigation={this.props.navigation} user={'Username'} image={require('../../assets/test_profile_pic_01.png')} avgLateTime={-150} level={87} exp={700} expFull={1000}/>
+                <ProfileHeader enableNavigation={true} navigation={this.props.navigation} user={'Username'} image={require('../../assets/test_profile_pic_01.png')} avgLateTime={-150} level={87} exp={700} expFull={1000}/>
             </View>
             <View style={{ flex: 3, backgroundColor: appColors.backgroundLightBlue, borderTopLeftRadius: 15, borderTopRightRadius: 15}}>
                 {/* show list of upcoming events */}
