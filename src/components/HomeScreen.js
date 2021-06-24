@@ -6,7 +6,7 @@ import ProfileHeader from './ProfileHeader.js';
 import appColors from '../styles/colors.js';
 import EventList from './EventList.js';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
+import{ProfileApiInit, getProfile}from '../api/Profile.js'
 import firestore from '@react-native-firebase/firestore';
 import { rgb } from 'color';
 
@@ -15,7 +15,11 @@ export default class HomeScreen extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            text: 'test',
+            username:'unknown',
+            avgLateTime: 0,
+            level: 0,
+            exp: 1, 
+            expFull: 1
           };
       }
 
@@ -25,7 +29,7 @@ export default class HomeScreen extends React.Component {
         <Container><SafeAreaView style={{flex:1}} forceInset="top">
 
             <View style={{ flex: 1, backgroundColor: appColors.backgroundBlue, borderBottomLeftRadius: 15, borderBottomRightRadius: 15}}>
-                <ProfileHeader enableNavigation={true} navigation={this.props.navigation} user={'Username'} image={require('../../assets/test_profile_pic_01.png')} avgLateTime={-150} level={87} exp={700} expFull={1000}/>
+                <ProfileHeader enableNavigation={true} navigation={this.props.navigation} user={this.state.username} image={require('../../assets/test_profile_pic_01.png')} avgLateTime={this.state.avgLateTime} level={this.state.level} exp={this.state.exp} expFull={this.state.expFull}/>
             </View>
             <View style={{ flex: 3, backgroundColor: appColors.backgroundLightBlue, borderTopLeftRadius: 15, borderTopRightRadius: 15}}>
                 {/* show list of upcoming events */}
@@ -89,12 +93,28 @@ export default class HomeScreen extends React.Component {
         // Firestore Example (commented to prevent overuse)
         // firestore().collection('testcollection').doc('test').get().then((testdata)=>{
         //      dataset = testdata.data();
-           
+           this.getProfileData();
         //     console.log(dataset["testcolumn"]);
         //     this.setState(
         //         { text: dataset["testcolumn"] }
         //     )
         // })      
+    }
+    async getProfileData()
+    {
+        await ProfileApiInit();
+        let profile = await getProfile();
+   
+        this.setState(
+            {
+                username: profile.username,
+                avgLateTime: profile.avgLateTime,
+                level: profile.level,
+                exp: profile.exp, 
+                expFull: profile.expFull,
+            }
+        )
+       
     }
   }
 

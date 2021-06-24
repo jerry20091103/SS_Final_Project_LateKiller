@@ -77,13 +77,20 @@ export async function getUserInfo() {
 }
 
 
-//不可直接拿來用 須經由傳送id_token驗證才行!!!!!
+export async function signInFireBase(){
+
+    const { idToken } = await getUserInfo();
+    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+    await auth().signInWithCredential(googleCredential);
+}  
+
+
+
 export async function getUid() {
     try 
     {
-        const { idToken } = await getUserInfo();
-        const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-        await auth().signInWithCredential(googleCredential);
+      
+        
         user = auth().currentUser;
         if (user) {
             //console.log(user.uid);
@@ -93,6 +100,21 @@ export async function getUid() {
         {
             throw new Error;
         }
+    }
+    catch
+    {
+        throw new Error;
+    }
+   
+   
+}
+
+export async function getUsername() {
+    try 
+    {
+        
+        const userData = await getUserInfo()
+        return userData.user.name;
     }
     catch
     {

@@ -13,7 +13,7 @@ import {
     statusCodes,
     
 } from '@react-native-google-signin/google-signin';
-import { signInWithGoogle, prepareSignInWithGoogle } from '../utilities/User.js';
+import { signInWithGoogle, prepareSignInWithGoogle,signInFireBase } from '../utilities/User.js';
 import{StyleSheet, Text, Image} from 'react-native'
 
 
@@ -44,11 +44,13 @@ export default class GoogleSignInButton extends React.Component {
 
     async googleSignIn() {
         prepareSignInWithGoogle();
+        signInFireBase();
         if(!this.state.isSigninInProgress) {
             this.setState({
                 isSigninInProgress: true,
             });
             var user = await signInWithGoogle();
+
             this.setState({
                 isSigninInProgress: false,
                 userInfo: user,

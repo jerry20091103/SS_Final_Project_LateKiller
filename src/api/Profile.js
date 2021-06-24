@@ -17,24 +17,43 @@ profile: {
 WARNING: NOT TESTED YET. CODE MAY NOT WORK.
 */
 import firestore from '@react-native-firebase/firestore';
+import { getUid, getUsername } from '../utilities/User';
+let userUid ='';
 
 // Get user doc from database.
 // It may fail when server is offline.
-export function getProfile(userId) {
-    let profile = [];
-    firestore().collection('users').doc(userId.toString()).get().then((userData)=>{
-        profile = userData;
-        // console.log(userData);
-    }).catch((error) => {
-        throw Error;
-        //console.log(error);
-    });
-    return profile;
+export async function getProfile() {
+    let profile =   {
+        username:'unknown',
+        avgLateTime: 0,
+        level: 0,
+        exp: 0, 
+        expFull: 100
+    };
+   const profileRef = await firestore().collection('users').doc(userUid).get();
+   if (!profileRef.exists) {
+     console.log('No such document exist!');
+    let GoogleUsername = await getUsername();
+    profile.username =  GoogleUsername;
+     await firestore().collection('users').doc(userUid).set({
+        username:[GoogleUsername],
+        img: '',
+        avgLateTime: 0,
+        level: 0,
+        exp: 10,
+        expFull: 100
+     })
+   } else {
+    profile = profileRef.data();
+    console.log(profile);
+   }
+   
+   return profile;
 };
 
 // Add user profile to database.
 // Return true if add success, and return false when failed.
-function addProfile(userId) {
+/*function addProfile(userId) {
     let success = false;
     firestore().collection('users').doc(userId.toString()).set({
         //username: profile.username,
@@ -50,7 +69,7 @@ function addProfile(userId) {
         console.log(error);
     });
     return success;
-};
+};*/
 
 // Update user profile in database.
 // Return true if add success, and return false when failed.
@@ -89,6 +108,13 @@ export function isProfileAvailable(userId) {
     let profile = getProfile(userId);
     return profile ? true : false;
 };
+
+
+export async function ProfileApiInit() {
+    userUid = await getUid();
+  // console.log(userUid);
+    return;
+}
 
 
 
