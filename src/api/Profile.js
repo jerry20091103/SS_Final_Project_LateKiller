@@ -36,12 +36,15 @@ export async function getProfile() {
     let GoogleUsername = await getUsername();
     profile.username =  GoogleUsername;
      await firestore().collection('users').doc(userUid).set({
-        username:[GoogleUsername],
+        username: GoogleUsername,
         img: '',
         avgLateTime: 0,
         level: 0,
         exp: 10,
-        expFull: 100
+        expFull: 100,
+        transportation:'',
+        my_events:[],
+        history:[]
      })
    } else {
     profile = profileRef.data();

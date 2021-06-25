@@ -58,6 +58,7 @@ export default class EventList extends React.Component {
 
      getData = async ()=> {
         await EventApiInit();
+        console.log('here2');
         const data = await  listEvent();
         this.setState({
             loading : false,
