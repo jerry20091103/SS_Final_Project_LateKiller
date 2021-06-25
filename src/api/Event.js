@@ -128,6 +128,10 @@ export async function leaveEvent(code)// 待完成 尚未完成empty event 刪�
             
             let [eventInfo, r2] = await Promise.all([p1, p2]);
 
+            if(eventInfo)
+            {
+                
+            }
             
             return;
 
@@ -199,6 +203,46 @@ export async function getEventInfo(eventIDList)
 
 
 }
+
+export async function getEventAttendee(code)
+{   
+   let attendee = [];
+
+    try{
+       
+            let  data = await firestore().collection('event').doc(code).get()
+            attendee = data.attendee;
+            return attendee;
+    }
+    catch
+    {
+        throw new Error("error when get attendee");
+    }
+}
+
+export async function finishEvent()
+{
+    
+    
+    if(userUid)
+    {
+       // console.log(userUid);
+        try{
+           
+        }
+        catch(err)
+        {
+            console.log(err);
+            throw new Error("damaged userProfile");
+        }
+    }
+    else
+    {
+        throw new Error("not existed user");
+    }
+   
+}
+
 
 export async function EventApiInit() {
    // shortid.characters(base64)

@@ -9,6 +9,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import{ProfileApiInit, getProfile}from '../api/Profile.js'
 import firestore from '@react-native-firebase/firestore';
 import { rgb } from 'color';
+import { attendEvent } from '../api/Event.js';
 
 
 export default class HomeScreen extends React.Component {
@@ -85,6 +86,7 @@ export default class HomeScreen extends React.Component {
 
     );}
     handleSubmitRoomID(){
+
         alert('submission test');
         return;
     }
