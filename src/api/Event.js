@@ -109,7 +109,7 @@ export async function attendEvent( code )
 }
 
 
-export async function leaveEvent(code)// 待完成 尚未完成empty event 刪除
+export async function leaveEvent(code)
 {
     if(userUid)
     {
@@ -126,10 +126,23 @@ export async function leaveEvent(code)// 待完成 尚未完成empty event 刪�
                 "attendee":firestore.FieldValue.arrayRemove(userUid)
               })
             
-            let [eventInfo, r2] = await Promise.all([p1, p2]);
+            let p3 = firestore()
+            .collection('users')
+            .doc(userUid)
+            .update({
+                "my_events":firestore.FieldValue.arrayRemove(code)
+              })
+            
+            let [snapshot, r2, r3] = await Promise.all([p1, p2, p3]);
 
-            if(eventInfo)
+            let eventInfo = snapshot.data()
+            console.log(eventInfo['attendee'].length);
+            console.log(eventInfo['attendee']);
+            if(eventInfo['attendee'].length <= 1 )
             {
+                console.log(code);
+                await firestore().collection('event').doc(code).delete();
+                console.log('delete empty event')
                 
             }
             
