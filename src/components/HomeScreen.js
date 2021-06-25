@@ -93,9 +93,16 @@ export default class HomeScreen extends React.Component {
         });
         console.log(newRoomID);
     }
-    handleSubmitRoomID(){
-        attendEvent(this.state.roomID);
-        alert('submission test');
+  async handleSubmitRoomID(){
+
+     try
+     {
+        await attendEvent(this.state.roomID);
+     }
+     catch(err)
+     {
+        alert(err);
+     }  
         return;
     }
     componentDidMount() 

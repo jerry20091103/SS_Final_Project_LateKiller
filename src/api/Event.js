@@ -72,35 +72,45 @@ export async function editEvent(eventInfo, code)
 export async function attendEvent( code )
 {
 
-    console.log(code);
+    //console.log(code);
     if(userUid){
         try{
-
-
-            let p1 = firestore().collection('event').doc(code)
-            .update({
-                "attendee":firestore.FieldValue.arrayUnion(userUid),
-              })
-
-            let p2 = firestore().collection('event').doc(code)
-            .set({
-                "attendee_status": {
-                    [userUid]: false
-                  }
-                },  {merge:true});   
-
             
-            let p3 = firestore().collection('users').doc(userUid)
-            .update({
-                "my_events":firestore.FieldValue.arrayUnion(code)
-            })    
-              
-           await Promise.all([p1,p2,p3]); 
-            return;
+            const profileRef = await firestore().collection('event').doc(code).get();
+            if (profileRef.exists) {
+
+                    let p1 = firestore().collection('event').doc(code)
+                    .update({
+                        "attendee":firestore.FieldValue.arrayUnion(userUid),
+                    })
+
+                    let p2 = firestore().collection('event').doc(code)
+                    .set({
+                        "attendee_status": {
+                            [userUid]: false
+                        }
+                        },  {merge:true});   
+
+                    
+                    let p3 = firestore().collection('users').doc(userUid)
+                    .update({
+                        "my_events":firestore.FieldValue.arrayUnion(code)
+                    })    
+                    
+                await Promise.all([p1,p2,p3]); 
+                    return;
+            }
+            else{
+                console.log('not existed event');
+                throw new EvalError('not existed event');
+            }
         }
-        catch{
-            throw new Error("cannot attend event");
-        }
+        catch(err){
+            if(err instanceof  EvalError)
+                throw new Error('不存在的房間號碼');
+            else
+                throw new Error("cannot attend event");
+        }   
     }
     else{
 
@@ -115,37 +125,38 @@ export async function leaveEvent(code)
     if(userUid)
     {
         try{
-            let p1 =  firestore()
-            .collection('event')
-            .doc(code)
-            .get()
-
-            let p2 = firestore()
-            .collection('event')
-            .doc(code)
-            .update({
-                "attendee":firestore.FieldValue.arrayRemove(userUid)
-              })
             
-            let p3 = firestore()
-            .collection('users')
-            .doc(userUid)
-            .update({
-                "my_events":firestore.FieldValue.arrayRemove(code)
-              })
-            
-            let [snapshot, r2, r3] = await Promise.all([p1, p2, p3]);
+                let p1 =  firestore()
+                .collection('event')
+                .doc(code)
+                .get()
 
-            let eventInfo = snapshot.data()
-            console.log(eventInfo['attendee'].length);
-            console.log(eventInfo['attendee']);
-            if(eventInfo['attendee'].length <= 1 )
-            {
-                console.log(code);
-                await firestore().collection('event').doc(code).delete();
-                console.log('delete empty event')
+                let p2 = firestore()
+                .collection('event')
+                .doc(code)
+                .update({
+                    "attendee":firestore.FieldValue.arrayRemove(userUid)
+                })
                 
-            }
+                let p3 = firestore()
+                .collection('users')
+                .doc(userUid)
+                .update({
+                    "my_events":firestore.FieldValue.arrayRemove(code)
+                })
+                
+                let [snapshot, r2, r3] = await Promise.all([p1, p2, p3]);
+
+                let eventInfo = snapshot.data()
+                console.log(eventInfo['attendee'].length);
+                console.log(eventInfo['attendee']);
+                if(eventInfo['attendee'].length <= 1 )
+                {
+                    console.log(code);
+                    await firestore().collection('event').doc(code).delete();
+                    console.log('delete empty event')
+                    
+                }
             
             return;
 
