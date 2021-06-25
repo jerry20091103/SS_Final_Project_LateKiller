@@ -53,6 +53,7 @@ export async function signOutWithGoogle() {
         // this.setState({ user: null }); // Remember to remove the user from your app's state as well
     } catch (error) {
         console.error(error);
+        throw new Error("Unknown error at signOutWithGoogle.");
     }
 }
 
@@ -100,12 +101,12 @@ export async function getUid() {
         }
         else
         {
-            throw new Error;
+            throw new Error("Cannot get user at getUid.");
         }
     }
     catch
     {
-        throw new Error;
+        throw new Error("Unknown error at getUid.");
     }
    
    
@@ -120,7 +121,7 @@ export async function getUsername() {
     }
     catch
     {
-        throw new Error;
+        throw new Error("Unknown error at getUsername.");
     }
    
    
