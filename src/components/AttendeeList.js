@@ -2,18 +2,26 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, Image, FlatList, RefreshControl, Alert, Dimensions } from 'react-native';
 import { Container, Header, Title, Button, Left, Right, Body, Icon, View, Item, Input, Fab } from 'native-base';
 import ViewOverflow from 'react-native-view-overflow';
-import moment from 'moment';
+import  getEventAttendee from '../api/Event';
+import { getUid } from '../utilities/User';
 import ProfileHeader from './ProfileHeader.js';
 
 export default class AttendeeList extends Component {
+
+    static propTypes = {
+        roomID : PropTypes.string //需要提供event的ID
+    };
     constructor(props) {
         super(props);
+        
+       
 
         this.state = {
             loading: false,
-            testdata: sampleData,// after api done, this would be replace as []
-            myID: '12345',//API好了以後，在componentwillmount裡面把自己的uuid寫設好，有功能會用到
+            attendeeData: [],// after api done, this would be replace as []
+            myID: '',//API好了以後，在componentwillmount裡面把自己的uuid寫設好，有功能會用到
             showUserInfo: false,
+
         }
     }
     toggleCancel(item/* name,level,picture,avgLateTime */) {
@@ -68,7 +76,7 @@ export default class AttendeeList extends Component {
         return (
             <View style={{ margin: 10 }}>
                 <FlatList
-                    data={this.state.testdata}
+                    data={this.state.attendeeData}
                     renderItem={({ item }) => this.renderItem(item)}
                     refreshControl={
                         <RefreshControl
@@ -90,6 +98,52 @@ export default class AttendeeList extends Component {
             </View>
         );
     }
+
+    componentDidMount() //componentWillMount會報錯
+    {
+        this.getUidFromAPI();
+        this.getAttendeeFromAPI(this.props.roomID);
+    }
+
+    async getUidFromAPI()
+    {
+        try
+        {
+            let Uid = await getUid;
+            this.setState( {
+                ...this.state,
+                myID : Uid
+            })
+           
+        }
+        catch
+        {
+            console.log('cannot get Uid from api')
+        }
+    }
+
+    async getAttendeeFromAPI()
+    {
+        let attendee = [];
+        try
+        {
+            attendee = await getEventAttendee();
+            this.setState(
+                {
+                    ...this.state,
+                    attendeeData : attendee
+                }
+            )
+
+        }
+        catch
+        {
+            console.log('cannot get attendee from api')
+        }
+        
+
+    }
+
 }
 
 function ConvertLateTime(time) {
