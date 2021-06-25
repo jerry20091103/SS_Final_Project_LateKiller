@@ -1,8 +1,6 @@
 /*
 This file provides GoogleSignInButton component.
 UserInfo returned by googleSignIn function is stored in state.
-
-WARN: NOT TESTED YET. CODE MAY NOT WORK.
 */
 
 

@@ -38,7 +38,7 @@ export async function signInWithGoogle() {
             console.log("User has no availabe play services.");
         } else {
             // some other error happened
-            console.log("Unknown error.");
+            console.log("Unknown error at signInWithGoogle.");
         }
     }
     return userInfo;
@@ -53,16 +53,18 @@ export async function signOutWithGoogle() {
         // this.setState({ user: null }); // Remember to remove the user from your app's state as well
     } catch (error) {
         console.error(error);
+        throw new Error("Unknown error at signOutWithGoogle.");
     }
 }
 
 // Get current user info.
-// This function can be used in ComponentDidMount.
+// This function CANNOT be used in ComponentDidMount.
 export async function getUserInfo() {
     let userInfo = undefined;
     try {
-        userInfo = await GoogleSignin.signInSilently();
-       
+        
+        userInfo = await GoogleSignin.getCurrentUser();
+        
         // this.setState({ userInfo });
     } catch (error) {
         if (error.code === statusCodes.SIGN_IN_REQUIRED) {
@@ -70,7 +72,7 @@ export async function getUserInfo() {
           console.log("User hasn't signed in.");
         } else {
           // some other error
-          console.log("Unknown error.");
+          console.log("Unknown error at getUserInfo.");
         }
     }
     return userInfo;
@@ -78,8 +80,9 @@ export async function getUserInfo() {
 
 
 export async function signInFireBase(){
-
-    const { idToken } = await getUserInfo();
+    
+    const userData = await getUserInfo();
+    const idToken = userData.idToken;
     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
     await auth().signInWithCredential(googleCredential);
 }  
@@ -98,12 +101,12 @@ export async function getUid() {
         }
         else
         {
-            throw new Error;
+            throw new Error("Cannot get user at getUid.");
         }
     }
     catch
     {
-        throw new Error;
+        throw new Error("Unknown error at getUid.");
     }
    
    
@@ -118,7 +121,7 @@ export async function getUsername() {
     }
     catch
     {
-        throw new Error;
+        throw new Error("Unknown error at getUsername.");
     }
    
    

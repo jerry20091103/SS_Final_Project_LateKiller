@@ -25,6 +25,10 @@ import RecordScreen from './components/RecordScreen'
 import SignInScreen from './components/SignInScreen.js'
 import PlaceSelectScreen from './components/PlaceSelectScreen.js'
 
+import {StyleProvider} from 'native-base';
+import getTheme from '../native-base-theme/components';
+import commonColor from '../native-base-theme/variables/commonColor.js';
+
 const AppNavigator = createStackNavigator(
   {
     Home: { screen: HomeScreen },
@@ -66,7 +70,9 @@ const AppContainer = createAppContainer(
 class App extends React.Component {
   render() {
     return (
-      <AppContainer />
+      <StyleProvider style={getTheme(commonColor)}>
+        <AppContainer />
+      </StyleProvider>
     );
   }
 }
