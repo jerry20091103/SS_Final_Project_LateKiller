@@ -20,7 +20,8 @@ export default class HomeScreen extends React.Component {
             avgLateTime: 0,
             level: 0,
             exp: 1, 
-            expFull: 1
+            expFull: 1,
+            roomID:''
           };
       }
 
@@ -59,7 +60,7 @@ export default class HomeScreen extends React.Component {
                             onPress={() => {navigate('Meet', {newEvent: true})}}>新增活動</Text>
                         <View style={{flexDirection:'row'}}>
                             <Text style={styles.bottomSheetText}>輸入房間號碼:</Text>
-                            <Input style={{fontSize:22}} placeholder="room ID" />
+                            <Input style={{fontSize:22}} placeholder="room ID" onChangeText={this.onChangeRoomID}/>
 
                             <TouchableHighlight
                                 activeOpacity={0.6}
@@ -85,8 +86,15 @@ export default class HomeScreen extends React.Component {
             </SafeAreaView></Container>
 
     );}
+    onChangeRoomID = (newRoomID) => {
+        this.setState({
+            ...this.state,
+            roomID: newRoomID
+        });
+        console.log(newRoomID);
+    }
     handleSubmitRoomID(){
-
+        attendEvent(this.state.roomID);
         alert('submission test');
         return;
     }

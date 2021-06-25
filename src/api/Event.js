@@ -72,16 +72,17 @@ export async function editEvent(eventInfo, code)
 export async function attendEvent( code )
 {
 
+    console.log(code);
     if(userUid){
         try{
 
 
-            let p1 = firestore().collection('event').doc(String(code))
+            let p1 = firestore().collection('event').doc(code)
             .update({
                 "attendee":firestore.FieldValue.arrayUnion(userUid),
               })
 
-            let p2 = firestore().collection('event').doc(String(code))
+            let p2 = firestore().collection('event').doc(code)
             .set({
                 "attendee_status": {
                     [userUid]: false
@@ -221,7 +222,6 @@ export async function getEventAttendee(code)
    let attendee = [];
 
     try{
-       
             let  Snapshot = await firestore().collection('event').doc(code).get()
             let  data = Snapshot.data();
             attendee = data['attendee'];
@@ -235,14 +235,26 @@ export async function getEventAttendee(code)
     }
 }
 
-export async function finishEvent()
+export async function finishEvent(code)
 {
     
     
     if(userUid)
     {
-       // console.log(userUid);
         try{
+            let p1 = firestore()
+            .collection('event')
+            .doc(code)
+            .update({
+                "attendee":firestore.FieldValue.arrayRemove(userUid)
+              })
+
+              let p2 = firestore().collection('event').doc(String(code))
+              .set({
+                  "attendee_status": {
+                      [userUid]: false
+                    }
+                  },  {merge:true});   
            
         }
         catch(err)
