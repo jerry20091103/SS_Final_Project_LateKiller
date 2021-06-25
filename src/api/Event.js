@@ -23,10 +23,10 @@ export async function creatEvent(eventInfo)
         try{
            await firestore().collection('event').doc(code)
             .set({
-                id: [code],
-                title : [eventInfo.title],
+                id: code,
+                title : eventInfo.title,
                 location: [eventInfo.location],
-                time: [eventInfo.time],
+                time: eventInfo.time,
                 attendee: [],
                 attendee_status: {},
               })
@@ -183,8 +183,7 @@ export async function getEventInfo(eventIDList)
             querySnapshot.forEach((doc) => {
             let data = doc.data();    
             let timestamp = data["time"];
-            
-             timestamp = moment.unix(timestamp).calendar();
+             timestamp = moment.unix(timestamp.seconds).calendar();
              data["time"] = timestamp;
              eventList.push(data);
             });
