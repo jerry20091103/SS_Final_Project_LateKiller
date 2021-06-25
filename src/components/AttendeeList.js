@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { StyleSheet, Text, Image, FlatList, RefreshControl, Alert, Dimensions } from 'react-native';
+import { StyleSheet, Text, Image, FlatList, RefreshControl, Alert, Dimensions, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
 import { Container, Header, Title, Button, Left, Right, Body, Icon, View, Item, Input, Fab } from 'native-base';
 import ViewOverflow from 'react-native-view-overflow';
 import  {getEventAttendee} from '../api/Event';
@@ -35,7 +35,6 @@ export default class AttendeeList extends Component {
             OnpressExp: item.exp,
             showUserInfo: !this.state.showUserInfo,
         });
-        console.log('avglatetime:', item.avgLateTime);
     }
     renderItem(item) {
         const TimebtnColor = (item.TimebeforeArrive <= 0) ? appColors.btnRed : appColors.btnGreen;
@@ -58,7 +57,7 @@ export default class AttendeeList extends Component {
                         </View>
 
                         <View style={{ flex: 3, justifyContent: 'center' }}>
-                            <Button style={[styles.arriveButton, { backgroundColor: TimebtnColor }]} >
+                        <Button style={[styles.arriveButton, { backgroundColor: TimebtnColor }]} onPress={() => Alert.alert('test')}>
                                 <Text style={{ color: TimetextColor, fontSize: 25 }}>
                                     {item.TimebeforeArrive <= 0 ? ArriveText : ConvertLateTime(item.TimebeforeArrive)}
                                 </Text>
@@ -85,17 +84,31 @@ export default class AttendeeList extends Component {
                         // onRefresh={this.onRefresh}
                         />}
                 />
-                {this.state.showUserInfo &&
-                    <ViewOverflow style={[styles.profileHeader, { width: windowWidth - 50 }]}>
-                        <ProfileHeader
-                            enableNavigation={false}
-                            user={this.state.OnpressName} image={this.state.OnpressPicture}
-                            avgLateTime={this.state.OnpressAvgLateTime}
-                            level={this.state.OnpressLevel}
-                            exp={this.state.OnpressExp} expFull={1000}
-                        />
-                    </ViewOverflow>
-                }
+                <Modal
+                    animationType="fade"
+                    transparent={true}
+                    visible={this.state.showUserInfo}
+                >
+                    <TouchableWithoutFeedback style={{flex:1}} onPress={()=>{this.setState({ showUserInfo: false })/* , console.log('show:', this.state.showUserInfo) */}}>
+                        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                            <View style={{
+                                width: windowWidth - 50 ,
+                                height:180,
+                            }}>
+                                <ViewOverflow style={[styles.profileHeader, { width: windowWidth - 50 }]}>
+                                    <ProfileHeader
+                                        enableNavigation={false}
+                                        user={this.state.OnpressName} image={this.state.OnpressPicture}
+                                        avgLateTime={this.state.OnpressAvgLateTime}
+                                        level={this.state.OnpressLevel}
+                                        exp={this.state.OnpressExp} expFull={1000}
+                                    />
+                                </ViewOverflow>
+                            </View>
+                        </View>
+                    </TouchableWithoutFeedback>
+
+                </Modal>
             </View>
         );
     }
