@@ -153,7 +153,6 @@ export async function leaveEvent(code)// 待完成 尚未完成empty event 刪�
 export async function listEvent()
 {
     
-    console.log("here");
     if(userUid)
     {
        // console.log(userUid);
@@ -210,13 +209,16 @@ export async function getEventAttendee(code)
 
     try{
        
-            let  data = await firestore().collection('event').doc(code).get()
-            attendee = data.attendee;
+            let  Snapshot = await firestore().collection('event').doc(code).get()
+            let  data = Snapshot.data();
+            attendee = data['attendee'];
             return attendee;
     }
     catch
     {
-        throw new Error("error when get attendee");
+        console.log("error when get attendee");
+        return attendee;
+  
     }
 }
 

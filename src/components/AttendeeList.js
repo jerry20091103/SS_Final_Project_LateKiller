@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { StyleSheet, Text, Image, FlatList, RefreshControl, Alert, Dimensions } from 'react-native';
 import { Container, Header, Title, Button, Left, Right, Body, Icon, View, Item, Input, Fab } from 'native-base';
 import ViewOverflow from 'react-native-view-overflow';
-import  getEventAttendee from '../api/Event';
+import  {getEventAttendee} from '../api/Event';
 import { getUid } from '../utilities/User';
 import ProfileHeader from './ProfileHeader.js';
 
@@ -102,7 +103,7 @@ export default class AttendeeList extends Component {
     componentDidMount() //componentWillMount會報錯
     {
         this.getUidFromAPI();
-        this.getAttendeeFromAPI(this.props.roomID);
+        this.getAttendeeFromAPI();
     }
 
     async getUidFromAPI()
@@ -127,7 +128,9 @@ export default class AttendeeList extends Component {
         let attendee = [];
         try
         {
-            attendee = await getEventAttendee();
+            attendee = await getEventAttendee(this.props.roomID);
+            console.log(attendee);
+
             this.setState(
                 {
                     ...this.state,
