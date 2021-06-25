@@ -20,10 +20,16 @@ export default class HomeScreen extends React.Component {
             avgLateTime: 0,
             level: 0,
             exp: 1, 
-            expFull: 1
+            expFull: 1,
+            roomID: '',
           };
-      }
-
+    }
+    onChangeInput=(inputText)=>{
+        this.setState({
+            roomID: inputText
+        });
+        console.log(this.state.roomID);
+    }
     render() {
     const {navigate} = this.props.navigation;
     return (
@@ -34,7 +40,7 @@ export default class HomeScreen extends React.Component {
             </View>
             <View style={{ flex: 3, backgroundColor: appColors.backgroundLightBlue, borderTopLeftRadius: 15, borderTopRightRadius: 15}}>
                 {/* show list of upcoming events */}
-                <EventList/>
+                <EventList navigation={this.props.navigation}/>
                 {/* bottom sheet that pop up when fab is pressed */}
                 <BottomSheet
                     ref={ref => {
@@ -59,7 +65,7 @@ export default class HomeScreen extends React.Component {
                             onPress={() => {navigate('Meet', {newEvent: true})}}>新增活動</Text>
                         <View style={{flexDirection:'row'}}>
                             <Text style={styles.bottomSheetText}>輸入房間號碼:</Text>
-                            <Input style={{fontSize:22}} placeholder="room ID" />
+                            <Input style={{fontSize:22}} placeholder="room ID" onChangeText={this.onChangeInput}/>
 
                             <TouchableHighlight
                                 activeOpacity={0.6}
@@ -86,8 +92,14 @@ export default class HomeScreen extends React.Component {
 
     );}
     handleSubmitRoomID(){
-
-        alert('submission test');
+        if(this.state.roomID==='')
+            alert('undefined roomID!');
+        else{
+            this.props.navigation.navigate('Meet', {newEvent: false});
+            //Also need to deal with roomID with API
+        }
+            
+        
         return;
     }
     componentDidMount() 

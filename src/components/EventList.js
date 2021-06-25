@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { StyleSheet, Text, Image, FlatList, RefreshControl } from 'react-native';
+import { StyleSheet, Text, Image, FlatList, RefreshControl, Alert } from 'react-native';
 import { Container, Header, View, Button, Icon, Fab, Content, Body, Thumbnail, TabHeading } from 'native-base';
 import appColors from '../styles/colors.js';
 import moment from 'moment';
-import {EventApiInit,listEvent} from '../api/Event.js' 
+import { EventApiInit, listEvent } from '../api/Event.js'
 export default class EventList extends React.Component {
     static propTypes = {
     };
@@ -13,36 +13,52 @@ export default class EventList extends React.Component {
         super(props);
         this.state = {
             loading: false,
-            data : []//測試用
+            data: []//測試用
         };
 
         this.onRefresh = this.onRefresh.bind(this);
     }
 
-    renderItem = ({ item }) => (
-        <EventListItem id={item.id} title={item.title} time={item.time} goTime={item.goTime} />
-    );
-    
+    renderItem(item) {
+
+        return (
+            <Button color={appColors.textBlack} style={styles.eventButton} onPress={() => { this.props.navigation.navigate('Meet', { newEvent: false }) }}>
+                <View style={{ flex: 1, flexDirection: 'row' }}>
+                    {/* title and room number */}
+                    <View style={{ flex: 3, margin: 5 }}>
+                        <Text style={styles.titleText}>{item.title}</Text>
+                        <Text style={styles.smallText}>{'# ' + item.id}</Text>
+                    </View>
+                    {/* time and goTime */}
+                    <View style={{ flex: 4, margin: 5 }}>
+                        <Text style={styles.titleText}>{item.time}</Text>
+                        <Text style={styles.goTimeText}>{convertGoTime(item.goTime)}</Text>
+                    </View>
+                </View>
+            </Button>
+        )
+    }
+
     // Showcase pull to refresh only
     // Delete this and get real data
     onRefresh() {
         this.setState({
             loading: true
         });
-        setTimeout(()=>(this.setState({loading: false})), 2000);
+        setTimeout(() => (this.setState({ loading: false })), 2000);
     }
-    
+
 
     render() {
         return (
             <View style={{ margin: 10 }}>
                 <FlatList
                     data={this.state.data} // <== put data here, and it will appear like magic (I hope so).
-                    renderItem={this.renderItem}
+                    renderItem={({ item }) => this.renderItem(item)}
                     ListHeaderComponent={<Text style={styles.smallText}> 活動清單</Text>}
                     refreshControl={
-                        <RefreshControl 
-                            refreshing={this.state.loading} 
+                        <RefreshControl
+                            refreshing={this.state.loading}
                             onRefresh={this.onRefresh}
                         />}
                 />
@@ -50,19 +66,18 @@ export default class EventList extends React.Component {
         );
     }
 
-    componentDidMount()
-    {
-        
-       this.getData();
+    componentDidMount() {
+
+        this.getData();
     }
 
-     getData = async ()=> {
+    getData = async () => {
         await EventApiInit();
         console.log('here2');
-        const data = await  listEvent();
+        const data = await listEvent();
         this.setState({
-            loading : false,
-            data : data
+            loading: false,
+            data: data
         })//測試用
     }
 
@@ -70,15 +85,15 @@ export default class EventList extends React.Component {
 }
 
 const EventListItem = ({ id, title, time, goTime }) => (
-    <Button color={appColors.textBlack} style={styles.eventButton}>
-        <View style={{ flex: 1, flexDirection: 'row'}}>
+    <Button color={appColors.textBlack} style={styles.eventButton} onPress={() => { this.props.navigation.navigate('Meet', { newEvent: false }) }}>
+        <View style={{ flex: 1, flexDirection: 'row' }}>
             {/* title and room number */}
             <View style={{ flex: 3, margin: 5 }}>
                 <Text style={styles.titleText}>{title}</Text>
                 <Text style={styles.smallText}>{'# ' + id}</Text>
             </View>
             {/* time and goTime */}
-            <View style={{ flex: 4, margin: 5}}>
+            <View style={{ flex: 4, margin: 5 }}>
                 <Text style={styles.titleText}>{time}</Text>
                 <Text style={styles.goTimeText}>{convertGoTime(goTime)}</Text>
             </View>
@@ -114,10 +129,10 @@ const styles = StyleSheet.create({
     },
 
     eventButton: {
-        marginVertical: 10, 
-        borderRadius: 15, 
-        borderWidth: 1, 
-        backgroundColor: 'white', 
+        marginVertical: 10,
+        borderRadius: 15,
+        borderWidth: 1,
+        backgroundColor: 'white',
         borderColor: appColors.textBlack,
         height: 'auto'
     }

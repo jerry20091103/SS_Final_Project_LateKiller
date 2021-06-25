@@ -30,7 +30,7 @@ const AppNavigator = createStackNavigator(
     Home: { screen: HomeScreen },
     Meet: { screen: EventScreen },
     Record: { screen: RecordScreen },
-    PlaceSelect: { screen: PlaceSelectScreen}
+    PlaceSelect: { screen: PlaceSelectScreen }
   },
   {
     initialRouteName: 'Home', //設定預設顯示的page
@@ -39,7 +39,14 @@ const AppNavigator = createStackNavigator(
   }
 );
 
-const AuthNavigator = createStackNavigator({ SignIn: SignInScreen });
+const AuthNavigator = createStackNavigator(
+  { 
+    SignIn:{ 
+    screen:SignInScreen ,
+    navigationOptions: {header: null},
+    }
+    
+  });
 
 const AppContainer = createAppContainer(
   createSwitchNavigator(
@@ -59,7 +66,7 @@ const AppContainer = createAppContainer(
 class App extends React.Component {
   render() {
     return (
-        <AppContainer />
+      <AppContainer />
     );
   }
 }
