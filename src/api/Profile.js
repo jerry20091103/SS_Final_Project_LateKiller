@@ -20,7 +20,7 @@ import firestore from '@react-native-firebase/firestore';
 import { getUid, getUsername } from '../utilities/User';
 let userUid ='';
 
-// Get user doc from database.
+// Get user doc from database. Create if none.
 // It may fail when server is offline.
 export async function getProfile() {
     let profile =   {
@@ -32,10 +32,10 @@ export async function getProfile() {
     };
    const profileRef = await firestore().collection('users').doc(userUid).get();
    if (!profileRef.exists) {
-     console.log('No such document exist!');
+    console.log('No such document exist!');
     let GoogleUsername = await getUsername();
     profile.username =  GoogleUsername;
-     await firestore().collection('users').doc(userUid).set({
+    await firestore().collection('users').doc(userUid).set({
         username: GoogleUsername,
         img: '',
         avgLateTime: 0,
@@ -45,7 +45,7 @@ export async function getProfile() {
         transportation:'',
         my_events:[],
         history:[]
-     })
+    })
    } else {
     profile = profileRef.data();
     console.log(profile);
@@ -56,7 +56,8 @@ export async function getProfile() {
 
 // Add user profile to database.
 // Return true if add success, and return false when failed.
-/*function addProfile(userId) {
+/*
+function addProfile(userId) {
     let success = false;
     firestore().collection('users').doc(userId.toString()).set({
         //username: profile.username,
@@ -72,13 +73,13 @@ export async function getProfile() {
         console.log(error);
     });
     return success;
-};*/
+};
+*/
 
 // Update user profile in database.
 // Return true if add success, and return false when failed.
-function updateProfile(userId, profile) {
-    let success = false;
-    firestore().collection('users').doc(userId.toString()).update({
+function updateProfile(profile) {
+    firestore().collection('users').doc(userUid).update({
         username: profile.username,
         img: profile.img,
         avgLateTime: profile.avgLateTime,
@@ -89,29 +90,15 @@ function updateProfile(userId, profile) {
         success = true;
         // console.log('User updated!');
     }).catch((error) => {
-        console.log(error);
+        throw new Error(error);
     });
-    return success;
 };
 
-// Store user profile to database.
-// Return true if add success, and return false when failed.
-export function storeProfile(userId, profile) {
-    if(isProfileAvailable(userId)) {
-        return updateProfile(userId, profile);
-    } else {
-        return addProfile(userId, profile);
-    }
-    // return false;
+// Set user profile.
+export async function setProfile(profile) {
+    await getProfile();
+    await updateProfile(profile);
 };
-
-// Check if profile available.
-// This may fail due to server offline.
-export function isProfileAvailable(userId) {
-    let profile = getProfile(userId);
-    return profile ? true : false;
-};
-
 
 export async function ProfileApiInit() {
     userUid = await getUid();
