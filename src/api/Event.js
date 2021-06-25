@@ -1,7 +1,7 @@
 import firestore from '@react-native-firebase/firestore';
 import { getUid } from '../utilities/User';
 import moment from 'moment';
-
+const shortid = require('shortid');
 let userUid = '';
 
 export async function creatEvent(eventInfo)
@@ -148,7 +148,8 @@ export async function leaveEvent(code)// 待完成 尚未完成empty event 刪�
 
 export async function listEvent()
 {
-
+    
+    console.log("here");
     if(userUid)
     {
        // console.log(userUid);
@@ -160,6 +161,7 @@ export async function listEvent()
         }
         catch(err)
         {
+            console.log(err);
             throw new Error("damaged userProfile");
         }
     }
@@ -175,16 +177,20 @@ export async function getEventInfo(eventIDList)
    let eventList = [];
 
     try{
-           let  querySnapshot = await firestore().collection('event').where(firestore.FieldPath.documentId(),'in',eventIDList).get()
+        if(eventIDList.length)
+        {
+            let  querySnapshot = await firestore().collection('event').where(firestore.FieldPath.documentId(),'in',eventIDList).get()
             querySnapshot.forEach((doc) => {
             let data = doc.data();    
             let timestamp = data["time"];
-             timestamp = moment.unix(parseInt(timestamp)).calendar();
+            
+             timestamp = moment.unix(timestamp).calendar();
              data["time"] = timestamp;
              eventList.push(data);
             });
-
-             return eventList;
+        }
+            return eventList;
+          
 
     }
     catch
@@ -196,14 +202,13 @@ export async function getEventInfo(eventIDList)
 }
 
 export async function EventApiInit() {
+   // shortid.characters(base64)
     userUid = await getUid();
-  // console.log(userUid);
     return;
 }
 
 
 
-function _CodeGen()//未完成
-{
-    return String(123456);
+function _CodeGen(){
+     return shortid.generate();
 }
