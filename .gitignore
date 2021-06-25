@@ -60,3 +60,4 @@ buck-out/
 
 android/app/google-services.json
 src/api/google-web-api-key.json
+android/app/src/main/AndroidManifest.xml
