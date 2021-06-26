@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { StyleSheet, TouchableHighlight, BackHandler, Alert, TouchableWithoutFeedback, Keyboard, TextInput, Animated } from 'react-native';
 import { StyleSheet, TouchableHighlight, BackHandler, Alert, TouchableWithoutFeedback, Keyboard, TextInput, Image } from 'react-native';
 import appColors from '../styles/colors.js';
 import PropTypes from 'prop-types';
@@ -69,15 +68,6 @@ export default class PlaceSelectScreen extends Component {
                             <Icon type='MaterialIcons' name='cancel' style={{backgroundColor: appColors.backgroundBlue, color: appColors.textGray, height: 60, alignItems: 'center', fontSize: 26, padding: 10, paddingVertical: 18}}
                             onPress={() => this.textInput.clear()} />
                         )}}
-                        renderLeftButton={()  =>
-                            <TouchableHighlight
-                                style={styles.backButton}
-                                activeOpacity={0.6}
-                                underlayColor='#EEEEEE'
-                                onPress={() => this.backAction()}>
-                                <Icon style={{ color: appColors.textBlack,padding:10 }} name='arrow-back' />
-                            </TouchableHighlight>
-                        }
                         placeholder='搜尋地點'
                         onPress={(data, details = null) => {
                             this.setState({
