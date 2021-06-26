@@ -161,12 +161,7 @@ export default class AttendeeList extends Component {
             this.setState(
                 {
                     ...this.state,
-<<<<<<< HEAD
-                    attendeeData : attendee
-                    // attendeeData: sampleData
-=======
                     attendeeData : attendeeProfiles
->>>>>>> ab292541b03c11d53de0224092dc2c033ea5e055
                 }
             )
 
