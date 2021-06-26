@@ -117,8 +117,9 @@ export default class AttendeeList extends Component {
 
     componentDidMount() 
     {
+
         this.getUidFromAPI();
-       // this.getAttendeeFromAPI();
+        //this.getAttendeeFromAPI();
     }
 
     componentDidUpdate(prevProps, prevState)
@@ -129,6 +130,7 @@ export default class AttendeeList extends Component {
         }
 
     }
+
 
     async getUidFromAPI()
     {
@@ -157,13 +159,13 @@ export default class AttendeeList extends Component {
            attendeeProfiles = await getProfileByUidList(attendeeList);
         
 
-
-            this.setState(
-                {
-                    ...this.state,
-                    attendeeData : attendeeProfiles
-                }
-            )
+                this.setState(
+                    {
+                        ...this.state,
+                        attendeeData : attendeeProfiles
+                    }
+                )
+          
 
         }
         catch
@@ -176,12 +178,12 @@ export default class AttendeeList extends Component {
 
     async handleLeaveEvent(itemUid)
     {
-        if(itemUid==this.state.myID)
+        if(itemUid == this.state.myID)
         {
             await leaveEvent(this.props.roomID);
             this.props.navigation.replace('Home');
-            console.log('leave event');
         }
+        return;
 
     }
 }
