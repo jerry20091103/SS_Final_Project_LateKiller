@@ -7,7 +7,7 @@ import { Container, Header, Title, Button, Left, Right, Body, Icon, Text, View, 
 import BottomSheet from 'react-native-raw-bottom-sheet';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
-import { creatEvent, attendEvent, getEventInfo } from '../api/Event.js'
+import { creatEvent, editEvent, getEventInfo } from '../api/Event.js'
 import AttendeeList from './AttendeeList.js'
 
 /* Event Screen
@@ -27,6 +27,8 @@ export default class EventScreen extends Component {
             newEvent: false, // if you are creating a new event or not
             date: null, // the event date
             time: null, // the event time
+            dateTimestamp: null,
+            timeTimestamp: null,
             title: "", // the event title
             placeCoord: null, // coordinate of the place {lat: ..., lng: ...} (object)
             placeName: "", // the event place name (it may be a name or a address) (string)
@@ -108,7 +110,7 @@ export default class EventScreen extends Component {
                                 {this.state.edit || this.state.newEvent ? (
                                     // pick date button
                                     <Text style={styles.detailTextGray} onPress={() => this.handlePickDate()}>
-                                        {this.state.date == null ? '新增日期' : moment(this.state.date).format('YYYY/MM/DD')}
+                                        {this.state.date == null ? '新增日期' : this.state.date}
                                     </Text>
                                 ) : (
                                     // show data from server
@@ -122,7 +124,7 @@ export default class EventScreen extends Component {
                                 {this.state.edit || this.state.newEvent ? (
                                     // pick time button
                                     <Text style={styles.detailTextGray} onPress={() => this.handlePickTime()}>
-                                        {this.state.time == null ? '新增時間' : moment(this.state.time).format('hh:mm')}
+                                        {this.state.time == null ? '新增時間' : this.state.time}
                                     </Text>
                                 ) : (
                                     // show data from server
@@ -204,21 +206,21 @@ export default class EventScreen extends Component {
                 {/* date picker */}
                 {this.state.showPickDate && (
                     <DateTimePicker
-                        value={this.state.date}
+                        value={this.state.dateTimestamp}
                         mode={'date'}
                         is24Hour={true}
                         display="default"
-                        onChange={this.onChnageDate}
+                        onChange={this.onChangeDate}
                     />
                 )}
                 {/* time picker */}
                 {this.state.showPickTime && (
                     <DateTimePicker
-                        value={this.state.time}
+                        value={this.state.timeTimestamp}
                         mode={'time'}
                         is24Hour={true}
                         display="default"
-                        onChange={this.onChnageTime}
+                        onChange={this.onChangeTime}
                     />
                 )}
 
@@ -253,6 +255,7 @@ export default class EventScreen extends Component {
             else if (this.state.placeCoord === "") Alert.alert("地點不能為空");
             else {
                 console.log("saved!");
+                editEvent({ 'title': this.state.title, 'time': this.state.time, 'location': this.state.location }, this.state.eventId);//測試用
                 this.setState({ edit: false, });
             };// modify event in firebase
         }
@@ -287,31 +290,33 @@ export default class EventScreen extends Component {
 
     handlePickDate() {
         this.setState({
-            date: new Date(),
+            dateTimestamp: new Date(),
             showPickDate: true
         });
     }
 
-    onChnageDate = (event, selectedDate) => {
+    onChangeDate = (event, selectedDate) => {
         this.setState({
             modified: true,
             showPickDate: false,
-            date: selectedDate || this.state.date
+            dateTimestamp: selectedDate || this.state.dateTimestamp,
+            date: moment(selectedDate || this.state.dateTimestamp).format('YYYY-MM-DD')
         });
     }
 
     handlePickTime() {
         this.setState({
-            time: new Date(),
+            timeTimestamp: new Date(),
             showPickTime: true
         });
     }
 
-    onChnageTime = (event, selectedTime) => {
+    onChangeTime = (event, selectedTime) => {
         this.setState({
             modified: true,
             showPickTime: false,
-            time: selectedTime || this.state.time
+            timeTimestamp: selectedTime || this.state.timeTimestamp,
+            time: moment(selectedTime || this.state.timeTimestamp).format('hh:mm')
         });
     }
 
