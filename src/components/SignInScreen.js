@@ -3,6 +3,7 @@ import { StyleSheet, Text, Image,ImageBackground,Dimensions } from 'react-native
 import { Container, Header, View, Button, Icon, Fab, Content, Body, Thumbnail } from 'native-base';
 import GoogleSignInButton from './GoogleSignInButton';
 import appColors from '../styles/colors.js';
+//api有問題
 export default class SignInScreen extends React.Component {
 
     render() {

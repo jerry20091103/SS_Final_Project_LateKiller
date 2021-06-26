@@ -6,7 +6,7 @@ import { Container, Header, Title, Button, Left, Right, Body, Icon, Text, View, 
 import BottomSheet from 'react-native-raw-bottom-sheet';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
-import { creatEvent, attendEvent } from '../api/Event.js'
+import {creatEvent, attendEvent, getEventInfo} from '../api/Event.js'
 import AttendeeList from './AttendeeList.js'
 
 /* Event Screen
@@ -22,7 +22,7 @@ export default class EventScreen extends Component {
         this.state = {
             edit: false,
             modified: false,
-            eventId: 0, // get event id from home screen (not used when creating event)
+            eventId: "", // get event id from home screen (not used when creating event)
             newEvent: false, // if you are creating a new event or not
             date: null, // the event date
             time: null, // the event time
@@ -41,7 +41,8 @@ export default class EventScreen extends Component {
             eventId: this.props.navigation.getParam('eventId', undefined),
             newEvent: this.props.navigation.getParam('newEvent', false),
             edit: this.props.navigation.getParam('edit', false),
-        });
+        },()=>{this.getEventInfoFromAPI()})
+
     }
 
     componentWillUnmount() {
@@ -82,8 +83,8 @@ export default class EventScreen extends Component {
                                     </Item>
 
                                 ) : (
-                                        <Title style={styles.titleText}>標題 from API</Title>
-                                    )
+                                    <Title style={styles.titleText}>{this.state.title}</Title>
+                                )
                                 }
                             </Body>
                             <Right style={{ paddingLeft: 0, flex: 1 }}>
@@ -107,11 +108,11 @@ export default class EventScreen extends Component {
                                         {this.state.date == null ? '新增日期' : moment(this.state.date).format('YYYY/MM/DD')}
                                     </Text>
                                 ) : (
-                                        // show data from server
-                                        <Text>
-                                            Insert data from firease!
-                                        </Text>
-                                    )}
+                                    // show data from server
+                                    <Text>
+                                        {this.state.date}
+                                    </Text>
+                                )}
                             </View>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <Text style={styles.detailText}>時間: </Text>
@@ -121,11 +122,11 @@ export default class EventScreen extends Component {
                                         {this.state.time == null ? '新增時間' : moment(this.state.time).format('hh:mm')}
                                     </Text>
                                 ) : (
-                                        // show data from server
-                                        <Text>
-                                            Insert data from firease!
-                                        </Text>
-                                    )}
+                                    // show data from server
+                                    <Text>
+                                       {this.state.time}
+                                    </Text>
+                                )}
                             </View>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <Text style={styles.detailText}>地點: </Text>
@@ -133,17 +134,17 @@ export default class EventScreen extends Component {
                                     // location picker
                                     <Text style={styles.detailTextGray} onPress={() => navigate("PlaceSelect")}>新增地點</Text>
                                 ) : (
-                                        // show data from server
-                                        <Text>
-                                            Insert data from firease!
-                                        </Text>
-                                    )}
+                                    // show data from server
+                                    <Text>
+                                         {this.state.location}
+                                    </Text>
+                                )}
                             </View>
 
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <Text style={styles.detailText}>房間號碼: </Text>
                                 {/* 新房間的號碼也直接由firebase提供? */}
-                                <Text style={styles.detailTextGray}>010101 (same as below)</Text>
+                                    <Text style={styles.detailTextGray}>{this.state.eventId}</Text>
                             </View>
 
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -160,7 +161,7 @@ export default class EventScreen extends Component {
                         {/* participants and notes */}
 
                         <View style={{ flex: 2 }}>
-                            <AttendeeList />
+                             {this.state.edit || this.state.newEvent ? (<View></View>):( <AttendeeList roomID = {this.state.eventId}/>)}
                         </View>
 
                     </View>
@@ -258,6 +259,37 @@ export default class EventScreen extends Component {
         }
     }
 
+async getEventInfoFromAPI()
+{   
+    try
+    {
+        if(!this.state.newEvent)
+        {
+
+        
+         let info =  await getEventInfo(this.state.eventId);
+
+          //console.log(info);
+
+         this.setState({
+                ...this.state,
+              title:info.title,
+              date:info.date,
+              time:info.time,
+              location:info.location
+         })
+        }
+    }
+    catch(err)
+    {
+        console.log(err);
+    }
+   
+
+
+
+}
+
     handlePickDate() {
         this.setState({
             date: new Date(),
@@ -310,6 +342,7 @@ export default class EventScreen extends Component {
         // show discard warning
         this.BottomSheet.open();
     }
+
 }
 
 const styles = StyleSheet.create({

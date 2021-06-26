@@ -47,9 +47,10 @@ const AuthNavigator = createStackNavigator(
   { 
     SignIn:{ 
     screen:SignInScreen ,
-    navigationOptions: {headerShown: false},
     }
-    
+  },
+  {
+    headerMode: 'none'
   });
 
 const AppContainer = createAppContainer(

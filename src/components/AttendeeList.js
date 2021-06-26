@@ -6,6 +6,7 @@ import ViewOverflow from 'react-native-view-overflow';
 import  {getEventAttendee} from '../api/Event';
 import { getUid } from '../utilities/User';
 import ProfileHeader from './ProfileHeader.js';
+import {getProfileByUidList} from'../api/Profile';
 
 export default class AttendeeList extends Component {
 
@@ -19,7 +20,7 @@ export default class AttendeeList extends Component {
 
         this.state = {
             loading: false,
-            attendeeData: [],// after api done, this would be replace as []
+            attendeeData: [] ,// after api done, this would be replace as []
             myID: '',//API好了以後，在componentwillmount裡面把自己的uuid寫設好，有功能會用到
             showUserInfo: false,
 
@@ -28,9 +29,9 @@ export default class AttendeeList extends Component {
     toggleCancel(item/* name,level,picture,avgLateTime */) {
         this.setState({
             ...this.state,
-            OnpressName: item.name,
+            OnpressName: item.username,
             OnpressLevel: item.level,
-            OnpressPicture: item.picture,
+            OnpressPicture: require('../../assets/test_profile_pic_02.png'),
             OnpressAvgLateTime: item.avgLateTime,
             OnpressExp: item.exp,
             showUserInfo: !this.state.showUserInfo,
@@ -39,7 +40,7 @@ export default class AttendeeList extends Component {
     renderItem(item) {
         const TimebtnColor = (item.TimebeforeArrive <= 0) ? appColors.btnRed : appColors.btnGreen;
         const TimetextColor = (item.TimebeforeArrive <= 0) ? appColors.textRed : appColors.textGreen;
-        const ArriveText = (this.state.myID === item.userID) ? '離開' : '已到達';
+        const ArriveText = (this.state.myID === item.Uid) ? '離開' : '已到達';
         return (
             <View style={{ flex: 1 }}>
                 <Button color={appColors.textBlack} style={styles.UserButton} onPress={() => this.toggleCancel(item)}>
@@ -47,11 +48,11 @@ export default class AttendeeList extends Component {
 
                         <View style={{ flex: 2, margin: 5 }}>
                             {/* api做好後，要記得把item.picture直接寫成load好的圖片，不是一段url而已 */}
-                            <Image source={item.picture} style={styles.profilePic} />
+                            <Image source={require('../../assets/test_profile_pic_02.png')} style={styles.profilePic} />
                         </View>
 
                         <View style={{ flex: 4, margin: 5 }}>
-                            <View style={{ flex: 1 }}><Text style={styles.infoText}>{item.name}</Text></View>
+                            <View style={{ flex: 1 }}><Text style={styles.infoText}>{item.username}</Text></View>
                             <View style={{ flex: 1 }}><Text style={styles.lvText}> LV.{item.level}</Text></View>
 
                         </View>
@@ -77,7 +78,7 @@ export default class AttendeeList extends Component {
             <View style={{ margin: 10 }}>
                 <FlatList
                     data={this.state.attendeeData}
-                    renderItem={({ item }) => this.renderItem(item)}
+                    renderItem={({item}) => this.renderItem(item)}
                     refreshControl={
                         <RefreshControl
                             refreshing={this.state.loading}
@@ -113,17 +114,26 @@ export default class AttendeeList extends Component {
         );
     }
 
-    componentDidMount() //componentWillMount會報錯
+    componentDidMount() 
     {
         this.getUidFromAPI();
-        this.getAttendeeFromAPI();
+       // this.getAttendeeFromAPI();
+    }
+
+    componentDidUpdate(prevProps, prevState)
+    {
+        if(this.props.roomID!==prevProps.roomID)
+        {
+           this.getAttendeeFromAPI();
+        }
+
     }
 
     async getUidFromAPI()
     {
         try
         {
-            let Uid = await getUid;
+            let Uid = await getUid();
             this.setState( {
                 ...this.state,
                 myID : Uid
@@ -138,17 +148,24 @@ export default class AttendeeList extends Component {
 
     async getAttendeeFromAPI()
     {
-        let attendee = [];
+        let attendeeProfiles = [];
         try
         {
-            attendee = await getEventAttendee(this.props.roomID);
-            console.log(attendee);
+           let attendeeList = await getEventAttendee(this.props.roomID);
+
+           attendeeProfiles = await getProfileByUidList(attendeeList);
+        
+
 
             this.setState(
                 {
                     ...this.state,
+<<<<<<< HEAD
                     attendeeData : attendee
                     // attendeeData: sampleData
+=======
+                    attendeeData : attendeeProfiles
+>>>>>>> ab292541b03c11d53de0224092dc2c033ea5e055
                 }
             )
 
