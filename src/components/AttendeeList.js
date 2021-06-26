@@ -161,7 +161,12 @@ export default class AttendeeList extends Component {
             this.setState(
                 {
                     ...this.state,
+<<<<<<< HEAD
+                    attendeeData : attendee
+                    // attendeeData: sampleData
+=======
                     attendeeData : attendeeProfiles
+>>>>>>> ab292541b03c11d53de0224092dc2c033ea5e055
                 }
             )
 
@@ -268,6 +273,33 @@ const sampleData = [
     },
     {
         userID: '13579',
+        name: 'earth',
+        picture: require('../../assets/test_profile_pic_04.png'),
+        level: 999,
+        TimebeforeArrive: 69,
+        avgLateTime: 13,
+        exp: 400,
+    },
+    {
+        userID: '11111',
+        name: 'earth',
+        picture: require('../../assets/test_profile_pic_04.png'),
+        level: 999,
+        TimebeforeArrive: 69,
+        avgLateTime: 13,
+        exp: 400,
+    },
+    {
+        userID: '22222',
+        name: 'earth',
+        picture: require('../../assets/test_profile_pic_04.png'),
+        level: 999,
+        TimebeforeArrive: 69,
+        avgLateTime: 13,
+        exp: 400,
+    },
+    {
+        userID: '33333',
         name: 'earth',
         picture: require('../../assets/test_profile_pic_04.png'),
         level: 999,
