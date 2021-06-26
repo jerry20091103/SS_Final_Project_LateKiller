@@ -114,16 +114,9 @@ export async function getProfileByUidList(UidList) {
                 };
                 profile.Uid =  data.Uid;
                 profile.username = data.username;
+                profile.img = data.img;
                 profile.avgLateTime = data.avgLateTime;
                 profile.level = data.level;
-
-                // Image may be empty. Need to handle this to avoid further errors. 
-                if(data.img) {
-                    profile.img = data.img;
-                } else {
-                    let userImage = await getUserImage();
-                    profile.img = userImage;
-                }
                 
                 console.log(profile);
                 profileList.push(profile);
