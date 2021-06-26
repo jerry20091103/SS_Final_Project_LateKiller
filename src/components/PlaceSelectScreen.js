@@ -183,8 +183,6 @@ export default class PlaceSelectScreen extends Component {
         await fetch(url, { method: 'GET' }).then(
             (res) => res.json()
         ).then((data) => {
-            console.log("coordToAddr results:");
-            console.log(data.results[0]);
             this.setState({
                 resultAddress: data.results[0].formatted_address
             });

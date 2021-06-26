@@ -332,7 +332,6 @@ export default class EventScreen extends Component {
         let nameTemp = await AsyncStorage.getItem('name');
         let isAddressTemp = await AsyncStorage.getItem('nameIsAddress');
         coordTemp = JSON.parse(coordTemp);
-        console.log(isAddressTemp);
         this.setState({
             modified: true,
             placeCoord: coordTemp,
