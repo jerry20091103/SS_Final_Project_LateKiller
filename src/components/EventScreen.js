@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, TouchableHighlight, BackHandler, Alert, TouchableWithoutFeedback, Keyboard, TextInput } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import appColors from '../styles/colors.js';
 import PropTypes from 'prop-types';
 import { Container, Header, Title, Button, Left, Right, Body, Icon, Text, View, Item, Input } from 'native-base';
@@ -27,7 +28,9 @@ export default class EventScreen extends Component {
             date: null, // the event date
             time: null, // the event time
             title: "", // the event title
-            place: "", // the event place
+            placeCoord: null, // coordinate of the place {lat: ..., lng: ...} (object)
+            placeName: "", // the event place name (it may be a name or a address) (string)
+            nameIsAddress: "false", // whether the stored name is a address (use string since AsyncStorge only take strings...)
             showPickDate: false, // control popup date picker
             showPickTime: false, // control popup time picker
         };
@@ -132,11 +135,11 @@ export default class EventScreen extends Component {
                                 <Text style={styles.detailText}>地點: </Text>
                                 {this.state.edit || this.state.newEvent ? (
                                     // location picker
-                                    <Text style={styles.detailTextGray} onPress={() => navigate("PlaceSelect")}>新增地點</Text>
+                                    <Text style={styles.detailTextGray} onPress={() => navigate("PlaceSelect", {coord: this.state.placeCoord, onGoBack: () => this.onChangePlace(), name: this.state.placeName, nameIsAddress: this.state.nameIsAddress})}>{this.state.placeName || "新增地點"}</Text>
                                 ) : (
                                     // show data from server
                                     <Text>
-                                        {this.state.location}
+                                        {this.state.placeName}
                                     </Text>
                                 )}
                             </View>
@@ -236,7 +239,7 @@ export default class EventScreen extends Component {
             if (this.state.title === "") Alert.alert("標題不能為空");
             else if (this.state.date === null) Alert.alert("日期不能為空");
             else if (this.state.time === null) Alert.alert("時間不能為空");
-            // else if (this.state.place === "") Alert.alert("地點不能為空");
+            // else if (this.state.placeCoord === "") Alert.alert("地點不能為空");
             else {
                 creatEvent({ 'title': this.state.title, 'time': this.state.time, 'location': this.state.location });//測試用
                 this.setState({ edit: false, });
@@ -247,7 +250,7 @@ export default class EventScreen extends Component {
             if (this.state.title === "") Alert.alert("標題不能為空");
             else if (this.state.date === null) Alert.alert("日期不能為空");
             else if (this.state.time === null) Alert.alert("時間不能為空");
-            else if (this.state.place === "") Alert.alert("地點不能為空");
+            else if (this.state.placeCoord === "") Alert.alert("地點不能為空");
             else {
                 console.log("saved!");
                 this.setState({ edit: false, });
@@ -319,12 +322,18 @@ export default class EventScreen extends Component {
         });
         console.log(newTitle);
     }
-    onChangePlace(newPlace) {
+    async onChangePlace() {
+        let coordTemp = await AsyncStorage.getItem('coord');
+        let nameTemp = await AsyncStorage.getItem('name');
+        let isAddressTemp = await AsyncStorage.getItem('nameIsAddress');
+        coordTemp = JSON.parse(coordTemp);
+        console.log(isAddressTemp);
         this.setState({
             modified: true,
-            place: newPlace
+            placeCoord: coordTemp,
+            placeName: nameTemp,
+            nameIsAddress: isAddressTemp
         });
-        console.log(newPlace);
     }
     handleGoBack() {
         if (!this.state.modified && !this.state.newEvent) {
