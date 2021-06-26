@@ -32,7 +32,7 @@ export default class AttendeeList extends Component {
             ...this.state,
             OnpressName: item.username,
             OnpressLevel: item.level,
-            OnpressPicture: require('../../assets/test_profile_pic_02.png'),
+            OnpressPicture: '',
             OnpressAvgLateTime: item.avgLateTime,
             OnpressExp: item.exp,
             showUserInfo: !this.state.showUserInfo,
@@ -49,7 +49,7 @@ export default class AttendeeList extends Component {
 
                         <View style={{ flex: 2, margin: 5 }}>
                             {/* api做好後，要記得把item.picture直接寫成load好的圖片，不是一段url而已 */}
-                            <Image source={require('../../assets/test_profile_pic_02.png')} style={styles.profilePic} />
+                            <Image source={''} style={styles.profilePic} />
                         </View>
 
                         <View style={{ flex: 4, margin: 5 }}>
@@ -119,8 +119,7 @@ export default class AttendeeList extends Component {
     {
 
         this.getUidFromAPI();
-        
-       // this.getAttendeeFromAPI();
+        //this.getAttendeeFromAPI();
     }
 
     componentDidUpdate(prevProps, prevState)
