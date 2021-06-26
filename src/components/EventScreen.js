@@ -161,7 +161,7 @@ export default class EventScreen extends Component {
                         {/* participants and notes */}
 
                         <View style={{ flex: 2 }}>
-                             {this.state.edit || this.state.newEvent ? (<View></View>):( <AttendeeList roomID = {this.state.eventId}/>)}
+                             {this.state.edit || this.state.newEvent ? (<View></View>):( <AttendeeList navigation={this.props.navigation} roomID = {this.state.eventId}/>)}
                         </View>
 
                     </View>
@@ -236,7 +236,7 @@ export default class EventScreen extends Component {
             if (this.state.title === "") Alert.alert("標題不能為空");
             else if (this.state.date === null) Alert.alert("日期不能為空");
             else if (this.state.time === null) Alert.alert("時間不能為空");
-            else if (this.state.place === "") Alert.alert("地點不能為空");
+           // else if (this.state.place === "") Alert.alert("地點不能為空");
             else{
                 creatEvent({ 'title': this.state.title, 'time': this.state.time, 'location': this.state.location });//測試用
                 this.setState({edit: false,});
