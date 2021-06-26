@@ -16,7 +16,7 @@ profile: {
 
 */
 import firestore from '@react-native-firebase/firestore';
-import { getUid, getUsername } from '../utilities/User';
+import { getUid, getUsername, getUserImage } from '../utilities/User';
 let userUid ='';
 
 // Get user doc from database. Create if none.
@@ -40,11 +40,12 @@ export async function getProfile() {
    if (!profileRef.exists) {
     console.log('No such document exist!');
     let GoogleUsername = await getUsername();
+    let GoogleUserImage = await getUserImage();
     // Fix the returned profile.
     profile = {
         Uid: userUid,
         username: GoogleUsername,
-        img: '',
+        img: GoogleUserImage,
         avgLateTime: 0,
         level: 0,
         exp: 10,
@@ -56,6 +57,29 @@ export async function getProfile() {
     await firestore().collection('users').doc(userUid).set(profile);
    } else {
     profile = profileRef.data();
+    // Handle possible errors like unknown name and image.
+    if(profile.username === 'unknown') {
+        profile.username = await getUsername();
+        await firestore().collection('users').doc(userUid).update({
+            username: profile.username
+        }).then(() => {
+            // console.log('User updated!');
+        }).catch((error) => {
+            console.log(error);
+            throw new Error("Unknown error at getProfile when correcting unknown username.");
+        });
+    }
+    if(!profile.img) {
+        profile.img = await getUserImage();
+        await firestore().collection('users').doc(userUid).update({
+            img: profile.img
+        }).then(() => {
+            // console.log('User updated!');
+        }).catch((error) => {
+            console.log(error);
+            throw new Error("Unknown error at getProfile when correcting empty user image.");
+        });
+    }
     //console.log(profile);
    }
    
@@ -80,6 +104,7 @@ export async function getProfileByUidList(UidList) {
                 let profile =   {
                     Uid : 'unknown',
                     username:'unknown',
+                    img: '',
                     avgLateTime: 0,
                     level: 0,
                     exp: 0, 
@@ -91,6 +116,14 @@ export async function getProfileByUidList(UidList) {
                 profile.username = data.username;
                 profile.avgLateTime = data.avgLateTime;
                 profile.level = data.level;
+
+                // Image may be empty. Need to handle this to avoid further errors. 
+                if(data.img) {
+                    profile.img = data.img;
+                } else {
+                    let userImage = await getUserImage();
+                    profile.img = userImage;
+                }
                 
                 console.log(profile);
                 profileList.push(profile);

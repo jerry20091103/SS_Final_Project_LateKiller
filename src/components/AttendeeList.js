@@ -6,7 +6,7 @@ import ViewOverflow from 'react-native-view-overflow';
 import  {getEventAttendee,leaveEvent} from '../api/Event';
 import { getUid } from '../utilities/User';
 import ProfileHeader from './ProfileHeader.js';
-import {getProfileByUidList} from'../api/Profile';
+import {getProfileByUidList, displayProfileImage} from'../api/Profile';
 import { isEnabled } from 'react-native/Libraries/Performance/Systrace';
 
 export default class AttendeeList extends Component {
@@ -32,7 +32,7 @@ export default class AttendeeList extends Component {
             ...this.state,
             OnpressName: item.username,
             OnpressLevel: item.level,
-            OnpressPicture: require('../../assets/test_profile_pic_02.png'),
+            OnpressPicture: item.img,
             OnpressAvgLateTime: item.avgLateTime,
             OnpressExp: item.exp,
             showUserInfo: !this.state.showUserInfo,
@@ -49,7 +49,7 @@ export default class AttendeeList extends Component {
 
                         <View style={{ flex: 2, margin: 5 }}>
                             {/* api做好後，要記得把item.picture直接寫成load好的圖片，不是一段url而已 */}
-                            <Image source={require('../../assets/test_profile_pic_02.png')} style={styles.profilePic} />
+                            <Image source={{uri: item.img}} style={styles.profilePic} />
                         </View>
 
                         <View style={{ flex: 4, margin: 5 }}>

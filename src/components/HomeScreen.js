@@ -18,6 +18,7 @@ export default class HomeScreen extends React.Component {
         this.state = {
             username: 'unknown',
             avgLateTime: 0,
+            img: '',
             level: 0,
             exp: 1,
             expFull: 1,
@@ -36,7 +37,7 @@ export default class HomeScreen extends React.Component {
             <Container><SafeAreaView style={{ flex: 1 }} forceInset="top">
 
                 <View style={{ flex: 1, backgroundColor: appColors.backgroundBlue, borderBottomLeftRadius: 15, borderBottomRightRadius: 15 }}>
-                    <ProfileHeader enableNavigation={true} navigation={this.props.navigation} user={this.state.username} image={require('../../assets/test_profile_pic_01.png')} avgLateTime={this.state.avgLateTime} level={this.state.level} exp={this.state.exp} expFull={this.state.expFull} />
+                    <ProfileHeader enableNavigation={true} navigation={this.props.navigation} user={this.state.username} image={this.state.img} avgLateTime={this.state.avgLateTime} level={this.state.level} exp={this.state.exp} expFull={this.state.expFull} />
                 </View>
                 <View style={{ flex: 3, backgroundColor: appColors.backgroundLightBlue, borderTopLeftRadius: 15, borderTopRightRadius: 15 }}>
                     {/* show list of upcoming events */}
@@ -125,6 +126,7 @@ export default class HomeScreen extends React.Component {
             {
                 username: profile.username,
                 avgLateTime: profile.avgLateTime,
+                img: profile.img,
                 level: profile.level,
                 exp: profile.exp,
                 expFull: profile.expFull,
