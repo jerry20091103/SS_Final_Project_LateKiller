@@ -137,39 +137,5 @@ const styles = StyleSheet.create({
     }
 })
 
-// this data is only for testing!
-// get real data from firebase and DELETE this
-const sampleData = [
-    {
-        id: '000001',               // room id
-        title: '軟實討論',
-        time: moment().calendar(),  // time of the event
-        goTime: 40,                 // time to go, get this from google map
-    },
-    {
-        id: '000102',
-        title: '1234',
-        time: moment().add(1, 'days').calendar(),
-        goTime: 100,
-    },
-    {
-        id: '000132',
-        title: 'An awesome event with a exteremely long title',
-        time: moment().add(3, 'days').calendar(),
-        goTime: 200,
-    },
-    {
-        id: '000178',
-        title: 'Google IO 2021',
-        time: moment.unix(1621270800).calendar(),
-        goTime: 78,
-    },
-    {
-        id: '000187',
-        title: 'WWDC 2021',
-        time: moment.unix(1622998800).calendar(),
-        goTime: 87,
-    },
 
-];
 
