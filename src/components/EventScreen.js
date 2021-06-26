@@ -161,7 +161,7 @@ export default class EventScreen extends Component {
                         {/* participants and notes */}
 
                         <View style={{ flex: 2 }}>
-                            {this.state.edit || this.state.newEvent ? (<View></View>) : (<AttendeeList navigation={this.props.navigation} roomID={this.state.eventId} />)}
+                             <AttendeeList navigation={this.props.navigation} roomID = {this.state.eventId}/>
                         </View>
 
                     </View>
