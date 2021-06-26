@@ -48,10 +48,13 @@ export default class PlaceSelectScreen extends Component {
                             latitudeDelta: 0.1,
                             longitudeDelta: 0.1
                         }}
-                        onPress={data => this.setState({
-                            resultCoord: { lat: data.nativeEvent.coordinate.latitude, lng: data.nativeEvent.coordinate.longitude }
-                        })
-                        }
+                        onPress={data => {
+                            this.setState({
+                                resultCoord: { lat: data.nativeEvent.coordinate.latitude, lng: data.nativeEvent.coordinate.longitude }},
+                                () => {
+                                    this.coordToAddress();
+                                });
+                        }}
                         onRegionChange={Region => this.setState({
                             resultRegion: Region
                         })
@@ -106,10 +109,10 @@ export default class PlaceSelectScreen extends Component {
                 {/* results */}
                 <View style={{ flex: 1, backgroundColor: appColors.backgroundLightBlue, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                     <View style={{ margin: 10, maxWidth: '70%' }}>
-                        {(this.state.resultName == null) ? (
+                        {(this.state.resultAddress == null) ? (
                             <Text style={styles.DetailText}>請選擇地點</Text>) : (
                             <View>
-                                <Text style={styles.DetailText}>{this.state.resultName}</Text>
+                                {(this.state.resultName && <Text style={styles.DetailText}>{this.state.resultName}</Text>)}
                                 <Text style={styles.DetailTextSmall}>{this.state.resultAddress}</Text>
                             </View>)
                         }
@@ -147,6 +150,19 @@ export default class PlaceSelectScreen extends Component {
             }
         else
             return this.state.resultRegion;
+    }
+    // reverse geocoding with google map
+    async coordToAddress() {
+        let url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng='+this.state.resultCoord.lat+','+this.state.resultCoord.lng+'&key='+browserApiKey+'&language=zh-TW';
+        await fetch(url, {method: 'GET'}).then(
+            (res) => res.json()
+        ).then((data) => {
+            console.log(data.results[0]);
+            this.setState({
+                resultName: null,
+                resultAddress: data.results[0].formatted_address
+            });
+        });
     }
 }
 
