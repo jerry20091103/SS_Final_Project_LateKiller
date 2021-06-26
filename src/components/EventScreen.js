@@ -241,7 +241,7 @@ export default class EventScreen extends Component {
             if (this.state.title === "") Alert.alert("標題不能為空");
             else if (this.state.date === null) Alert.alert("日期不能為空");
             else if (this.state.time === null) Alert.alert("時間不能為空");
-            // else if (this.state.placeCoord === "") Alert.alert("地點不能為空");
+            else if (this.state.placeCoord === null) Alert.alert("地點不能為空");
             else {
                 creatEvent({ 'title': this.state.title, 'time': this.state.time, 'location': this.state.location });//測試用
                 this.setState({ edit: false, });
@@ -252,7 +252,7 @@ export default class EventScreen extends Component {
             if (this.state.title === "") Alert.alert("標題不能為空");
             else if (this.state.date === null) Alert.alert("日期不能為空");
             else if (this.state.time === null) Alert.alert("時間不能為空");
-            else if (this.state.placeCoord === "") Alert.alert("地點不能為空");
+            else if (this.state.placeCoord === null) Alert.alert("地點不能為空");
             else {
                 console.log("saved!");
                 editEvent({ 'title': this.state.title, 'time': this.state.time, 'location': this.state.location }, this.state.eventId);//測試用
