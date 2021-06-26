@@ -113,20 +113,19 @@ export default class AttendeeList extends Component {
         );
     }
 
-    componentDidMount() //componentWillMount會報錯
+    componentDidMount() 
     {
         this.getUidFromAPI();
-       
+       // this.getAttendeeFromAPI();
     }
 
-    componentWillReceiveProps(nextProps)
+    componentDidUpdate(prevProps, prevState)
     {
-        this.setState(
-            {
-                roomID:nextProps.roomID
-            }
-        )
-        this.getAttendeeFromAPI();
+        if(this.props.roomID!=prevProps.roomID)
+        {
+            this.getAttendeeFromAPI();
+        }
+
     }
 
     async getUidFromAPI()
