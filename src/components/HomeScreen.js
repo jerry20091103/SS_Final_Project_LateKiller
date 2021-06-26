@@ -97,7 +97,7 @@ export default class HomeScreen extends React.Component {
             ...this.state,
             roomID: newRoomID
         });
-        console.log(newRoomID);
+        //console.log(newRoomID);
     }
     async handleSubmitRoomID() {
         if (this.state.roomID === '')
@@ -115,15 +115,7 @@ export default class HomeScreen extends React.Component {
         return;
     }
     componentDidMount() {
-        // Firestore Example (commented to prevent overuse)
-        // firestore().collection('testcollection').doc('test').get().then((testdata)=>{
-        //      dataset = testdata.data();
         this.getProfileData();
-        //     console.log(dataset["testcolumn"]);
-        //     this.setState(
-        //         { text: dataset["testcolumn"] }
-        //     )
-        // })      
     }
     async getProfileData() {
         await ProfileApiInit();

@@ -148,11 +148,8 @@ export async function leaveEvent(code)
                 let [snapshot, r2, r3] = await Promise.all([p1, p2, p3]);
 
                 let eventInfo = snapshot.data()
-                console.log(eventInfo['attendee'].length);
-                console.log(eventInfo['attendee']);
                 if(eventInfo['attendee'].length <= 1 )
                 {
-                    console.log(code);
                     await firestore().collection('event').doc(code).delete();
                     console.log('delete empty event')
                     
@@ -184,7 +181,7 @@ export async function listEvent()
         try{
             const  userProfileSet = await firestore().collection('users').doc(userUid).get();
             const userProfile = userProfileSet.data();
-            infoList = await getEventInfo(userProfile["my_events"])
+            infoList = await _getEventInfoList(userProfile["my_events"])
             return infoList;
         }
         catch(err)
@@ -200,20 +197,30 @@ export async function listEvent()
    
 }
 
-export async function getEventInfo(eventIDList)
+async function _getEventInfoList(eventIDList)
 {   
    let eventList = [];
+
 
     try{
         if(eventIDList.length)
         {
             let  querySnapshot = await firestore().collection('event').where(firestore.FieldPath.documentId(),'in',eventIDList).get()
             querySnapshot.forEach((doc) => {
-            let data = doc.data();    
-            let timestamp = data["time"];
-             timestamp = moment.unix(timestamp.seconds).calendar();
-             data["time"] = timestamp;
-             eventList.push(data);
+
+            let eventInfo ={
+                id:'unknown',
+                title:'unknown',
+                time:'unknown',
+                goTime:'unkown'
+                
+            }
+
+            const data = doc.data();   
+             eventInfo.id = data.id;
+             eventInfo.title = data.title;
+             eventInfo.time = moment.unix(data["time"].seconds).calendar();
+             eventList.push( eventInfo);
             });
         }
             return eventList;
@@ -228,8 +235,40 @@ export async function getEventInfo(eventIDList)
 
 }
 
+
+export async function getEventInfo(eventID)
+{   
+
+    let eventInfo ={
+        title:'unknown',
+        date:'unknown',
+        location:'unknown',
+        arrival:NaN
+    }
+
+    try{
+
+            let  Snapshot = await firestore().collection('event').doc(eventID).get()
+            
+            let data = Snapshot.data();    
+            let timestamp = data["time"];
+
+
+            eventInfo.title = data.title;
+            eventInfo.date = moment.unix(timestamp.seconds).format("YYYY-MM-DD")
+            eventInfo.time = moment.unix(timestamp.seconds).format("HH:mm")
+          
+            return eventInfo;
+    }
+    catch
+    {
+        throw new Error("error when get eventInfo");
+    }
+}
+
 export async function getEventAttendee(code)
 {   
+    console.log(code)
    let attendee = [];
 
     try{

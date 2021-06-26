@@ -116,6 +116,16 @@ export default class AttendeeList extends Component {
     componentDidMount() //componentWillMount會報錯
     {
         this.getUidFromAPI();
+       
+    }
+
+    componentWillReceiveProps(nextProps)
+    {
+        this.setState(
+            {
+                roomID:nextProps.roomID
+            }
+        )
         this.getAttendeeFromAPI();
     }
 

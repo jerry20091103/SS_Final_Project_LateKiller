@@ -22,7 +22,7 @@ export default class EventList extends React.Component {
     renderItem(item) {
 
         return (
-            <Button color={appColors.textBlack} style={styles.eventButton} onPress={() => { this.props.navigation.navigate('Meet', { newEvent: false }) }}>
+            <Button color={appColors.textBlack} style={styles.eventButton} onPress={() => { this.props.navigation.navigate('Meet', { newEvent: false , eventId: item.id}) }}>
                 <View style={{ flex: 1, flexDirection: 'row' }}>
                     {/* title and room number */}
                     <View style={{ flex: 3, margin: 5 }}>
@@ -73,7 +73,6 @@ export default class EventList extends React.Component {
 
     getData = async () => {
         await EventApiInit();
-        console.log('here2');
         const data = await listEvent();
         this.setState({
             loading: false,
