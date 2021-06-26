@@ -3,10 +3,11 @@ import PropTypes from 'prop-types';
 import { StyleSheet, Text, Image, FlatList, RefreshControl, Alert, Dimensions, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
 import { Container, Header, Title, Button, Left, Right, Body, Icon, View, Item, Input, Fab } from 'native-base';
 import ViewOverflow from 'react-native-view-overflow';
-import  {getEventAttendee} from '../api/Event';
+import  {getEventAttendee,leaveEvent} from '../api/Event';
 import { getUid } from '../utilities/User';
 import ProfileHeader from './ProfileHeader.js';
 import {getProfileByUidList} from'../api/Profile';
+import { isEnabled } from 'react-native/Libraries/Performance/Systrace';
 
 export default class AttendeeList extends Component {
 
@@ -58,7 +59,7 @@ export default class AttendeeList extends Component {
                         </View>
 
                         <View style={{ flex: 3, justifyContent: 'center' }}>
-                        <Button style={[styles.arriveButton, { backgroundColor: TimebtnColor }]} onPress={() => Alert.alert('test')}>
+                        <Button style={[styles.arriveButton, { backgroundColor: TimebtnColor }]} onPress={() => this.handleLeaveEvent(item.Uid)}>
                                 <Text style={{ color: TimetextColor, fontSize: 25 }}>
                                     {item.TimebeforeArrive <= 0 ? ArriveText : ConvertLateTime(item.TimebeforeArrive)}
                                 </Text>
@@ -160,12 +161,7 @@ export default class AttendeeList extends Component {
             this.setState(
                 {
                     ...this.state,
-<<<<<<< HEAD
-                    attendeeData : attendee
-                    // attendeeData: sampleData
-=======
                     attendeeData : attendeeProfiles
->>>>>>> ab292541b03c11d53de0224092dc2c033ea5e055
                 }
             )
 
@@ -178,6 +174,16 @@ export default class AttendeeList extends Component {
 
     }
 
+    async handleLeaveEvent(itemUid)
+    {
+        if(itemUid==this.state.myID)
+        {
+            await leaveEvent(this.props.roomID);
+            this.props.navigation.replace('Home');
+            console.log('leave event');
+        }
+
+    }
 }
 
 function ConvertLateTime(time) {
