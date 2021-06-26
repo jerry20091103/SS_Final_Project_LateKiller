@@ -20,12 +20,14 @@ export async function creatEvent(eventInfo)
     {
         let code = _CodeGen();
 
+        
         try{
            await firestore().collection('event').doc(code)
             .set({
                 id: code,
                 title : eventInfo.title,
                 location: [eventInfo.location],
+                date: eventInfo.date,
                 time: eventInfo.time,
                 attendee: [],
                 attendee_status: {},
@@ -53,12 +55,16 @@ export async function creatEvent(eventInfo)
 
 export async function editEvent(eventInfo, code)
 {
+
     try{
+
+      
         await firestore().collection('event').doc(code)
          .update({
-             'title' : [eventInfo.title],
-             'location': [eventInfo.location],
-             'time': [eventInfo.time]
+             'title' : eventInfo.title,
+             'date': eventInfo.date,
+             'time': eventInfo.time,
+             'location': eventInfo.location
            })
            return;
 
@@ -219,7 +225,7 @@ async function _getEventInfoList(eventIDList)
             const data = doc.data();   
              eventInfo.id = data.id;
              eventInfo.title = data.title;
-             eventInfo.time = moment.unix(data["time"].seconds).calendar();
+             eventInfo.time = data.date + ' ' + data.time;
              eventList.push( eventInfo);
             });
         }
@@ -251,12 +257,11 @@ export async function getEventInfo(eventID)
             let  Snapshot = await firestore().collection('event').doc(eventID).get()
             
             let data = Snapshot.data();    
-            let timestamp = data["time"];
 
 
             eventInfo.title = data.title;
-            eventInfo.date = moment.unix(timestamp.seconds).format("YYYY-MM-DD")
-            eventInfo.time = moment.unix(timestamp.seconds).format("HH:mm")
+            eventInfo.date = data.date;
+            eventInfo.time = data.time;
           
             return eventInfo;
     }
