@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, TouchableHighlight, BackHandler, Alert, TouchableWithoutFeedback, Keyboard, TextInput } from 'react-native';
+import { StyleSheet, TouchableHighlight, BackHandler, Alert, TouchableWithoutFeedback, Keyboard, TextInput, Image } from 'react-native';
 import appColors from '../styles/colors.js';
 import PropTypes from 'prop-types';
 import { Container, Header, Title, Button, Left, Right, Body, Icon, Text, View, Item, Input } from 'native-base';
@@ -52,6 +52,15 @@ export default class PlaceSelectScreen extends Component {
                 {/* search bar */}
                 <View style={{ flex: 5 }}>
                     <GooglePlacesAutocomplete
+                        renderLeftButton={()  =>
+                            <TouchableHighlight
+                                style={styles.backButton}
+                                activeOpacity={0.6}
+                                underlayColor='#EEEEEE'
+                                onPress={() => this.backAction()}>
+                                <Icon style={{ color: appColors.textBlack,padding:10 }} name='arrow-back' />
+                            </TouchableHighlight>
+                        }
                         placeholder='搜尋地點'
                         onPress={(data, details = null) => {
                             this.setState({
@@ -114,4 +123,9 @@ const styles = StyleSheet.create({
         color: "white",
         fontSize: 18,
     },
+    backButton:{
+        backgroundColor: appColors.backgroundBlue,
+        justifyContent: 'center',
+        // padding: 10,
+    }
 });

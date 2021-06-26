@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import { StyleSheet, TouchableHighlight, BackHandler, Alert, TouchableWithoutFeedback, Keyboard, TextInput   } from 'react-native';
+import { StyleSheet, TouchableHighlight, BackHandler, Alert, TouchableWithoutFeedback, Keyboard, TextInput } from 'react-native';
 import appColors from '../styles/colors.js';
 import PropTypes from 'prop-types';
 import { Container, Header, Title, Button, Left, Right, Body, Icon, Text, View, Item, Input } from 'native-base';
 import BottomSheet from 'react-native-raw-bottom-sheet';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
-import {creatEvent, attendEvent} from '../api/Event.js'
+import { creatEvent, attendEvent } from '../api/Event.js'
 import AttendeeList from './AttendeeList.js'
 
 /* Event Screen
@@ -39,7 +39,8 @@ export default class EventScreen extends Component {
         // get data from home screen
         this.setState({
             eventId: this.props.navigation.getParam('eventId', undefined),
-            newEvent: this.props.navigation.getParam('newEvent', false)
+            newEvent: this.props.navigation.getParam('newEvent', false),
+            edit: this.props.navigation.getParam('edit', false),
         });
     }
 
@@ -64,7 +65,7 @@ export default class EventScreen extends Component {
                             <Left>
                                 <TouchableHighlight
                                     activeOpacity={0.6}
-                                    underlayColor="#DDDDDD"
+                                    underlayColor="#EEEEEE"
                                     onPress={() => this.handleGoBack()}>
                                     <Icon style={{ color: appColors.textBlack }} name='arrow-back' />
                                 </TouchableHighlight>
@@ -72,20 +73,24 @@ export default class EventScreen extends Component {
                             <Body style={{ flex: 3 }}>
                                 {this.state.edit || this.state.newEvent ? (
                                     <Item underline style={{ marginBottom: 5 }}>
-                                        <Input allowFontScaling={true} maxFontSizeMultiplier={0} placeholder='新增標題' placeholderTextColor={appColors.textGray} style={styles.titleInput}
-                                        onChangeText={this.onChangeTitle} />
+                                        <TextInput /* autoFocus={this.state.modified} */
+                                            allowFontScaling={true} maxFontSizeMultiplier={0}
+                                            placeholder='新增標題'
+                                            placeholderTextColor={appColors.textGray}
+                                            style={styles.titleInput}
+                                            onChangeText={this.onChangeTitle} />
                                     </Item>
 
                                 ) : (
-                                    <Title style={styles.titleText}>這裡是標題123132</Title>
-                                )
+                                        <Title style={styles.titleText}>標題 from API</Title>
+                                    )
                                 }
                             </Body>
                             <Right style={{ paddingLeft: 0, flex: 1 }}>
                                 <View style={{ padding: 0 }}>
 
                                     <Button style={styles.SaveButton} rounded block onPress={() => this.handleTopButtonPress()}>
-                                        <Text style={styles.SaveText}>儲存</Text>
+                                        <Text style={styles.SaveText}>{this.state.edit || this.state.newEvent ? "儲存" : "編輯"}</Text>
                                     </Button>
                                 </View>
                             </Right>
@@ -93,7 +98,7 @@ export default class EventScreen extends Component {
                     </View>
                     <View style={{ flex: 5, padding: 15, backgroundColor: appColors.backgroundLightBlue, borderTopLeftRadius: 15, borderTopRightRadius: 15 }}>
                         {/* Event details */}
-                        <View style={{ flex: 1, marginBottom: 10,marginLeft: 10 }}>
+                        <View style={{ flex: 1, marginBottom: 10, marginLeft: 10 }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <Text style={styles.detailText}>日期: </Text>
                                 {this.state.edit || this.state.newEvent ? (
@@ -102,11 +107,11 @@ export default class EventScreen extends Component {
                                         {this.state.date == null ? '新增日期' : moment(this.state.date).format('YYYY/MM/DD')}
                                     </Text>
                                 ) : (
-                                    // show data from server
-                                    <Text>
-                                        Insert data from firease!
-                                    </Text>
-                                )}
+                                        // show data from server
+                                        <Text>
+                                            Insert data from firease!
+                                        </Text>
+                                    )}
                             </View>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <Text style={styles.detailText}>時間: </Text>
@@ -116,46 +121,46 @@ export default class EventScreen extends Component {
                                         {this.state.time == null ? '新增時間' : moment(this.state.time).format('hh:mm')}
                                     </Text>
                                 ) : (
-                                    // show data from server
-                                    <Text>
-                                        Insert data from firease!
-                                    </Text>
-                                )}
+                                        // show data from server
+                                        <Text>
+                                            Insert data from firease!
+                                        </Text>
+                                    )}
                             </View>
-                            <View style={{flexDirection: 'row',alignItems: 'center'}}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <Text style={styles.detailText}>地點: </Text>
                                 {this.state.edit || this.state.newEvent ? (
                                     // location picker
                                     <Text style={styles.detailTextGray} onPress={() => navigate("PlaceSelect")}>新增地點</Text>
                                 ) : (
-                                    // show data from server
-                                    <Text>
-                                        Insert data from firease!
-                                    </Text>
-                                )}
+                                        // show data from server
+                                        <Text>
+                                            Insert data from firease!
+                                        </Text>
+                                    )}
                             </View>
 
-                            <View style={{flexDirection: 'row',alignItems: 'center'}}>
-                                <Text style={styles.detailText}>房間號碼: </Text>        
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Text style={styles.detailText}>房間號碼: </Text>
                                 {/* 新房間的號碼也直接由firebase提供? */}
-                                    <Text style={styles.detailTextGray}>010101 (same as below)</Text>
+                                <Text style={styles.detailTextGray}>010101 (same as below)</Text>
                             </View>
 
-                            <View style={{flexDirection: 'row',alignItems: 'center'}}>
-                                <Text style={styles.detailText}>已到人數: </Text>        
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Text style={styles.detailText}>已到人數: </Text>
                                 {this.state.edit || this.state.newEvent ? (
                                     <Text style={styles.detailTextGray}>4 (just a fix number so far)</Text>
                                 ) : (
-                                    // show data from server
-                                    <Text style={styles.detailTextGray}>{'Insert data from firease!'}</Text>
-                                )}
+                                        // show data from server
+                                        <Text style={styles.detailTextGray}>{'Insert data from firease!'}</Text>
+                                    )}
                             </View>
-                            
+
                         </View>
                         {/* participants and notes */}
 
                         <View style={{ flex: 2 }}>
-                            <AttendeeList/>
+                            <AttendeeList />
                         </View>
 
                     </View>
@@ -212,24 +217,43 @@ export default class EventScreen extends Component {
                         onChange={this.onChnageTime}
                     />
                 )}
-                
+
             </Container></TouchableWithoutFeedback>
         );
     }
 
-async   handleTopButtonPress() {
+    async handleTopButtonPress() {
+        Keyboard.dismiss();
+        if (!this.state.edit) {
+            this.setState({
+                edit: true,
+            });
+            return;
+        }
         if (this.state.newEvent) {
             // Send new event to firebase!!!
-            if(this.state.title==="" || this.state.time===null)
-                Alert.alert("Please fill in all the required fields!!!");
-            else
-                creatEvent({'title': this.state.title,'time':this.state.time,'location':this.state.location});//測試用
-
+            if (this.state.title === "") Alert.alert("標題不能為空");
+            else if (this.state.date === null) Alert.alert("日期不能為空");
+            else if (this.state.time === null) Alert.alert("時間不能為空");
+            else if (this.state.place === "") Alert.alert("地點不能為空");
+            else{
+                creatEvent({ 'title': this.state.title, 'time': this.state.time, 'location': this.state.location });//測試用
+                this.setState({edit: false,});
+            }
+                
         }
         else if (this.state.modified) {
-            // modify event in firebase
+            if (this.state.title === "") Alert.alert("標題不能為空");
+            else if (this.state.date === null) Alert.alert("日期不能為空");
+            else if (this.state.time === null) Alert.alert("時間不能為空");
+            else if (this.state.place === "") Alert.alert("地點不能為空");
+            else {
+                console.log("saved!");
+                this.setState({edit: false,});
+            };// modify event in firebase
         }
         else {
+            this.setState({edit: false,});
             // nothing was changed
         }
     }
@@ -243,6 +267,7 @@ async   handleTopButtonPress() {
 
     onChnageDate = (event, selectedDate) => {
         this.setState({
+            modified: true,
             showPickDate: false,
             date: selectedDate || this.state.date
         });
@@ -257,6 +282,7 @@ async   handleTopButtonPress() {
 
     onChnageTime = (event, selectedTime) => {
         this.setState({
+            modified: true,
             showPickTime: false,
             time: selectedTime || this.state.time
         });
@@ -264,12 +290,14 @@ async   handleTopButtonPress() {
 
     onChangeTitle = (newTitle) => {
         this.setState({
+            modified: true,
             title: newTitle
         });
         console.log(newTitle);
     }
-    onChangePlace(newPlace){
+    onChangePlace(newPlace) {
         this.setState({
+            modified: true,
             place: newPlace
         });
         console.log(newPlace);

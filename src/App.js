@@ -47,7 +47,7 @@ const AuthNavigator = createStackNavigator(
   { 
     SignIn:{ 
     screen:SignInScreen ,
-    navigationOptions: {header: null},
+    navigationOptions: {headerShown: false},
     }
     
   });

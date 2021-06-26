@@ -62,7 +62,7 @@ export default class HomeScreen extends React.Component {
                         <View style={{ flex: 1, backgroundColor: appColors.backgroundBlue, borderTopLeftRadius: 15, borderTopRightRadius: 15 }}>
                             <Text
                                 style={styles.bottomSheetText}
-                                onPress={() => { navigate('Meet', { newEvent: true }) }}>新增活動</Text>
+                                onPress={() => { navigate('Meet', { newEvent: true,edit: true }) }}>新增活動</Text>
                             <View style={{ flexDirection: 'row' }}>
                                 <Text style={styles.bottomSheetText}>輸入房間號碼:</Text>
                                 <Input style={{ fontSize: 22 }} placeholder="room ID" onChangeText={this.onChangeRoomID} />
@@ -101,7 +101,7 @@ export default class HomeScreen extends React.Component {
     }
     async handleSubmitRoomID() {
         if (this.state.roomID === '')
-            alert('undefined roomID!');
+            alert('roomID is empty!');
         else {
             this.props.navigation.navigate('Meet', { newEvent: false });
             try {
