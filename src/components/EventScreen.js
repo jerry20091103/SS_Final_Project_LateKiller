@@ -35,6 +35,7 @@ export default class EventScreen extends Component {
             nameIsAddress: "false", // whether the stored name is a address (use string since AsyncStorge only take strings...)
             showPickDate: false, // control popup date picker
             showPickTime: false, // control popup time picker
+            arriveNum: 0,
         };
     }
 
@@ -158,7 +159,7 @@ export default class EventScreen extends Component {
                                     <Text style={styles.detailTextGray}>4 (just a fix number so far)</Text>
                                 ) : (
                                     // show data from server
-                                    <Text style={styles.detailTextGray}>{'Insert data from firease!'}</Text>
+                                    <Text style={styles.detailTextGray}>{this.state.arriveNum}</Text>
                                 )}
                             </View>
 
@@ -280,13 +281,31 @@ export default class EventScreen extends Component {
                     date: info.date,
                     time: info.time,
                     placeName: info.placeName,
-                    nameIsAddress: info.nameIsAddress  
+                    nameIsAddress: info.nameIsAddress,
+                    arriveNum: this.getArrivedAttendeeNumber(info.attendeeStatus)
                 })
             }
         }
         catch (err) {
             console.log(err);
         }
+    }
+
+    getArrivedAttendeeNumber(attendeeStatus) {
+        let arriveNumber = 0;
+        try{
+            attendeeStatus.forEach((attendee) => {
+                if (attendee.arrival) {
+                    arriveNumber += 1;
+                }
+            });
+        } catch(error) {
+            console.log(error);
+            throw new Error("Unknown error at getArrivedAttendeeNumber.");
+        }
+        
+        // console.log("Arrive Num: " + arriveNumber);
+        return arriveNumber;
     }
 
     handlePickDate() {
