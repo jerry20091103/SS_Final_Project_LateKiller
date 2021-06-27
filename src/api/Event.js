@@ -33,6 +33,7 @@ export async function creatEvent(eventInfo) {
                     time: eventInfo.time,
                     attendee: [],
                     attendeeStatus: {},
+                    attendeeMessage:[],
                     active: false
                 })
 
@@ -431,7 +432,7 @@ async function _arrivalTimeCaculate(desPos, mode) {
         const curPos = await getCurrentLocation();
       
   
-       // const travelTime = await getTravelTime({lat:curPos.lat,lng:curPos.lng},desPos,mode); /*prvent overuse*/
+        //const travelTime = await getTravelTime({lat:curPos.lat,lng:curPos.lng},desPos,mode); /*prvent overuse*/
         //arrivalTime = (travelTime.value + 300)/60;    /*prvent overuse*/
       
         return arrivalTime;
@@ -447,12 +448,8 @@ async function _arrivalTimeCaculate(desPos, mode) {
 }
 
 async function _checkEventStatus(code) {
-    console.log('here');
     const snapshot = await firestore().collection('event').doc(code).get();
     const data = snapshot.data();
-    console.log(data.active);
-
-
 
     if(data.active)
     {
@@ -460,9 +457,18 @@ async function _checkEventStatus(code) {
     }
     else
     {
-        if(true)
+
+        let nowPlusAnHour = moment().add(1, 'hour');
+        let ans =  nowPlusAnHour.isAfter(data.date  +'T'+  data.time);
+        console.log(ans);
+
+        if(ans)
         {
-            return true;
+            await firestore().collection('event').doc(code).update({
+                active : true
+            });
+            return true
+
         }
         else
         {
