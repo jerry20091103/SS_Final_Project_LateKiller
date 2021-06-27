@@ -258,6 +258,8 @@ export default class EventScreen extends Component {
             else {
                 creatEvent({ 'title': this.state.title, 'date' : this.state.date, 'time': this.state.time, 'placeName': this.state.placeName, 'placeCoor':this.state.placeCoord, 'nameIsAddress':this.state.nameIsAddress  });
                 this.setState({ edit: false, });
+                Alert.alert("已儲存!");
+                this.props.navigation.replace('Home');
             }
 
         }
@@ -270,6 +272,8 @@ export default class EventScreen extends Component {
                 console.log("saved!");
                 editEvent({ 'title': this.state.title, 'date' : this.state.date,'time': this.state.time, 'placeName': this.state.placeName, 'placeCoor':this.state.placeCoord, 'nameIsAddress':this.state.nameIsAddress }, this.state.eventId);
                 this.setState({ edit: false, });
+                Alert.alert("已儲存!");
+                this.props.navigation.replace('Home');
             };// modify event in firebase
         }
         else {
@@ -372,7 +376,7 @@ export default class EventScreen extends Component {
         });
     }
     handleGoBack() {
-        if (!this.state.modified && !this.state.newEvent) {
+        if ((!this.state.modified && !this.state.newEvent)||!this.state.edit) {
             this.props.navigation.replace('Home');
             return;
         }

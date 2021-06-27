@@ -164,6 +164,7 @@ export default class AttendeeList extends Component {
                     {
                         ...this.state,
                         attendeeData : attendeeProfiles
+                        // attendeeData: sampleData
                     }
                 )
           
