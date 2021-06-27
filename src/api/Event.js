@@ -18,23 +18,15 @@ export async function creatEvent(eventInfo) {
      }
        #tentative 
     */
-    console.log(eventInfo);
-
     if (userUid) {
         let code = _CodeGen();
-
-        //console.log(a);
-        //let a = new firebase.firestore.GeoPoint(eventInfo.placeCoor.lat, eventInfo.placeCoor.lng);
-        //placeName: eventInfo.placeName,
-        //placeCoor: a,
-        console.log(code);
         try {
             await firestore().collection('event').doc(code)
                 .set({
                     id: code,
                     title: eventInfo.title,
                     placeName: eventInfo.placeName,
-                    placeCoor: eventInfo.placeCoor,
+                    placeCoord: eventInfo.placeCoord,
                     nameIsAddress: eventInfo.nameIsAddress,
                     date: eventInfo.date,
                     time: eventInfo.time,
@@ -65,7 +57,7 @@ export async function editEvent(eventInfo, code) {
                 'date': eventInfo.date,
                 'time': eventInfo.time,
                 'placeName': eventInfo.placeName,
-                'placeCoor': eventInfo.placeCoor,
+                'placeCoord': eventInfo.placeCoord,
                 'nameIsAddress': eventInfo.nameIsAddress,
             })
         return;
@@ -259,7 +251,7 @@ export async function getEventInfo(eventID) {
         eventInfo.date = data.date;
         eventInfo.time = data.time;
         eventInfo.placeName = data.placeName;
-        eventInfo.placeCoor = data.placeCoor;
+        eventInfo.placeCoord = data.placeCoord;
         try {
             data.attendee.forEach((name) => {
                 eventInfo.attendeeStatus.push({
@@ -302,22 +294,21 @@ export async function  setArrivalTime(desPos, code, mode) {
 
     try {
         let active = false;
-        active = await _checkEventStatus(code);
+       active = await _checkEventStatus(code);
         
+        active = true;//test
 
+        console.log(userUid);
         if(active)
         {
             let userArrivalTime = 0;
-            
              userArrivalTime = await _arrivalTimeCaculate(desPos, mode)
-
-            await firestore().collection('event').doc(userUid)
-            .set({
-                "my_events": {
-                    [code]: userArrivalTime
-                }
-            }, { merge: true });
-
+            
+             
+            await firestore().collection('users').doc(userUid)
+            .update({
+                ["my_events."+code]: userArrivalTime,
+            });
 
         }
 
@@ -334,31 +325,50 @@ export async function  setArrivalTime(desPos, code, mode) {
 export async function  getEventAttendeeInfo (code) {
     try {
 
+        
+
+
+
         let p1 = _checkEventStatus(code);
         let p2 = _getEventAttendee(code);
         let [active, attendeeList] = await Promise.all([p1, p2]);
-         console.log(attendeeList);
-        let attendeeData = await getProfileByUidList(attendeeList);
+        let attendeeData = await getProfileByUidList(attendeeList, code);
+        let attendeeInfo = [];
 
-        console.log(attendeeData);
-
-        if(active)
-        {
+       
             attendeeData.forEach((attendee)=>{
-                console.log(attendee);
+
+                let info = {
+                    Uid : 'unknown',
+                    username:'unknown',
+                    img: '',
+                    TimebeforeArrive: 0,
+                    avgLateTime: 0,
+                    level: 0,
+                    exp: 0, 
+                    expFull: 100,
+                }
+
+                info.Uid =  attendee.Uid;
+                info.username = attendee.username;
+                info.img = attendee.img;
+                if(active)
+                    info.TimebeforeArrive = attendee.calTime;
+                else
+                    info.TimebeforeArrive = attendee.avgLateTime;
+                info.avgLateTime = attendee.avgLateTime;
+                info.level = attendee.level;
+                info.exp = attendee.exp;
+                info.expFull = attendee.expFull;
+                attendeeInfo.push(info);
+
             }
            )
-        }
-        else
-        {
-            attendeeData.forEach((attendee)=>{
-                console.log(attendee);
-            }
-           )
-        }
+        
+       console.log(attendeeInfo);
 
 
-        return attendeeData;
+        return attendeeInfo;
     }
     catch
     {
@@ -412,16 +422,16 @@ async function _arrivalTimeCaculate(desPos, mode) {
     {
       let arrivalTime = 0;
 
-    
-        const curPos =  await getCurrentLocation();
-        console.log(curPos);
-        //const travelTime = await getTravelTime(curPos,desPos,mode);
-        console.log(travelTime);
-        arrivalTime = travelTime.value + 300;
-        console.log(arrivalTime);
-        console.log('here');
+        const curPos = await getCurrentLocation();
       
-     // return arrivalTime;
+        console.log(curPos);
+        console.log(desPos);
+        const travelTime = await getTravelTime({lat:curPos.lat,lng:curPos.lng},desPos,mode);
+        arrivalTime = (travelTime.value + 300)/60;
+        console.log(arrivalTime);
+        //console.log('here');
+      
+        return arrivalTime;
 
     }
     catch
@@ -434,6 +444,7 @@ async function _arrivalTimeCaculate(desPos, mode) {
 }
 
 async function _checkEventStatus(code) {
+    console.log('here');
     const snapshot = await firestore().collection('event').doc(code).get();
     const data = snapshot.data();
     console.log(data.active);

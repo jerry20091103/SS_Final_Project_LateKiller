@@ -258,7 +258,7 @@ export default class EventScreen extends Component {
             else if (this.state.time === null) Alert.alert("時間不能為空");
             else if (this.state.placeCoord === null) Alert.alert("地點不能為空");
             else {
-                creatEvent({ 'title': this.state.title, 'date' : this.state.date, 'time': this.state.time, 'placeName': this.state.placeName, 'placeCoor':this.state.placeCoord, 'nameIsAddress':this.state.nameIsAddress  });
+                creatEvent({ 'title': this.state.title, 'date' : this.state.date, 'time': this.state.time, 'placeName': this.state.placeName, 'placeCoord':this.state.placeCoord, 'nameIsAddress':this.state.nameIsAddress  });
                 this.setState({ edit: false, });
                 Alert.alert("已儲存!");
                 this.props.navigation.replace('Home');
@@ -272,7 +272,7 @@ export default class EventScreen extends Component {
             else if (this.state.placeCoord === null) Alert.alert("地點不能為空");
             else {
                 console.log("saved!");
-                editEvent({ 'title': this.state.title, 'date' : this.state.date,'time': this.state.time, 'placeName': this.state.placeName, 'placeCoor':this.state.placeCoord, 'nameIsAddress':this.state.nameIsAddress }, this.state.eventId);
+                editEvent({ 'title': this.state.title, 'date' : this.state.date,'time': this.state.time, 'placeName': this.state.placeName, 'placeCoord':this.state.placeCoord, 'nameIsAddress':this.state.nameIsAddress }, this.state.eventId);
                 this.setState({ edit: false, });
                 Alert.alert("已儲存!");
                 this.props.navigation.replace('Home');
@@ -292,7 +292,7 @@ export default class EventScreen extends Component {
                 let info = await getEventInfo(this.state.eventId);
 
                 //console.log(info);
-                this.setArrivalTimeFromAPI(info.placeCoord, this.state.eventId, 'bicycle')//設定到達時間
+                this.setArrivalTimeFromAPI(info.placeCoord,this.state.eventId, 'bicycle');
                 this.setState({
                     ...this.state,
                     title: info.title,

@@ -87,7 +87,7 @@ export async function getProfile() {
 };
 
 
-export async function getProfileByUidList(UidList) {
+export async function getProfileByUidList(UidList, code) {
     let profileList = []
    
     try 
@@ -109,9 +109,7 @@ export async function getProfileByUidList(UidList) {
                     level: 0,
                     exp: 0, 
                     expFull: 100,
-                    events: {},
-                    
-                   
+                    calTime:0, //預估時間
                 };
                 profile.Uid =  data.Uid;
                 profile.username = data.username;
@@ -119,7 +117,8 @@ export async function getProfileByUidList(UidList) {
                 profile.avgLateTime = data.avgLateTime;
                 profile.level = data.level;
                 profile.exp=data.exp;
-                profile.events = data.my_events;
+                profile.calTime = data.my_events[code];
+                //console.log(profile.events);
                 profileList.push(profile);
 
          
