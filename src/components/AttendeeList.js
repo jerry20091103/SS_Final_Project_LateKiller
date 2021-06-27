@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { StyleSheet, Text, Image, FlatList, RefreshControl, Alert, Dimensions, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, Text, Image, FlatList, RefreshControl, Alert, Dimensions, TouchableOpacity, Modal, TouchableWithoutFeedback,SafeAreaView, LogBox  } from 'react-native';
 import { Container, Header, Title, Button, Left, Right, Body, Icon, View, Item, Input, Fab } from 'native-base';
 import ViewOverflow from 'react-native-view-overflow';
 import  {getEventAttendee,leaveEvent} from '../api/Event';
@@ -43,7 +43,7 @@ export default class AttendeeList extends Component {
         const TimetextColor = (item.TimebeforeArrive <= 0) ? appColors.textRed : appColors.textGreen;
         const ArriveText = (this.state.myID === item.Uid) ? '離開' : '已到達';
         return (
-            <View style={{ flex: 1 }}>
+            <SafeAreaView style={{ flex: 1 }}>
                 <Button color={appColors.textBlack} style={styles.UserButton} onPress={() => this.toggleCancel(item)}>
                     <View style={{ flex: 1, flexDirection: 'row' }}>
 
@@ -68,7 +68,7 @@ export default class AttendeeList extends Component {
 
                     </View>
                 </Button>
-            </View>
+            </SafeAreaView>
         )
     }
 
@@ -76,8 +76,9 @@ export default class AttendeeList extends Component {
         const windowWidth = Dimensions.get('window').width;
 
         return (
-            <View style={{ margin: 10 }}>
+            <SafeAreaView style={{ margin: 10 }}>
                 <FlatList
+                    // horizontal={true}
                     data={this.state.attendeeData}
                     renderItem={({item}) => this.renderItem(item)}
                     refreshControl={
@@ -111,13 +112,13 @@ export default class AttendeeList extends Component {
                     </TouchableWithoutFeedback>
 
                 </Modal>
-            </View>
+            </SafeAreaView>
         );
     }
 
     componentDidMount() 
     {
-
+        LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
         this.getUidFromAPI();
         //this.getAttendeeFromAPI();
     }
@@ -163,6 +164,7 @@ export default class AttendeeList extends Component {
                     {
                         ...this.state,
                         attendeeData : attendeeProfiles
+                        // attendeeData: sampleData
                     }
                 )
           

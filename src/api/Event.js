@@ -261,7 +261,9 @@ export async function getEventInfo(eventID)
         title:'unknown',
         date:'unknown',
         location:'unknown',
-        arrival:NaN
+        arrival: NaN,
+        // attendeeStatus: Array of objects. Objects contain attendee's name and he/she arrives or not.
+        attendeeStatus: []
     }
 
     try{
@@ -276,6 +278,18 @@ export async function getEventInfo(eventID)
             eventInfo.time = data.time;
             eventInfo.placeName = data.placeName;
             eventInfo.placeCoor = data.placeCoor;
+            try {
+                data.attendee.forEach((name) => {
+                    eventInfo.attendeeStatus.push({
+                        username: name,
+                        arrival:  data.attendee_status[name]
+                    })
+                });
+            } catch(error) {
+                console.log(error);
+                throw new Error("Unknown error at getEventInfo when getting attendee status.");
+            }
+            
           
             return eventInfo;
     }

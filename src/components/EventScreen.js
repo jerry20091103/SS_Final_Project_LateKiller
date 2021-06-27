@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import { Container, Header, Title, Button, Left, Right, Body, Icon, Text, View, Item, Input } from 'native-base';
 import BottomSheet from 'react-native-raw-bottom-sheet';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import moment from 'moment';
 import { creatEvent, editEvent, getEventInfo } from '../api/Event.js'
 import AttendeeList from './AttendeeList.js'
@@ -35,6 +36,7 @@ export default class EventScreen extends Component {
             nameIsAddress: "false", // whether the stored name is a address (use string since AsyncStorge only take strings...)
             showPickDate: false, // control popup date picker
             showPickTime: false, // control popup time picker
+            arriveNum: 0,
         };
     }
 
@@ -46,7 +48,7 @@ export default class EventScreen extends Component {
             eventId: this.props.navigation.getParam('eventId', undefined),
             newEvent: this.props.navigation.getParam('newEvent', false),
             edit: this.props.navigation.getParam('edit', false),
-        }, () => { this.getEventInfoFromAPI() })
+        }, () => { this.props.newEvent || this.getEventInfoFromAPI() })
 
     }
 
@@ -63,6 +65,12 @@ export default class EventScreen extends Component {
     render() {
         const { navigate } = this.props.navigation;
         return (
+        <>
+            <ParallaxScrollView
+            parallaxHeaderHeight={280}
+            fadeOutForeground={true}
+            backgroundColor={appColors.backgroundBlue}
+            renderForeground={()=>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}><Container>
                 <View style={styles.container}>
                     {/* header area */}
@@ -155,24 +163,15 @@ export default class EventScreen extends Component {
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <Text style={styles.detailText}>已到人數: </Text>
                                 {this.state.edit || this.state.newEvent ? (
-                                    <Text style={styles.detailTextGray}>4 (just a fix number so far)</Text>
+                                    <Text style={styles.detailTextGray}>{this.state.arriveNum}</Text>
                                 ) : (
                                     // show data from server
-                                    <Text style={styles.detailTextGray}>{'Insert data from firease!'}</Text>
+                                    <Text style={styles.detailTextGray}>{this.state.arriveNum}</Text>
                                 )}
                             </View>
 
                         </View>
-                        {/* participants and notes */}
 
-                        <View style={{ flex: 2 }}>
-                             <AttendeeList navigation={this.props.navigation} roomID = {this.state.eventId}/>
-                        </View>
-
-                    </View>
-                    {/* google map area */}
-                    <View style={{ flex: 1, padding: 10, backgroundColor: appColors.btnGreen, borderTopLeftRadius: 15, borderTopRightRadius: 15 }}>
-                        <Text style={styles.titleText}>Google Map: TBD</Text>
                     </View>
                 </View>
 
@@ -226,6 +225,19 @@ export default class EventScreen extends Component {
                 )}
 
             </Container></TouchableWithoutFeedback>
+            }
+            renderContentBackground={() =>
+                <View style={{ flex: 1 }}>
+                    <AttendeeList navigation={this.props.navigation} roomID = {this.state.eventId}/>
+                </View>
+            }
+            
+            >
+            </ParallaxScrollView>
+            <View style={{ flex: 0.15, padding: 10, backgroundColor: appColors.btnGreen, borderTopLeftRadius: 15, borderTopRightRadius: 15 }}>
+                    <Text style={styles.titleText}>Google Map: TBD</Text>
+                </View>
+            </>
         );
     }
 
@@ -246,6 +258,8 @@ export default class EventScreen extends Component {
             else {
                 creatEvent({ 'title': this.state.title, 'date' : this.state.date, 'time': this.state.time, 'placeName': this.state.placeName, 'placeCoor':this.state.placeCoord, 'nameIsAddress':this.state.nameIsAddress  });
                 this.setState({ edit: false, });
+                Alert.alert("已儲存!");
+                this.props.navigation.replace('Home');
             }
 
         }
@@ -258,6 +272,8 @@ export default class EventScreen extends Component {
                 console.log("saved!");
                 editEvent({ 'title': this.state.title, 'date' : this.state.date,'time': this.state.time, 'placeName': this.state.placeName, 'placeCoor':this.state.placeCoord, 'nameIsAddress':this.state.nameIsAddress }, this.state.eventId);
                 this.setState({ edit: false, });
+                Alert.alert("已儲存!");
+                this.props.navigation.replace('Home');
             };// modify event in firebase
         }
         else {
@@ -281,13 +297,31 @@ export default class EventScreen extends Component {
                     date: info.date,
                     time: info.time,
                     placeName: info.placeName,
-                    nameIsAddress: info.nameIsAddress  
+                    nameIsAddress: info.nameIsAddress,
+                    arriveNum: this.getArrivedAttendeeNumber(info.attendeeStatus)
                 })
             }
         }
         catch (err) {
             console.log(err);
         }
+    }
+
+    getArrivedAttendeeNumber(attendeeStatus) {
+        let arriveNumber = 0;
+        try{
+            attendeeStatus.forEach((attendee) => {
+                if (attendee.arrival) {
+                    arriveNumber += 1;
+                }
+            });
+        } catch(error) {
+            console.log(error);
+            throw new Error("Unknown error at getArrivedAttendeeNumber.");
+        }
+        
+        // console.log("Arrive Num: " + arriveNumber);
+        return arriveNumber;
     }
 
     handlePickDate() {
@@ -342,7 +376,7 @@ export default class EventScreen extends Component {
         });
     }
     handleGoBack() {
-        if (!this.state.modified && !this.state.newEvent) {
+        if ((!this.state.modified && !this.state.newEvent)||!this.state.edit) {
             this.props.navigation.replace('Home');
             return;
         }
