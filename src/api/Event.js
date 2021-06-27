@@ -1,4 +1,5 @@
 import firestore from '@react-native-firebase/firestore';
+import firebase from '@react-native-firebase/app';
 import { getUid } from '../utilities/User';
 import moment from 'moment';
 const shortid = require('shortid');
@@ -16,24 +17,32 @@ export async function creatEvent(eventInfo)
        #tentative 
     */
 
+
+    console.log(eventInfo);
+
     if(userUid)
     {
         let code = _CodeGen();
 
-        
+       //console.log(a);
+        //let a = new firebase.firestore.GeoPoint(eventInfo.placeCoor.lat, eventInfo.placeCoor.lng);
+                        //placeName: eventInfo.placeName,
+                //placeCoor: a,
+        console.log(code);
         try{
            await firestore().collection('event').doc(code)
             .set({
                 id: code,
                 title : eventInfo.title,
-                location: [eventInfo.location],
+                placeName: eventInfo.placeName,
+                placeCoor: eventInfo.placeCoor,
                 date: eventInfo.date,
                 time: eventInfo.time,
                 attendee: [],
                 attendee_status: {},
               })
 
-             attendEvent( code );  
+            attendEvent( code );  
               return;
                
         }
@@ -64,7 +73,8 @@ export async function editEvent(eventInfo, code)
              'title' : eventInfo.title,
              'date': eventInfo.date,
              'time': eventInfo.time,
-             'location': eventInfo.location
+             'placeName': eventInfo.placeName,
+             'placeCoor': eventInfo.placeCoor,
            })
            return;
 
@@ -262,6 +272,8 @@ export async function getEventInfo(eventID)
             eventInfo.title = data.title;
             eventInfo.date = data.date;
             eventInfo.time = data.time;
+            eventInfo.placeName = data.placeName;
+            eventInfo.placeCoor = data.placeCoor;
           
             return eventInfo;
     }
