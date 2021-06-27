@@ -19,6 +19,7 @@ export async function getCurrentLocation() {
                     buttonPositive: "OK"
                 }
             );
+            console.log(granted);
         }
         if (checkPermission || granted === PermissionsAndroid.RESULTS.GRANTED) {
             let location = await GetLocation.getCurrentPosition({
