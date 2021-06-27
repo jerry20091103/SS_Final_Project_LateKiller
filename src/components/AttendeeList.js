@@ -27,7 +27,7 @@ export default class AttendeeList extends Component {
 
         }
     }
-    toggleCancel(item/* name,level,picture,avgLateTime */) {
+    showOthersInfo(item/* name,level,picture,avgLateTime */) {
         this.setState({
             ...this.state,
             OnpressName: item.username,
@@ -44,7 +44,7 @@ export default class AttendeeList extends Component {
         const ArriveText = (this.state.myID === item.Uid) ? '離開' : '已到達';
         return (
             <SafeAreaView style={{ flex: 1 }}>
-                <Button color={appColors.textBlack} style={styles.UserButton} onPress={() => this.toggleCancel(item)}>
+                <Button color={appColors.textBlack} style={styles.UserButton} onPress={() => this.showOthersInfo(item)}>
                     <View style={{ flex: 1, flexDirection: 'row' }}>
 
                         <View style={{ flex: 2, margin: 5 }}>
@@ -177,16 +177,31 @@ export default class AttendeeList extends Component {
         
 
     }
-
-    async handleLeaveEvent(itemUid)
-    {
-        if(itemUid == this.state.myID)
-        {
+    // handleLeaveEvent(itemUid){
+    //     Alert.alert(
+    //         "確定要離開嗎?","",
+    //         [{
+    //             text: "取消",
+    //             onPress: () => console.log("Cancel Pressed"),
+    //           },
+    //           { text: "確定", onPress: () => {this.LeaveEvent(itemUid),this.props.navigation.replace('Home'); }}
+    //         ]
+    //       );
+    // }
+    async handleLeaveEvent(itemUid){
+        if(itemUid == this.state.myID){
+            Alert.alert(
+                "確定要離開嗎?","",
+                [{
+                    text: "取消",
+                    onPress: () => {return},
+                  },
+                  { text: "確定", onPress: () => {this.props.navigation.replace('Home') }}
+                ]
+              );
             await leaveEvent(this.props.roomID);
-            this.props.navigation.replace('Home');
         }
         return;
-
     }
 }
 
