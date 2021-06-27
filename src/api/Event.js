@@ -5,6 +5,7 @@ import{ getProfileByUidList} from'../api/Profile';
 import {getCurrentLocation} from  '../utilities/GetCurrentLocation';
 import { getTravelTime } from  '../utilities/GetTravelTime';
 import moment from 'moment';
+import { Item } from 'native-base';
 const shortid = require('shortid');
 let userUid = '';
 
@@ -237,7 +238,8 @@ export async function getEventInfo(eventID) {
         location: 'unknown',
         arrival: NaN,
         // attendeeStatus: Array of objects. Objects contain attendee's name and he/she arrives or not.
-        attendeeStatus: []
+        attendeeStatus: [],
+        attendeeMessage: [],
     }
 
     try {
@@ -253,15 +255,19 @@ export async function getEventInfo(eventID) {
         eventInfo.placeName = data.placeName;
         eventInfo.placeCoord = data.placeCoord;
         try {
-            data.attendee.forEach((name) => {
+            data.attendee.forEach((id) => {
                 eventInfo.attendeeStatus.push({
-                    username: name,
-                    arrival: data.attendeeStatus[name]
-                })
+                    userUid: id,
+                    arrival: data.attendeeStatus[id],
+                });
+                eventInfo.attendeeMessage.push({
+                    userUid: id,
+                    message: data.attendeeMessage[id],
+                });
             });
         } catch (error) {
             console.log(error);
-            throw new Error("Unknown error at getEventInfo when getting attendee status.");
+            throw new Error("Unknown error at getEventInfo when getting attendee status or message.");
         }
 
 
