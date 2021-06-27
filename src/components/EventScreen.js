@@ -48,7 +48,7 @@ export default class EventScreen extends Component {
             eventId: this.props.navigation.getParam('eventId', undefined),
             newEvent: this.props.navigation.getParam('newEvent', false),
             edit: this.props.navigation.getParam('edit', false),
-        }, () => { this.props.newEvent || this.getEventInfoFromAPI();/* this.setArrivalTime();*/ })
+        }, () => { this.props.newEvent || this.getEventInfoFromAPI();})
 
 
 
@@ -292,13 +292,14 @@ export default class EventScreen extends Component {
                 let info = await getEventInfo(this.state.eventId);
 
                 //console.log(info);
-
+                this.setArrivalTimeFromAPI(info.placeCoord, this.state.eventId, 'bicycle')//設定到達時間
                 this.setState({
                     ...this.state,
                     title: info.title,
                     date: info.date,
                     time: info.time,
                     placeName: info.placeName,
+                    placeCoord: info.placeCoord,
                     nameIsAddress: info.nameIsAddress,
                     arriveNum: this.getArrivedAttendeeNumber(info.attendeeStatus)
                 })
@@ -310,10 +311,10 @@ export default class EventScreen extends Component {
     }
 
 
-    async setArrivalTimeFromAPI(){
+    async setArrivalTimeFromAPI(placeCoord, code, mode){
         try
         {
-            setArrivalTime(this.state.roomID, 'bicycle');
+            setArrivalTime(placeCoord, code, mode);
         }
         catch
         {
