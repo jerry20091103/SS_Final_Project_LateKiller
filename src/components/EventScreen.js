@@ -211,6 +211,7 @@ export default class EventScreen extends Component {
                         is24Hour={true}
                         display="default"
                         onChange={this.onChangeDate}
+                        minimumDate={new Date()}
                     />
                 )}
                 {/* time picker */}
