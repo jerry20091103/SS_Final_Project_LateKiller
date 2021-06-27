@@ -75,7 +75,8 @@ export default class MessageBoard extends React.Component {
         // change message.
         this.setState({
             ...this.state,
-            message: text
+            modified: true,
+            message: text,
         })
         console.log(text);
     }
