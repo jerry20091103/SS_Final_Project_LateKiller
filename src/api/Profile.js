@@ -109,7 +109,8 @@ export async function getProfileByUidList(UidList) {
                     level: 0,
                     exp: 0, 
                     expFull: 100,
-                    TimebeforeArrive: 0,
+                    events: {},
+                    
                    
                 };
                 profile.Uid =  data.Uid;
@@ -118,8 +119,9 @@ export async function getProfileByUidList(UidList) {
                 profile.avgLateTime = data.avgLateTime;
                 profile.level = data.level;
                 profile.exp=data.exp;
-                console.log(profile);
+                profile.events = data.events;
                 profileList.push(profile);
+
          
             });
             

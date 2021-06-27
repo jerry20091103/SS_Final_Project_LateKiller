@@ -1,6 +1,9 @@
 import firestore from '@react-native-firebase/firestore';
 import firebase from '@react-native-firebase/app';
 import { getUid } from '../utilities/User';
+import{ getProfileByUidList} from'../api/Profile';
+import {getCurrentLocation} from  '../utilities/GetCurrentLocation';
+import { getTravelTime } from  '../utilities/GetTravelTime';
 import moment from 'moment';
 const shortid = require('shortid');
 let userUid = '';
@@ -36,7 +39,8 @@ export async function creatEvent(eventInfo) {
                     date: eventInfo.date,
                     time: eventInfo.time,
                     attendee: [],
-                    attendee_status: {},
+                    attendeeStatus: {},
+                    active: false
                 })
 
             attendEvent(code);
@@ -88,16 +92,19 @@ export async function attendEvent(code) {
 
                 let p2 = firestore().collection('event').doc(code)
                     .set({
-                        "attendee_status": {
+                        "attendeeStatus": {
                             [userUid]: false
+                            
                         }
                     }, { merge: true });
 
 
                 let p3 = firestore().collection('users').doc(userUid)
-                    .update({
-                        "my_events": firestore.FieldValue.arrayUnion(code)
-                    })
+                    .set({
+                        "my_events": {
+                            [code] : null
+                        }
+                    },{merge:true})
 
                 await Promise.all([p1, p2, p3]);
                 return;
@@ -140,20 +147,21 @@ export async function leaveEvent(code) {
             let p3 = firestore()
                 .collection('users')
                 .doc(userUid)
-                .update({
-                    "my_events": firestore.FieldValue.arrayRemove(code)
-                })
-                
+                .set({
+                    "my_events": {
+                        [code]: firestore.FieldValue.delete()
+                    },
+                },{ merge: true })
             let p4 = firestore()
                 .collection('event')
                 .doc(code)
                 .set({
-                    "attendee_status": {
+                    "attendeeStatus": {
                         [userUid]: firestore.FieldValue.delete()
-                    }
+                    },
                 },{ merge: true })
 
-            let [snapshot, r2, r3] = await Promise.all([p1, p2, p3, p4]);
+            let [snapshot, r2, r3, r4] = await Promise.all([p1, p2, p3, p4]);
 
             let eventInfo = snapshot.data()
             if (eventInfo['attendee'].length <= 1) {
@@ -178,9 +186,12 @@ export async function listEvent() {
     if (userUid) {
         // console.log(userUid);
         try {
-            const userProfileSet = await firestore().collection('users').doc(userUid).get();
-            const userProfile = userProfileSet.data();
-            infoList = await _getEventInfoList(userProfile["my_events"])
+          
+            let eventList = []
+            const snapshot = await firestore().collection('users').doc(userUid).get();
+            const data = snapshot.data();
+            let events = data.my_events;
+            let infoList = await _getEventInfoList(Object.keys(events));
             return infoList;
         }
         catch (err) {
@@ -253,7 +264,7 @@ export async function getEventInfo(eventID) {
             data.attendee.forEach((name) => {
                 eventInfo.attendeeStatus.push({
                     username: name,
-                    arrival: data.attendee_status[name]
+                    arrival: data.attendeeStatus[name]
                 })
             });
         } catch (error) {
@@ -270,8 +281,7 @@ export async function getEventInfo(eventID) {
     }
 }
 
-export async function getEventAttendee(code) {
-    console.log(code)
+async function _getEventAttendee(code) {
     let attendee = [];
 
     try {
@@ -288,6 +298,73 @@ export async function getEventAttendee(code) {
     }
 }
 
+export async function  setArrivalTime(code, mode) {
+
+    try {
+        let active = false;
+        active = await _checkEventStatus(code);
+        
+        if(active)
+        {
+            
+            let userArrivalTime = await _arrivalTimeCaculate(desPos, mode)
+
+            await firestore().collection('event').doc(userUid)
+            .set({
+                "my_events": {
+                    [code]: userArrivalTime
+                }
+            }, { merge: true });
+
+
+        }
+
+        return;
+    }
+    catch
+    {
+        console.log("error when set arrival time");
+    }
+
+}
+
+
+export async function  getEventAttendeeInfo (code) {
+    try {
+
+        let p1 = _checkEventStatus(code);
+        let p2 = _getEventAttendee(code);
+        let [active, attendeeList] = await Promise.all([p1, p2]);
+         console.log(attendeeList);
+        let attendeeData = await getProfileByUidList(attendeeList);
+
+        console.log(attendeeData);
+
+        if(active)
+        {
+            attendeeData.forEach((attendee)=>{
+                console.log(attendee);
+            }
+           )
+        }
+        else
+        {
+            attendeeData.forEach((attendee)=>{
+                console.log(attendee);
+            }
+           )
+        }
+
+
+        return []
+    }
+    catch
+    {
+        console.log("error when get event attendee info ");
+    }
+    
+}
+
 export async function finishEvent(code) {
     if (userUid) {
         try {
@@ -298,9 +375,9 @@ export async function finishEvent(code) {
                     "attendee": firestore.FieldValue.arrayRemove(userUid)
                 })
 
-            let p2 = firestore().collection('event').doc(String(code))
+            let p2 = firestore().collection('event').doc(code)
                 .set({
-                    "attendee_status": {
+                    "attendeeStatus": {
                         [userUid]: false
                     }
                 }, { merge: true });
@@ -325,4 +402,55 @@ export async function EventApiInit() {
 
 function _CodeGen() {
     return shortid.generate();
+}
+
+async function _arrivalTimeCaculate(desPos, mode) {
+
+    try
+    {
+      let arrivalTime = 0;
+
+    
+        const curPos =  await getCurrentLocation();
+        console.log(curPos);
+        const travelTime = await getTravelTime(curPos,desPos,mode);
+        console.log(travelTime);
+        arrivalTime = travelTime.value + 300;
+      
+      return arrivalTime;
+
+    }
+    catch
+    {
+        console.log('arrivalTime Caculation Error')
+        return 0;
+    }
+
+    
+}
+
+async function _checkEventStatus(code) {
+    const snapshot = await firestore().collection('event').doc(code).get();
+    const data = snapshot.data();
+    console.log(data.active);
+
+
+
+    if(data.active)
+    {
+        return true;
+    }
+    else
+    {
+        if(true)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    
 }

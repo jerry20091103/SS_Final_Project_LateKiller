@@ -8,7 +8,7 @@ import BottomSheet from 'react-native-raw-bottom-sheet';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import moment from 'moment';
-import { creatEvent, editEvent, getEventInfo } from '../api/Event.js'
+import { creatEvent, editEvent, getEventInfo, setArrivalTime } from '../api/Event.js'
 import AttendeeList from './AttendeeList.js'
 
 /* Event Screen
@@ -48,7 +48,9 @@ export default class EventScreen extends Component {
             eventId: this.props.navigation.getParam('eventId', undefined),
             newEvent: this.props.navigation.getParam('newEvent', false),
             edit: this.props.navigation.getParam('edit', false),
-        }, () => { this.props.newEvent || this.getEventInfoFromAPI() })
+        }, () => { this.props.newEvent || this.getEventInfoFromAPI();/* this.setArrivalTime();*/ })
+
+
 
     }
 
@@ -305,6 +307,19 @@ export default class EventScreen extends Component {
         catch (err) {
             console.log(err);
         }
+    }
+
+
+    async setArrivalTimeFromAPI(){
+        try
+        {
+            setArrivalTime(this.state.roomID, 'bicycle');
+        }
+        catch
+        {
+            console.log('error when setting arrival time')
+        }
+
     }
 
     getArrivedAttendeeNumber(attendeeStatus) {
