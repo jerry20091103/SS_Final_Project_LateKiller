@@ -236,9 +236,14 @@ export default class EventScreen extends Component {
             
             >
             </ParallaxScrollView>
-            <View style={{ flex: 0.15, padding: 10, backgroundColor: appColors.btnGreen, borderTopLeftRadius: 15, borderTopRightRadius: 15 }}>
-                    <Text style={styles.titleText}>Google Map: TBD</Text>
-                </View>
+            {/* google map area */}
+            <View style={{ flex: 0.15, padding: 10, backgroundColor: appColors.btnGreen, borderTopLeftRadius: 15, borderTopRightRadius: 15 , justifyContent: 'center'}}>
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', margin: 10}}>
+                        <Icon type='MaterialCommunityIcons' name='car' style={styles.bottomIcon}/>
+                        <Text style={{color: appColors.textGreen, fontSize: 23, marginVertical: 5}}>Time</Text>
+                        <Icon type='MaterialCommunityIcons' name='google-maps' style={styles.bottomIcon}/>
+                    </View>
+            </View>
             </>
         );
     }
@@ -452,6 +457,17 @@ const styles = StyleSheet.create({
         fontSize: 22,
         marginHorizontal: 15,
         marginVertical: 10
+    },
+    bottomIcon: {
+        color: appColors.textBlack,
+        fontSize: 50,
+        backgroundColor: 'transparent',
+        borderRadius: 15,
+        borderWidth: 1,
+        borderColor: appColors.textGray,
+        padding: 5,
+        paddingLeft: 7,
+        paddingBottom: 7
     },
 });
 
