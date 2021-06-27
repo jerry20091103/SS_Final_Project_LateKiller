@@ -1,7 +1,11 @@
 import firestore from '@react-native-firebase/firestore';
 import firebase from '@react-native-firebase/app';
 import { getUid } from '../utilities/User';
+import{ getProfileByUidList} from'../api/Profile';
+import {getCurrentLocation} from  '../utilities/GetCurrentLocation';
+import { getTravelTime } from  '../utilities/GetTravelTime';
 import moment from 'moment';
+import { Item } from 'native-base';
 const shortid = require('shortid');
 let userUid = '';
 
@@ -15,28 +19,21 @@ export async function creatEvent(eventInfo) {
      }
        #tentative 
     */
-    console.log(eventInfo);
-
     if (userUid) {
         let code = _CodeGen();
-
-        //console.log(a);
-        //let a = new firebase.firestore.GeoPoint(eventInfo.placeCoor.lat, eventInfo.placeCoor.lng);
-        //placeName: eventInfo.placeName,
-        //placeCoor: a,
-        console.log(code);
         try {
             await firestore().collection('event').doc(code)
                 .set({
                     id: code,
                     title: eventInfo.title,
                     placeName: eventInfo.placeName,
-                    placeCoor: eventInfo.placeCoor,
+                    placeCoord: eventInfo.placeCoord,
                     nameIsAddress: eventInfo.nameIsAddress,
                     date: eventInfo.date,
                     time: eventInfo.time,
                     attendee: [],
-                    attendee_status: {},
+                    attendeeStatus: {},
+                    active: false
                 })
 
             attendEvent(code);
@@ -61,7 +58,7 @@ export async function editEvent(eventInfo, code) {
                 'date': eventInfo.date,
                 'time': eventInfo.time,
                 'placeName': eventInfo.placeName,
-                'placeCoor': eventInfo.placeCoor,
+                'placeCoord': eventInfo.placeCoord,
                 'nameIsAddress': eventInfo.nameIsAddress,
             })
         return;
@@ -88,16 +85,19 @@ export async function attendEvent(code) {
 
                 let p2 = firestore().collection('event').doc(code)
                     .set({
-                        "attendee_status": {
+                        "attendeeStatus": {
                             [userUid]: false
+                            
                         }
                     }, { merge: true });
 
 
                 let p3 = firestore().collection('users').doc(userUid)
-                    .update({
-                        "my_events": firestore.FieldValue.arrayUnion(code)
-                    })
+                    .set({
+                        "my_events": {
+                            [code] : null
+                        }
+                    },{merge:true})
 
                 await Promise.all([p1, p2, p3]);
                 return;
@@ -140,20 +140,21 @@ export async function leaveEvent(code) {
             let p3 = firestore()
                 .collection('users')
                 .doc(userUid)
-                .update({
-                    "my_events": firestore.FieldValue.arrayRemove(code)
-                })
-                
+                .set({
+                    "my_events": {
+                        [code]: firestore.FieldValue.delete()
+                    },
+                },{ merge: true })
             let p4 = firestore()
                 .collection('event')
                 .doc(code)
                 .set({
-                    "attendee_status": {
+                    "attendeeStatus": {
                         [userUid]: firestore.FieldValue.delete()
-                    }
+                    },
                 },{ merge: true })
 
-            let [snapshot, r2, r3] = await Promise.all([p1, p2, p3, p4]);
+            let [snapshot, r2, r3, r4] = await Promise.all([p1, p2, p3, p4]);
 
             let eventInfo = snapshot.data()
             if (eventInfo['attendee'].length <= 1) {
@@ -178,9 +179,12 @@ export async function listEvent() {
     if (userUid) {
         // console.log(userUid);
         try {
-            const userProfileSet = await firestore().collection('users').doc(userUid).get();
-            const userProfile = userProfileSet.data();
-            infoList = await _getEventInfoList(userProfile["my_events"])
+          
+            let eventList = []
+            const snapshot = await firestore().collection('users').doc(userUid).get();
+            const data = snapshot.data();
+            let events = data.my_events;
+            let infoList = await _getEventInfoList(Object.keys(events));
             return infoList;
         }
         catch (err) {
@@ -234,7 +238,8 @@ export async function getEventInfo(eventID) {
         location: 'unknown',
         arrival: NaN,
         // attendeeStatus: Array of objects. Objects contain attendee's name and he/she arrives or not.
-        attendeeStatus: []
+        attendeeStatus: [],
+        attendeeMessage: [],
     }
 
     try {
@@ -248,17 +253,21 @@ export async function getEventInfo(eventID) {
         eventInfo.date = data.date;
         eventInfo.time = data.time;
         eventInfo.placeName = data.placeName;
-        eventInfo.placeCoor = data.placeCoor;
+        eventInfo.placeCoord = data.placeCoord;
         try {
-            data.attendee.forEach((name) => {
+            data.attendee.forEach((id) => {
                 eventInfo.attendeeStatus.push({
-                    username: name,
-                    arrival: data.attendee_status[name]
-                })
+                    userUid: id,
+                    arrival: data.attendeeStatus[id],
+                });
+                eventInfo.attendeeMessage.push({
+                    userUid: id,
+                    message: data.attendeeMessage[id],
+                });
             });
         } catch (error) {
             console.log(error);
-            throw new Error("Unknown error at getEventInfo when getting attendee status.");
+            throw new Error("Unknown error at getEventInfo when getting attendee status or message.");
         }
 
 
@@ -270,8 +279,7 @@ export async function getEventInfo(eventID) {
     }
 }
 
-export async function getEventAttendee(code) {
-    console.log(code)
+async function _getEventAttendee(code) {
     let attendee = [];
 
     try {
@@ -288,6 +296,93 @@ export async function getEventAttendee(code) {
     }
 }
 
+export async function  setArrivalTime(desPos, code, mode) {
+
+    try {
+        let active = false;
+       active = await _checkEventStatus(code);
+        
+        active = true;//test
+
+        console.log(userUid);
+        if(active)
+        {
+            let userArrivalTime = 0;
+             userArrivalTime = await _arrivalTimeCaculate(desPos, mode)
+            
+             
+            await firestore().collection('users').doc(userUid)
+            .update({
+                ["my_events."+code]: userArrivalTime,
+            });
+
+        }
+
+        return;
+    }
+    catch
+    {
+        console.log("error when set arrival time");
+    }
+
+}
+
+
+export async function  getEventAttendeeInfo (code) {
+    try {
+
+        
+
+
+
+        let p1 = _checkEventStatus(code);
+        let p2 = _getEventAttendee(code);
+        let [active, attendeeList] = await Promise.all([p1, p2]);
+        let attendeeData = await getProfileByUidList(attendeeList, code);
+        let attendeeInfo = [];
+
+       
+            attendeeData.forEach((attendee)=>{
+
+                let info = {
+                    Uid : 'unknown',
+                    username:'unknown',
+                    img: '',
+                    TimebeforeArrive: 0,
+                    avgLateTime: 0,
+                    level: 0,
+                    exp: 0, 
+                    expFull: 100,
+                }
+
+                info.Uid =  attendee.Uid;
+                info.username = attendee.username;
+                info.img = attendee.img;
+                if(active)
+                    info.TimebeforeArrive = attendee.calTime;
+                else
+                    info.TimebeforeArrive = attendee.avgLateTime;
+                info.avgLateTime = attendee.avgLateTime;
+                info.level = attendee.level;
+                info.exp = attendee.exp;
+                info.expFull = attendee.expFull;
+                attendeeInfo.push(info);
+
+            }
+           )
+        
+       console.log(attendeeInfo);
+
+
+        return attendeeInfo;
+    }
+    catch
+    {
+        console.log("error when get event attendee info ");
+    }
+    
+}
+
 export async function finishEvent(code) {
     if (userUid) {
         try {
@@ -298,9 +393,9 @@ export async function finishEvent(code) {
                     "attendee": firestore.FieldValue.arrayRemove(userUid)
                 })
 
-            let p2 = firestore().collection('event').doc(String(code))
+            let p2 = firestore().collection('event').doc(code)
                 .set({
-                    "attendee_status": {
+                    "attendeeStatus": {
                         [userUid]: false
                     }
                 }, { merge: true });
@@ -325,4 +420,55 @@ export async function EventApiInit() {
 
 function _CodeGen() {
     return shortid.generate();
+}
+
+async function _arrivalTimeCaculate(desPos, mode) {
+
+    try
+    {
+      let arrivalTime = 0;
+
+        const curPos = await getCurrentLocation();
+      
+  
+       // const travelTime = await getTravelTime({lat:curPos.lat,lng:curPos.lng},desPos,mode); /*prvent overuse*/
+        //arrivalTime = (travelTime.value + 300)/60;    /*prvent overuse*/
+      
+        return arrivalTime;
+
+    }
+    catch
+    {
+        console.log('arrivalTime Caculation Error')
+        return 0;
+    }
+
+    
+}
+
+async function _checkEventStatus(code) {
+    console.log('here');
+    const snapshot = await firestore().collection('event').doc(code).get();
+    const data = snapshot.data();
+    console.log(data.active);
+
+
+
+    if(data.active)
+    {
+        return true;
+    }
+    else
+    {
+        if(true)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    
 }

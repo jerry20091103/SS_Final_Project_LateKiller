@@ -8,7 +8,7 @@ import BottomSheet from 'react-native-raw-bottom-sheet';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import moment from 'moment';
-import { creatEvent, editEvent, getEventInfo } from '../api/Event.js'
+import { creatEvent, editEvent, getEventInfo, setArrivalTime } from '../api/Event.js'
 import AttendeeList from './AttendeeList.js'
 
 /* Event Screen
@@ -48,7 +48,9 @@ export default class EventScreen extends Component {
             eventId: this.props.navigation.getParam('eventId', undefined),
             newEvent: this.props.navigation.getParam('newEvent', false),
             edit: this.props.navigation.getParam('edit', false),
-        }, () => { this.props.newEvent || this.getEventInfoFromAPI() })
+        }, () => { this.props.newEvent || this.getEventInfoFromAPI();})
+
+
 
     }
 
@@ -241,10 +243,56 @@ export default class EventScreen extends Component {
             
             >
             </ParallaxScrollView>
-            <View style={{ flex: 0.15, padding: 10, backgroundColor: appColors.btnGreen, borderTopLeftRadius: 15, borderTopRightRadius: 15 }}>
-                    <Text style={styles.titleText}>Google Map: TBD</Text>
-                </View>
-            </>
+            {/* google map area */}
+            <View style={{ flex: 0.15, padding: 10, backgroundColor: appColors.btnGreen, borderTopLeftRadius: 15, borderTopRightRadius: 15 , justifyContent: 'center'}}>
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', margin: 10}}>
+                        <Icon type='MaterialCommunityIcons' name='car' style={styles.bottomIcon} onPress={() => this.TransitPicker.open()}/>
+                        <Text style={{color: appColors.textGreen, fontSize: 23, marginVertical: 5}}>Time</Text>
+                        <Icon type='MaterialCommunityIcons' name='google-maps' style={styles.bottomIcon}/>
+                    </View>
+            </View>
+            {/* bottomSheet to select transit mode */}
+            <BottomSheet
+                    ref={ref => {
+                        this.TransitPicker = ref;
+                    }}
+                    height={150}
+                    closeOnDragDown={true}
+                    closeDuration={200}
+                    openDuration={200}
+                    customStyles={{
+                        container: {
+                            borderTopLeftRadius: 15,
+                            borderTopRightRadius: 15,
+                            backgroundColor: appColors.backgroundBlue
+                        }
+                    }}
+                >
+                    <View style={{ flex: 1, backgroundColor: appColors.backgroundBlue, borderTopLeftRadius: 15, borderTopRightRadius: 15 }}>
+                        <View style={{flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 10}}>
+                            <View style={{flexDirection: 'row', marginHorizontal: 15}}>
+                                <Icon type='MaterialCommunityIcons' name='car' style={styles.transitSelectIcon}/>
+                                <Text style={styles.transitSelectText}>開車</Text>
+                            </View>
+                            <View style={{flexDirection: 'row', marginHorizontal: 15, marginRight: 35}}>
+                                <Icon type='MaterialCommunityIcons' name='walk' style={styles.transitSelectIcon}/>
+                                <Text style={styles.transitSelectText}>步行</Text>
+                            </View>
+                        </View>
+                        <View style={{flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 10}}>
+                            <View style={{flexDirection: 'row', marginHorizontal: 15}}>
+                                <Icon type='MaterialCommunityIcons' name='subway-variant' style={styles.transitSelectIcon}/>
+                                <Text style={styles.transitSelectText}>大眾運輸</Text>
+                            </View>
+                            <View style={{flexDirection: 'row', marginHorizontal: 15}}>
+                                <Icon type='MaterialCommunityIcons' name='bike' style={styles.transitSelectIcon}/>
+                                <Text style={styles.transitSelectText}>腳踏車</Text>
+                            </View>
+                        </View>
+                    </View>
+
+                </BottomSheet>
+        </>
         );
     }
     getDefaultTitle(){
@@ -266,7 +314,7 @@ export default class EventScreen extends Component {
             else if (this.state.time === null) Alert.alert("時間不能為空");
             else if (this.state.placeCoord === null) Alert.alert("地點不能為空");
             else {
-                creatEvent({ 'title': this.state.title, 'date' : this.state.date, 'time': this.state.time, 'placeName': this.state.placeName, 'placeCoor':this.state.placeCoord, 'nameIsAddress':this.state.nameIsAddress  });
+                creatEvent({ 'title': this.state.title, 'date' : this.state.date, 'time': this.state.time, 'placeName': this.state.placeName, 'placeCoord':this.state.placeCoord, 'nameIsAddress':this.state.nameIsAddress  });
                 this.setState({ edit: false, });
                 Alert.alert("已儲存!");
                 this.props.navigation.replace('Home');
@@ -280,7 +328,7 @@ export default class EventScreen extends Component {
             else if (this.state.placeCoord === null) Alert.alert("地點不能為空");
             else {
                 console.log("saved!");
-                editEvent({ 'title': this.state.title, 'date' : this.state.date,'time': this.state.time, 'placeName': this.state.placeName, 'placeCoor':this.state.placeCoord, 'nameIsAddress':this.state.nameIsAddress }, this.state.eventId);
+                editEvent({ 'title': this.state.title, 'date' : this.state.date,'time': this.state.time, 'placeName': this.state.placeName, 'placeCoord':this.state.placeCoord, 'nameIsAddress':this.state.nameIsAddress }, this.state.eventId);
                 this.setState({ edit: false, });
                 Alert.alert("已儲存!");
                 this.props.navigation.replace('Home');
@@ -300,13 +348,14 @@ export default class EventScreen extends Component {
                 let info = await getEventInfo(this.state.eventId);
 
                 //console.log(info);
-
+                this.setArrivalTimeFromAPI(info.placeCoord,this.state.eventId, 'bicycle');
                 this.setState({
                     ...this.state,
                     title: info.title,
                     date: info.date,
                     time: info.time,
                     placeName: info.placeName,
+                    placeCoord: info.placeCoord,
                     nameIsAddress: info.nameIsAddress,
                     arriveNum: this.getArrivedAttendeeNumber(info.attendeeStatus)
                 })
@@ -315,6 +364,19 @@ export default class EventScreen extends Component {
         catch (err) {
             console.log(err);
         }
+    }
+
+
+    async setArrivalTimeFromAPI(placeCoord, code, mode){
+        try
+        {
+            setArrivalTime(placeCoord, code, mode);
+        }
+        catch
+        {
+            console.log('error when setting arrival time')
+        }
+
     }
 
     getArrivedAttendeeNumber(attendeeStatus) {
@@ -445,6 +507,30 @@ const styles = StyleSheet.create({
         color: appColors.textRed,
         fontSize: 22,
         marginHorizontal: 15,
+        marginVertical: 10
+    },
+    bottomIcon: {
+        color: appColors.textBlack,
+        fontSize: 50,
+        backgroundColor: 'transparent',
+        borderRadius: 15,
+        borderWidth: 1,
+        borderColor: appColors.textGray,
+        padding: 5,
+        paddingLeft: 7,
+        paddingBottom: 7
+    },
+    transitSelectIcon: {
+        color: appColors.textBlack,
+        fontSize: 40,
+        backgroundColor: 'transparent',
+        padding: 5,
+    },
+    transitSelectText: {
+        color: appColors.textBlack,
+        fontSize: 22,
+        marginHorizontal: 15,
+        marginLeft: 5,
         marginVertical: 10
     },
 });
