@@ -415,7 +415,7 @@ async function _arrivalTimeCaculate(desPos, mode) {
     
         const curPos =  await getCurrentLocation();
         console.log(curPos);
-        const travelTime = await getTravelTime(curPos,desPos,mode);
+        //const travelTime = await getTravelTime(curPos,desPos,mode);
         console.log(travelTime);
         arrivalTime = travelTime.value + 300;
         console.log(arrivalTime);

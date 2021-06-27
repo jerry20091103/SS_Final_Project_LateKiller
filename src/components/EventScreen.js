@@ -292,7 +292,7 @@ export default class EventScreen extends Component {
                 let info = await getEventInfo(this.state.eventId);
 
                 //console.log(info);
-              //  this.setArrivalTimeFromAPI(info.placeCoord, this.state.eventId, 'bicycle')//設定到達時間
+                this.setArrivalTimeFromAPI(info.placeCoord, this.state.eventId, 'bicycle')//設定到達時間
                 this.setState({
                     ...this.state,
                     title: info.title,
