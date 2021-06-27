@@ -239,12 +239,53 @@ export default class EventScreen extends Component {
             {/* google map area */}
             <View style={{ flex: 0.15, padding: 10, backgroundColor: appColors.btnGreen, borderTopLeftRadius: 15, borderTopRightRadius: 15 , justifyContent: 'center'}}>
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', margin: 10}}>
-                        <Icon type='MaterialCommunityIcons' name='car' style={styles.bottomIcon}/>
+                        <Icon type='MaterialCommunityIcons' name='car' style={styles.bottomIcon} onPress={() => this.TransitPicker.open()}/>
                         <Text style={{color: appColors.textGreen, fontSize: 23, marginVertical: 5}}>Time</Text>
                         <Icon type='MaterialCommunityIcons' name='google-maps' style={styles.bottomIcon}/>
                     </View>
             </View>
-            </>
+            {/* bottomSheet to select transit mode */}
+            <BottomSheet
+                    ref={ref => {
+                        this.TransitPicker = ref;
+                    }}
+                    height={150}
+                    closeOnDragDown={true}
+                    closeDuration={200}
+                    openDuration={200}
+                    customStyles={{
+                        container: {
+                            borderTopLeftRadius: 15,
+                            borderTopRightRadius: 15,
+                            backgroundColor: appColors.backgroundBlue
+                        }
+                    }}
+                >
+                    <View style={{ flex: 1, backgroundColor: appColors.backgroundBlue, borderTopLeftRadius: 15, borderTopRightRadius: 15 }}>
+                        <View style={{flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 10}}>
+                            <View style={{flexDirection: 'row', marginHorizontal: 15}}>
+                                <Icon type='MaterialCommunityIcons' name='car' style={styles.transitSelectIcon}/>
+                                <Text style={styles.transitSelectText}>開車</Text>
+                            </View>
+                            <View style={{flexDirection: 'row', marginHorizontal: 15, marginRight: 35}}>
+                                <Icon type='MaterialCommunityIcons' name='walk' style={styles.transitSelectIcon}/>
+                                <Text style={styles.transitSelectText}>步行</Text>
+                            </View>
+                        </View>
+                        <View style={{flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 10}}>
+                            <View style={{flexDirection: 'row', marginHorizontal: 15}}>
+                                <Icon type='MaterialCommunityIcons' name='subway-variant' style={styles.transitSelectIcon}/>
+                                <Text style={styles.transitSelectText}>大眾運輸</Text>
+                            </View>
+                            <View style={{flexDirection: 'row', marginHorizontal: 15}}>
+                                <Icon type='MaterialCommunityIcons' name='bike' style={styles.transitSelectIcon}/>
+                                <Text style={styles.transitSelectText}>腳踏車</Text>
+                            </View>
+                        </View>
+                    </View>
+
+                </BottomSheet>
+        </>
         );
     }
 
@@ -468,6 +509,19 @@ const styles = StyleSheet.create({
         padding: 5,
         paddingLeft: 7,
         paddingBottom: 7
+    },
+    transitSelectIcon: {
+        color: appColors.textBlack,
+        fontSize: 40,
+        backgroundColor: 'transparent',
+        padding: 5,
+    },
+    transitSelectText: {
+        color: appColors.textBlack,
+        fontSize: 22,
+        marginHorizontal: 15,
+        marginLeft: 5,
+        marginVertical: 10
     },
 });
 
