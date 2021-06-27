@@ -117,7 +117,7 @@ export async function getProfileByUidList(UidList) {
                 profile.img = data.img;
                 profile.avgLateTime = data.avgLateTime;
                 profile.level = data.level;
-                
+                profile.exp=data.exp;
                 console.log(profile);
                 profileList.push(profile);
          

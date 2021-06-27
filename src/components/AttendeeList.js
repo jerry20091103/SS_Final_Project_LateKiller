@@ -27,7 +27,7 @@ export default class AttendeeList extends Component {
 
         }
     }
-    toggleCancel(item/* name,level,picture,avgLateTime */) {
+    showOthersInfo(item/* name,level,picture,avgLateTime */) {
         this.setState({
             ...this.state,
             OnpressName: item.username,
@@ -44,7 +44,7 @@ export default class AttendeeList extends Component {
         const ArriveText = (this.state.myID === item.Uid) ? '離開' : '已到達';
         return (
             <SafeAreaView style={{ flex: 1 }}>
-                <Button color={appColors.textBlack} style={styles.UserButton} onPress={() => this.toggleCancel(item)}>
+                <Button color={appColors.textBlack} style={styles.UserButton} onPress={() => this.showOthersInfo(item)}>
                     <View style={{ flex: 1, flexDirection: 'row' }}>
 
                         <View style={{ flex: 2, margin: 5 }}>

@@ -104,9 +104,9 @@ export default class HomeScreen extends React.Component {
         if (this.state.roomID === '')
             alert('roomID is empty!');
         else {
-            this.props.navigation.navigate('Meet', { newEvent: false });
             try {
                 await attendEvent(this.state.roomID);
+                this.props.navigation.navigate('Meet', { newEvent: false });
             }
             catch (err) {
                 alert(err);
