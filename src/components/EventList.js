@@ -45,7 +45,7 @@ export default class EventList extends React.Component {
         this.setState({
             loading: true
         });
-        setTimeout(() => (this.setState({ loading: false })), 2000);
+       this.getData();
     }
 
 
