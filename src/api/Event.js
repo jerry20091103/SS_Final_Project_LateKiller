@@ -298,16 +298,18 @@ async function _getEventAttendee(code) {
     }
 }
 
-export async function  setArrivalTime(code, mode) {
+export async function  setArrivalTime(desPos, code, mode) {
 
     try {
         let active = false;
         active = await _checkEventStatus(code);
         
+
         if(active)
         {
+            let userArrivalTime = 0;
             
-            let userArrivalTime = await _arrivalTimeCaculate(desPos, mode)
+             userArrivalTime = await _arrivalTimeCaculate(desPos, mode)
 
             await firestore().collection('event').doc(userUid)
             .set({
@@ -356,7 +358,7 @@ export async function  getEventAttendeeInfo (code) {
         }
 
 
-        return []
+        return attendeeData;
     }
     catch
     {
@@ -416,8 +418,10 @@ async function _arrivalTimeCaculate(desPos, mode) {
         const travelTime = await getTravelTime(curPos,desPos,mode);
         console.log(travelTime);
         arrivalTime = travelTime.value + 300;
+        console.log(arrivalTime);
+        console.log('here');
       
-      return arrivalTime;
+     // return arrivalTime;
 
     }
     catch
