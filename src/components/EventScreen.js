@@ -243,7 +243,7 @@ export default class EventScreen extends Component {
             else if (this.state.time === null) Alert.alert("時間不能為空");
             else if (this.state.placeCoord === null) Alert.alert("地點不能為空");
             else {
-                creatEvent({ 'title': this.state.title, 'date' : this.state.date, 'time': this.state.time, 'placeName': this.state.placeName, 'placeCoor':this.state.placeCoord });
+                creatEvent({ 'title': this.state.title, 'date' : this.state.date, 'time': this.state.time, 'placeName': this.state.placeName, 'placeCoor':this.state.placeCoord, 'nameIsAddress':this.state.nameIsAddress  });
                 this.setState({ edit: false, });
             }
 
@@ -255,7 +255,7 @@ export default class EventScreen extends Component {
             else if (this.state.placeCoord === null) Alert.alert("地點不能為空");
             else {
                 console.log("saved!");
-                editEvent({ 'title': this.state.title, 'date' : this.state.date,'time': this.state.time, 'placeName': this.state.placeName, 'placeCoor':this.state.placeCoord  }, this.state.eventId);
+                editEvent({ 'title': this.state.title, 'date' : this.state.date,'time': this.state.time, 'placeName': this.state.placeName, 'placeCoor':this.state.placeCoord, 'nameIsAddress':this.state.nameIsAddress }, this.state.eventId);
                 this.setState({ edit: false, });
             };// modify event in firebase
         }
@@ -279,7 +279,8 @@ export default class EventScreen extends Component {
                     title: info.title,
                     date: info.date,
                     time: info.time,
-                    placeName: info.placeName
+                    placeName: info.placeName,
+                    nameIsAddress: info.nameIsAddress  
                 })
             }
         }

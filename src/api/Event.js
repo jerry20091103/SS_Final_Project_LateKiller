@@ -36,6 +36,7 @@ export async function creatEvent(eventInfo)
                 title : eventInfo.title,
                 placeName: eventInfo.placeName,
                 placeCoor: eventInfo.placeCoor,
+                nameIsAddress:eventInfo.nameIsAddress, 
                 date: eventInfo.date,
                 time: eventInfo.time,
                 attendee: [],
@@ -75,6 +76,7 @@ export async function editEvent(eventInfo, code)
              'time': eventInfo.time,
              'placeName': eventInfo.placeName,
              'placeCoor': eventInfo.placeCoor,
+             'nameIsAddress': eventInfo.nameIsAddress, 
            })
            return;
 
