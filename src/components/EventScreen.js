@@ -291,7 +291,7 @@ export default class EventScreen extends Component {
 
     handlePickDate() {
         this.setState({
-            dateTimestamp: new Date(),
+            dateTimestamp: this.state.date ? new Date(moment(this.state.date)) : new Date(),
             showPickDate: true
         });
     }
@@ -307,7 +307,7 @@ export default class EventScreen extends Component {
 
     handlePickTime() {
         this.setState({
-            timeTimestamp: new Date(),
+            timeTimestamp: this.state.time ? new Date(moment(this.state.time, 'hh:mm')) : new Date(),
             showPickTime: true
         });
     }
