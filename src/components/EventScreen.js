@@ -156,7 +156,7 @@ export default class EventScreen extends Component {
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <Text style={styles.detailText}>已到人數: </Text>
                                 {this.state.edit || this.state.newEvent ? (
-                                    <Text style={styles.detailTextGray}>4 (just a fix number so far)</Text>
+                                    <Text style={styles.detailTextGray}>{this.state.arriveNum}</Text>
                                 ) : (
                                     // show data from server
                                     <Text style={styles.detailTextGray}>{this.state.arriveNum}</Text>
