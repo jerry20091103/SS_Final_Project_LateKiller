@@ -1,4 +1,5 @@
 import firestore from '@react-native-firebase/firestore';
+import firebase from '@react-native-firebase/app';
 import { getUid } from '../utilities/User';
 import moment from 'moment';
 const shortid = require('shortid');
@@ -16,22 +17,33 @@ export async function creatEvent(eventInfo)
        #tentative 
     */
 
+
+    console.log(eventInfo);
+
     if(userUid)
     {
         let code = _CodeGen();
 
+       //console.log(a);
+        //let a = new firebase.firestore.GeoPoint(eventInfo.placeCoor.lat, eventInfo.placeCoor.lng);
+                        //placeName: eventInfo.placeName,
+                //placeCoor: a,
+        console.log(code);
         try{
            await firestore().collection('event').doc(code)
             .set({
                 id: code,
                 title : eventInfo.title,
-                location: [eventInfo.location],
+                placeName: eventInfo.placeName,
+                placeCoor: eventInfo.placeCoor,
+                nameIsAddress:eventInfo.nameIsAddress, 
+                date: eventInfo.date,
                 time: eventInfo.time,
                 attendee: [],
                 attendee_status: {},
               })
 
-             attendEvent( code );  
+            attendEvent( code );  
               return;
                
         }
@@ -53,12 +65,18 @@ export async function creatEvent(eventInfo)
 
 export async function editEvent(eventInfo, code)
 {
+
     try{
+
+      
         await firestore().collection('event').doc(code)
          .update({
-             'title' : [eventInfo.title],
-             'location': [eventInfo.location],
-             'time': [eventInfo.time]
+             'title' : eventInfo.title,
+             'date': eventInfo.date,
+             'time': eventInfo.time,
+             'placeName': eventInfo.placeName,
+             'placeCoor': eventInfo.placeCoor,
+             'nameIsAddress': eventInfo.nameIsAddress, 
            })
            return;
 
@@ -219,7 +237,7 @@ async function _getEventInfoList(eventIDList)
             const data = doc.data();   
              eventInfo.id = data.id;
              eventInfo.title = data.title;
-             eventInfo.time = moment.unix(data["time"].seconds).calendar();
+             eventInfo.time = data.date + ' ' + data.time;
              eventList.push( eventInfo);
             });
         }
@@ -243,7 +261,9 @@ export async function getEventInfo(eventID)
         title:'unknown',
         date:'unknown',
         location:'unknown',
-        arrival:NaN
+        arrival: NaN,
+        // attendeeStatus: Array of objects. Objects contain attendee's name and he/she arrives or not.
+        attendeeStatus: []
     }
 
     try{
@@ -251,12 +271,25 @@ export async function getEventInfo(eventID)
             let  Snapshot = await firestore().collection('event').doc(eventID).get()
             
             let data = Snapshot.data();    
-            let timestamp = data["time"];
 
 
             eventInfo.title = data.title;
-            eventInfo.date = moment.unix(timestamp.seconds).format("YYYY-MM-DD")
-            eventInfo.time = moment.unix(timestamp.seconds).format("HH:mm")
+            eventInfo.date = data.date;
+            eventInfo.time = data.time;
+            eventInfo.placeName = data.placeName;
+            eventInfo.placeCoor = data.placeCoor;
+            try {
+                data.attendee.forEach((name) => {
+                    eventInfo.attendeeStatus.push({
+                        username: name,
+                        arrival:  data.attendee_status[name]
+                    })
+                });
+            } catch(error) {
+                console.log(error);
+                throw new Error("Unknown error at getEventInfo when getting attendee status.");
+            }
+            
           
             return eventInfo;
     }

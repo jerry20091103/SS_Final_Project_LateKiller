@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, TouchableHighlight, BackHandler, Alert, TouchableWithoutFeedback, Keyboard, TextInput } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import appColors from '../styles/colors.js';
 import PropTypes from 'prop-types';
 import { Container, Header, Title, Button, Left, Right, Body, Icon, Text, View, Item, Input } from 'native-base';
@@ -7,7 +8,7 @@ import BottomSheet from 'react-native-raw-bottom-sheet';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import moment from 'moment';
-import { creatEvent, attendEvent, getEventInfo } from '../api/Event.js'
+import { creatEvent, editEvent, getEventInfo } from '../api/Event.js'
 import AttendeeList from './AttendeeList.js'
 
 /* Event Screen
@@ -27,10 +28,15 @@ export default class EventScreen extends Component {
             newEvent: false, // if you are creating a new event or not
             date: null, // the event date
             time: null, // the event time
+            dateTimestamp: null,
+            timeTimestamp: null,
             title: "", // the event title
-            place: "", // the event place
+            placeCoord: null, // coordinate of the place {lat: ..., lng: ...} (object)
+            placeName: "", // the event place name (it may be a name or a address) (string)
+            nameIsAddress: "false", // whether the stored name is a address (use string since AsyncStorge only take strings...)
             showPickDate: false, // control popup date picker
             showPickTime: false, // control popup time picker
+            arriveNum: 0,
         };
     }
 
@@ -112,7 +118,7 @@ export default class EventScreen extends Component {
                                 {this.state.edit || this.state.newEvent ? (
                                     // pick date button
                                     <Text style={styles.detailTextGray} onPress={() => this.handlePickDate()}>
-                                        {this.state.date == null ? '新增日期' : moment(this.state.date).format('YYYY/MM/DD')}
+                                        {this.state.date == null ? '新增日期' : this.state.date}
                                     </Text>
                                 ) : (
                                     // show data from server
@@ -126,7 +132,7 @@ export default class EventScreen extends Component {
                                 {this.state.edit || this.state.newEvent ? (
                                     // pick time button
                                     <Text style={styles.detailTextGray} onPress={() => this.handlePickTime()}>
-                                        {this.state.time == null ? '新增時間' : moment(this.state.time).format('hh:mm')}
+                                        {this.state.time == null ? '新增時間' : this.state.time}
                                     </Text>
                                 ) : (
                                     // show data from server
@@ -139,11 +145,11 @@ export default class EventScreen extends Component {
                                 <Text style={styles.detailText}>地點: </Text>
                                 {this.state.edit || this.state.newEvent ? (
                                     // location picker
-                                    <Text style={styles.detailTextGray} onPress={() => navigate("PlaceSelect")}>新增地點</Text>
+                                    <Text style={styles.detailTextGray} onPress={() => navigate("PlaceSelect", {coord: this.state.placeCoord, onGoBack: () => this.onChangePlace(), name: this.state.placeName, nameIsAddress: this.state.nameIsAddress})}>{this.state.placeName || "新增地點"}</Text>
                                 ) : (
                                     // show data from server
                                     <Text>
-                                        {this.state.location}
+                                        {this.state.placeName}
                                     </Text>
                                 )}
                             </View>
@@ -157,10 +163,10 @@ export default class EventScreen extends Component {
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <Text style={styles.detailText}>已到人數: </Text>
                                 {this.state.edit || this.state.newEvent ? (
-                                    <Text style={styles.detailTextGray}>4 (just a fix number so far)</Text>
+                                    <Text style={styles.detailTextGray}>{this.state.arriveNum}</Text>
                                 ) : (
                                     // show data from server
-                                    <Text style={styles.detailTextGray}>{'Insert data from firease!'}</Text>
+                                    <Text style={styles.detailTextGray}>{this.state.arriveNum}</Text>
                                 )}
                             </View>
 
@@ -199,21 +205,22 @@ export default class EventScreen extends Component {
                 {/* date picker */}
                 {this.state.showPickDate && (
                     <DateTimePicker
-                        value={this.state.date}
+                        value={this.state.dateTimestamp}
                         mode={'date'}
                         is24Hour={true}
                         display="default"
-                        onChange={this.onChnageDate}
+                        onChange={this.onChangeDate}
+                        minimumDate={new Date()}
                     />
                 )}
                 {/* time picker */}
                 {this.state.showPickTime && (
                     <DateTimePicker
-                        value={this.state.time}
+                        value={this.state.timeTimestamp}
                         mode={'time'}
                         is24Hour={true}
                         display="default"
-                        onChange={this.onChnageTime}
+                        onChange={this.onChangeTime}
                     />
                 )}
 
@@ -247,9 +254,9 @@ export default class EventScreen extends Component {
             if (this.state.title === "") Alert.alert("標題不能為空");
             else if (this.state.date === null) Alert.alert("日期不能為空");
             else if (this.state.time === null) Alert.alert("時間不能為空");
-            // else if (this.state.place === "") Alert.alert("地點不能為空");
+            else if (this.state.placeCoord === null) Alert.alert("地點不能為空");
             else {
-                creatEvent({ 'title': this.state.title, 'time': this.state.time, 'location': this.state.location });//測試用
+                creatEvent({ 'title': this.state.title, 'date' : this.state.date, 'time': this.state.time, 'placeName': this.state.placeName, 'placeCoor':this.state.placeCoord, 'nameIsAddress':this.state.nameIsAddress  });
                 this.setState({ edit: false, });
             }
 
@@ -258,9 +265,10 @@ export default class EventScreen extends Component {
             if (this.state.title === "") Alert.alert("標題不能為空");
             else if (this.state.date === null) Alert.alert("日期不能為空");
             else if (this.state.time === null) Alert.alert("時間不能為空");
-            else if (this.state.place === "") Alert.alert("地點不能為空");
+            else if (this.state.placeCoord === null) Alert.alert("地點不能為空");
             else {
                 console.log("saved!");
+                editEvent({ 'title': this.state.title, 'date' : this.state.date,'time': this.state.time, 'placeName': this.state.placeName, 'placeCoor':this.state.placeCoord, 'nameIsAddress':this.state.nameIsAddress }, this.state.eventId);
                 this.setState({ edit: false, });
             };// modify event in firebase
         }
@@ -284,7 +292,9 @@ export default class EventScreen extends Component {
                     title: info.title,
                     date: info.date,
                     time: info.time,
-                    location: info.location
+                    placeName: info.placeName,
+                    nameIsAddress: info.nameIsAddress,
+                    arriveNum: this.getArrivedAttendeeNumber(info.attendeeStatus)
                 })
             }
         }
@@ -293,33 +303,52 @@ export default class EventScreen extends Component {
         }
     }
 
+    getArrivedAttendeeNumber(attendeeStatus) {
+        let arriveNumber = 0;
+        try{
+            attendeeStatus.forEach((attendee) => {
+                if (attendee.arrival) {
+                    arriveNumber += 1;
+                }
+            });
+        } catch(error) {
+            console.log(error);
+            throw new Error("Unknown error at getArrivedAttendeeNumber.");
+        }
+        
+        // console.log("Arrive Num: " + arriveNumber);
+        return arriveNumber;
+    }
+
     handlePickDate() {
         this.setState({
-            date: new Date(),
+            dateTimestamp: this.state.date ? new Date(moment(this.state.date)) : new Date(),
             showPickDate: true
         });
     }
 
-    onChnageDate = (event, selectedDate) => {
+    onChangeDate = (event, selectedDate) => {
         this.setState({
             modified: true,
             showPickDate: false,
-            date: selectedDate || this.state.date
+            dateTimestamp: selectedDate || this.state.dateTimestamp,
+            date: moment(selectedDate || this.state.dateTimestamp).format('YYYY-MM-DD')
         });
     }
 
     handlePickTime() {
         this.setState({
-            time: new Date(),
+            timeTimestamp: this.state.time ? new Date(moment(this.state.time, 'hh:mm')) : new Date(),
             showPickTime: true
         });
     }
 
-    onChnageTime = (event, selectedTime) => {
+    onChangeTime = (event, selectedTime) => {
         this.setState({
             modified: true,
             showPickTime: false,
-            time: selectedTime || this.state.time
+            timeTimestamp: selectedTime || this.state.timeTimestamp,
+            time: moment(selectedTime || this.state.timeTimestamp).format('hh:mm')
         });
     }
 
@@ -330,12 +359,17 @@ export default class EventScreen extends Component {
         });
         console.log(newTitle);
     }
-    onChangePlace(newPlace) {
+    async onChangePlace() {
+        let coordTemp = await AsyncStorage.getItem('coord');
+        let nameTemp = await AsyncStorage.getItem('name');
+        let isAddressTemp = await AsyncStorage.getItem('nameIsAddress');
+        coordTemp = JSON.parse(coordTemp);
         this.setState({
             modified: true,
-            place: newPlace
+            placeCoord: coordTemp,
+            placeName: nameTemp,
+            nameIsAddress: isAddressTemp
         });
-        console.log(newPlace);
     }
     handleGoBack() {
         if (!this.state.modified && !this.state.newEvent) {

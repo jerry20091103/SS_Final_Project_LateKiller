@@ -4,7 +4,7 @@ import { StyleSheet, Text, Image, FlatList, RefreshControl, Alert } from 'react-
 import { Container, Header, View, Button, Icon, Fab, Content, Body, Thumbnail, TabHeading } from 'native-base';
 import appColors from '../styles/colors.js';
 import moment from 'moment';
-import { EventApiInit, listEvent } from '../api/Event.js'
+import { EventApiInit, listEvent} from '../api/Event.js'
 export default class EventList extends React.Component {
     static propTypes = {
     };

@@ -19,11 +19,12 @@ export default class ProfileHeader extends React.Component {
     render() {
         const TextColor = (this.props.avgLateTime > 0 ? appColors.textRed : appColors.textGreen);
         const BtnColor = (this.props.avgLateTime > 0 ? appColors.btnRed : appColors.btnGreen);
+        const DefaultImage = require('../../assets/test_profile_pic_01.png');
         return (
             <View style={{ flex: 1, flexDirection: "row", alignItems: 'center',position:'absolute' }}>
                 {/* Left side (photo and Button) */}
                 <View style={{ flex: 1,paddingLeft: 20 }}>
-                    <Image source={this.props.image} style={styles.profilePic} />
+                    <Image source={this.props.image ? {uri: this.props.image} : DefaultImage} style={styles.profilePic} />
 
                     <Button rounded block style={{ backgroundColor: BtnColor,width: 90,margin: 10 }} onPress={() => { (this.props.enableNavigation)?this.props.navigation.navigate('Record'):{} }}>
                         <Text style={{ color: TextColor }}>{this.getLateTime(this.props.avgLateTime)}</Text>

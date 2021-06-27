@@ -127,6 +127,21 @@ export async function getUsername() {
    
 }
 
+export async function getUserImage() {
+    try 
+    {
+        
+        const userData = await getUserInfo();
+        return userData.user.photo;
+    }
+    catch
+    {
+        throw new Error("Unknown error at getUserImage.");
+    }
+   
+   
+}
+
 // This function is used to check if some user is currently signed in.
 // If network error happened, getUserInfo may reject but this function may return true.
 export async function isUserSignedIn() {
