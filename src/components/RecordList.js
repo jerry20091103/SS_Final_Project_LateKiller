@@ -1,27 +1,51 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, Image, FlatList, RefreshControl } from 'react-native';
+import { StyleSheet, Text, Image, FlatList, RefreshControl, SafeAreaView,LogBox } from 'react-native';
 import { Container, Header, Title, Button, Left, Right, Body, Icon, View, Item, Input } from 'native-base';
 import moment from 'moment';
+
 
 export default class RecordList extends Component {
     constructor(props) {
         super(props);
-        
+
         this.state = {
             loading: false,
             testdata: sampleData// after api done, this would be replace as []
         }
     }
-    renderItem = ({ item }) => (
-        <EventListItem id={item.id} title={item.title} time={item.time} LateTime={item.LateTime} />
-    );
-
+    // renderItem = ({ item }) => (
+    //     <EventListItem id={item.id} title={item.title} time={item.time} LateTime={item.LateTime} />
+    // );
+    componentDidMount(){
+        LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
+    }
+    renderItem(item) {
+        const LateTimeColor = (this.LateTime > 0) ? appColors.textRed : appColors.textGreen;
+        return (
+            <Button color={appColors.textBlack} style={styles.eventButton}>
+                <View style={{ flex: 1, flexDirection: 'row' }}>
+                    {/* title and room number */}
+                    <View style={{ flex: 3, margin: 5 }}>
+                        <Text style={styles.titleText}>{item.title}</Text>
+                        <Text style={styles.smallText}>{'# ' + item.id}</Text>
+                    </View>
+                    {/* time and LateTime */}
+                    <View style={{ flex: 4, margin: 5 }}>
+                        <Text style={styles.titleText}>{item.time}</Text>
+                        <Text style={/* styles.LateTimeText */{ color: LateTimeColor, fontSize: 18, marginTop: 'auto' }}>
+                            {ConvertLateTime(item.LateTime)}
+                        </Text>
+                    </View>
+                </View>
+            </Button>
+        )
+    }
     render() {
         return (
-            <View style={{ margin: 10 }}>
+            <SafeAreaView style={{ margin: 10 }}>
                 <FlatList
                     data={this.state.testdata}
-                    renderItem={this.renderItem}
+                    renderItem={({ item }) => this.renderItem(item)}
                     ListHeaderComponent={<Text style={{ fontSize: 25 }}> 活動紀錄</Text>}
                     refreshControl={
                         <RefreshControl
@@ -29,29 +53,29 @@ export default class RecordList extends Component {
                         // onRefresh={this.onRefresh}
                         />}
                 />
-            </View>
+            </SafeAreaView>
         );
     }
 }
 
-const EventListItem = ({ id, title, time, LateTime, LateTimeColor = (LateTime > 0) ? appColors.textRed : appColors.textGreen }) => (
-    <Button color={appColors.textBlack} style={styles.eventButton}>
-        <View style={{ flex: 1, flexDirection: 'row' }}>
-            {/* title and room number */}
-            <View style={{ flex: 3, margin: 5 }}>
-                <Text style={styles.titleText}>{title}</Text>
-                <Text style={styles.smallText}>{'# ' + id}</Text>
-            </View>
-            {/* time and LateTime */}
-            <View style={{ flex: 4, margin: 5 }}>
-                <Text style={styles.titleText}>{time}</Text>
-                <Text style={/* styles.LateTimeText */{ color: LateTimeColor, fontSize: 18, marginTop: 'auto' }}>
-                    {ConvertLateTime(LateTime)}
-                </Text>
-            </View>
-        </View>
-    </Button>
-);
+// const EventListItem = ({ id, title, time, LateTime, LateTimeColor = (LateTime > 0) ? appColors.textRed : appColors.textGreen }) => (
+//     <Button color={appColors.textBlack} style={styles.eventButton}>
+//         <View style={{ flex: 1, flexDirection: 'row' }}>
+//             {/* title and room number */}
+//             <View style={{ flex: 3, margin: 5 }}>
+//                 <Text style={styles.titleText}>{title}</Text>
+//                 <Text style={styles.smallText}>{'# ' + id}</Text>
+//             </View>
+//             {/* time and LateTime */}
+//             <View style={{ flex: 4, margin: 5 }}>
+//                 <Text style={styles.titleText}>{time}</Text>
+//                 <Text style={/* styles.LateTimeText */{ color: LateTimeColor, fontSize: 18, marginTop: 'auto' }}>
+//                     {ConvertLateTime(LateTime)}
+//                 </Text>
+//             </View>
+//         </View>
+//     </Button>
+// );
 
 function ConvertLateTime(time) {
     var str = (time >= 0) ? ' + ' : '';
@@ -132,6 +156,24 @@ const sampleData = [
     },
     {
         id: '0001890',
+        title: 'WWDC 2021',
+        time: moment.unix(1622998800).calendar(),
+        LateTime: 87,
+    },
+    {
+        id: '0001891',
+        title: 'WWDC 2021',
+        time: moment.unix(1622998800).calendar(),
+        LateTime: 87,
+    },
+    {
+        id: '0001892',
+        title: 'WWDC 2021',
+        time: moment.unix(1622998800).calendar(),
+        LateTime: 87,
+    },
+    {
+        id: '0001893',
         title: 'WWDC 2021',
         time: moment.unix(1622998800).calendar(),
         LateTime: 87,

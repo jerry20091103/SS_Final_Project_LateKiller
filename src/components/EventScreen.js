@@ -69,11 +69,11 @@ export default class EventScreen extends Component {
             <ParallaxScrollView
             parallaxHeaderHeight={280}
             fadeOutForeground={true}
+            // renderStickyHeader={()=>
+                
+            // }
             backgroundColor={appColors.backgroundBlue}
-            renderForeground={()=>
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss}><Container>
-                <View style={styles.container}>
-                    {/* header area */}
+            renderFixedHeader={()=>
                     <View style={{ backgroundColor: appColors.backgroundBlue, borderBottomLeftRadius: 15, borderBottomRightRadius: 15 }}>
                         <Header transparent >
                             <Left>
@@ -90,6 +90,7 @@ export default class EventScreen extends Component {
                                         <TextInput /* autoFocus={this.state.modified} */
                                             allowFontScaling={true} maxFontSizeMultiplier={0}
                                             placeholder='新增標題'
+                                            defaultValue={this.getDefaultTitle()}
                                             placeholderTextColor={appColors.textGray}
                                             style={styles.titleInput}
                                             onChangeText={this.onChangeTitle} />
@@ -110,6 +111,12 @@ export default class EventScreen extends Component {
                             </Right>
                         </Header>
                     </View>
+            }
+            renderForeground={()=>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}><Container>
+                <View style={styles.container}>
+                    {/* header area */}
+                    <View style={{flex:2}}></View>
                     <View style={{ flex: 5, padding: 15, backgroundColor: appColors.backgroundLightBlue, borderTopLeftRadius: 15, borderTopRightRadius: 15 }}>
                         {/* Event details */}
                         <View style={{ flex: 1, marginBottom: 10, marginLeft: 10 }}>
@@ -240,7 +247,10 @@ export default class EventScreen extends Component {
             </>
         );
     }
-
+    getDefaultTitle(){
+        if(this.state.newEvent) return "";
+        else return this.state.title;
+    }
     async handleTopButtonPress() {
         Keyboard.dismiss();
         if (!this.state.edit) {

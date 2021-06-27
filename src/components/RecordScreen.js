@@ -3,6 +3,7 @@ import { Container, Header, Title, Button, Left, Right, Body, Icon, Text, View, 
 import { StyleSheet, TouchableHighlight } from 'react-native';
 import appColors from '../styles/colors.js';
 import RecordList from './RecordList.js'
+import ParallaxScrollView from 'react-native-parallax-scroll-view';
 export default class RecordScreen extends Component {
   constructor(props) {
     super(props);
@@ -15,9 +16,11 @@ export default class RecordScreen extends Component {
     const TextColor = (this.state.avgLateTime >= 0 ? appColors.textRed : appColors.textGreen);
     const LateMins = ((this.state.avgLateTime > 0 ? '+ ' : '') + this.state.avgLateTime + ' Min');
     return (
-      <Container>
-        {/* <View style={{flex:1}}> */}
-        <View style={{ flex: 1, backgroundColor: BtnColor, borderBottomLeftRadius: 15, borderBottomRightRadius: 15 }}>
+      <ParallaxScrollView
+        parallaxHeaderHeight={250}
+        fadeOutForeground={true}
+        backgroundColor={BtnColor}
+        renderFixedHeader={()=>
           <Header transparent style={{ backgroundColor: BtnColor }}>
             <Left>
               <TouchableHighlight
@@ -31,19 +34,23 @@ export default class RecordScreen extends Component {
               <Text style={{ fontSize: 25 }}>平均抵達時間</Text>
             </Body>
           </Header>
-
-          <View style={{ flex: 1, alignItems: 'center', }}>
+        }
+        renderForeground={()=>
+          <View style={{ flex: 1, alignItems: 'center', justifyContent:'flex-end'}}>
             <Text style={{ fontSize: 50, margin: 35, color: TextColor }}>{LateMins}</Text>
           </View>
+        }
+        renderContentBackground={()=>
+          <View style={{ flex: 1, backgroundColor: BtnColor, borderBottomLeftRadius: 15, borderBottomRightRadius: 15 }}>
+            <View style={{ flex: 4 }}>
+              <RecordList />
+            </View>
 
-          <View style={{ flex: 4 }}>
-            <RecordList />
-          </View>
-
-        </View>
-
-      </Container>
-
+          </View> 
+        }
+      >
+      </ParallaxScrollView>
+      
     );
   }
 }

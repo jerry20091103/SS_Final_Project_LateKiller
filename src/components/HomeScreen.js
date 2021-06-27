@@ -102,7 +102,7 @@ export default class HomeScreen extends React.Component {
     }
     async handleSubmitRoomID() {
         if (this.state.roomID === '')
-            alert('roomID is empty!');
+            Alert.alert('room ID 不能為空!');
         else {
             try {
                 await attendEvent(this.state.roomID);

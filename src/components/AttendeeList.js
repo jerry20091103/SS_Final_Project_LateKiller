@@ -177,17 +177,7 @@ export default class AttendeeList extends Component {
         
 
     }
-    // handleLeaveEvent(itemUid){
-    //     Alert.alert(
-    //         "確定要離開嗎?","",
-    //         [{
-    //             text: "取消",
-    //             onPress: () => console.log("Cancel Pressed"),
-    //           },
-    //           { text: "確定", onPress: () => {this.LeaveEvent(itemUid),this.props.navigation.replace('Home'); }}
-    //         ]
-    //       );
-    // }
+
     async handleLeaveEvent(itemUid){
         if(itemUid == this.state.myID){
             Alert.alert(
@@ -312,14 +302,6 @@ const sampleData = [
         avgLateTime: 13,
         exp: 400,
     },
-    {
-        userID: '33333',
-        name: 'earth',
-        picture: require('../../assets/test_profile_pic_04.png'),
-        level: 999,
-        TimebeforeArrive: 69,
-        avgLateTime: 13,
-        exp: 400,
-    },
+
 
 ];
