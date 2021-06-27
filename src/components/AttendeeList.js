@@ -175,16 +175,31 @@ export default class AttendeeList extends Component {
         
 
     }
-
-    async handleLeaveEvent(itemUid)
-    {
-        if(itemUid == this.state.myID)
-        {
+    // handleLeaveEvent(itemUid){
+    //     Alert.alert(
+    //         "確定要離開嗎?","",
+    //         [{
+    //             text: "取消",
+    //             onPress: () => console.log("Cancel Pressed"),
+    //           },
+    //           { text: "確定", onPress: () => {this.LeaveEvent(itemUid),this.props.navigation.replace('Home'); }}
+    //         ]
+    //       );
+    // }
+    async handleLeaveEvent(itemUid){
+        if(itemUid == this.state.myID){
+            Alert.alert(
+                "確定要離開嗎?","",
+                [{
+                    text: "取消",
+                    onPress: () => {return},
+                  },
+                  { text: "確定", onPress: () => {this.props.navigation.replace('Home') }}
+                ]
+              );
             await leaveEvent(this.props.roomID);
-            this.props.navigation.replace('Home');
         }
         return;
-
     }
 }
 

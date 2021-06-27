@@ -8,7 +8,7 @@ export async function getCurrentLocation() {
     try {
         const checkPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
         if (!checkPermission) {
-            await PermissionsAndroid.request(
+            var granted = await PermissionsAndroid.request(
                 PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
                 {
                     title: "Location Permission",
