@@ -353,7 +353,8 @@ export default class EventScreen extends Component {
 
                 let info = await getEventInfo(this.state.eventId);
                 this.setArrivalTimeFromAPI(info.placeCoord, this.state.eventId, this.state.transitMode);
-                //console.log(info);
+                console.log('here33333');
+                console.log(info.active);
                 this.setState({
                     ...this.state,
                     active: info.active,
@@ -378,6 +379,8 @@ export default class EventScreen extends Component {
         try 
         {
             let timeNeed = 0 ; 
+           // console.log('here333');
+            //console.log(this.state.active);
             if(!this.state.active)
                 timeNeed =  await getAdviseTime(placeCoord, mode);
             else
@@ -390,6 +393,7 @@ export default class EventScreen extends Component {
         }
         catch
         {
+            Alert.alert('無法取得交通資料');
             console.log('error when getting goTime');
         }
        
@@ -511,8 +515,8 @@ export default class EventScreen extends Component {
             transitMode: mode,
         });
         await this.setArrivalTimeFromAPI(this.state.placeCoord,this.state.eventId, mode);
-        await this.getGoTimeFromAPI(this.state.placeCoord, mode);
         await this.getEventInfoFromAPI();
+        await this.getGoTimeFromAPI(this.state.placeCoord, mode);
 
     }
 
@@ -617,7 +621,7 @@ const styles = StyleSheet.create({
 
 function convertGoTime(wantedTime, timeNeed, active) {
     if (!active)
-       return moment(wantedTime).subtract(timeNeed, 'minutes').format('HH:mm') + '　出發';
+       return moment(wantedTime).subtract(timeNeed, 'minutes').format('MM-DD HH:mm') + '　出發';
     else
         return　moment().add(timeNeed, 'minutes').format('HH:mm') + '　抵達'
 }
