@@ -26,7 +26,7 @@ export default class MessageScreen extends React.Component {
             loading: true,
             eventId: this.props.navigation.getParam('eventId', undefined),
             userUid: '',
-            message: '新增留言',
+            message: '',
             data: []
         };
 
@@ -48,21 +48,25 @@ export default class MessageScreen extends React.Component {
                             allowFontScaling={true} maxFontSizeMultiplier={0}
                             placeholder={'新增留言'}
                             placeholderTextColor={appColors.textGray}
+                            defaultValue={item.message}
                             style={styles.messageInput}
                             onChangeText={this.onChangeText}
                             onEndEditing={this.onEndEditing} />
-                        <Button style={styles.finishButton} onPress={() => { this.onEndEditing }}>
-                            <Text style={styles.nameText}>
+                        <Button rounded block style={styles.finishButton} onPress={() => { this.onEndEditing }}>
+                            <Text style={styles.finishText}>
                                 完成
                             </Text>
                         </Button>
                     </View>
                 ) : (
+                    <View>
+                    <Text style={styles.nameText}>{item.username + ": "}</Text>
                     <Text style={styles.messageText} onPress={() => {
                         this.setState({
                             edit: true,
                         })
-                    }}>{item.username + ":\n" + item.message + "\n"}</Text>
+                    }}>{(item.message || "新增留言") + "\n"}</Text>
+                    </View>
                 )}
             </View>
         );
@@ -118,7 +122,6 @@ export default class MessageScreen extends React.Component {
             modified: true,
             message: text,
         })
-        console.log(text);
     }
 
     onEndEditing = () => {
@@ -200,7 +203,8 @@ const styles = StyleSheet.create({
     messageText: {
         color: appColors.textBlack,
         fontSize: 20,
-        paddingLeft: 5
+        paddingLeft: 5,
+        paddingTop: 7
     },
 
     messageInput: {
@@ -212,8 +216,11 @@ const styles = StyleSheet.create({
     finishButton: {
         backgroundColor: appColors.appBlue,
         height: 40,
-        width: 100,
-        marginLeft: 5
+        width: 75,
+    },
+    finishText: {
+        color: "white",
+        fontSize: 18,
     }
 })
 
