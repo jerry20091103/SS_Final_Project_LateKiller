@@ -11,6 +11,7 @@ import firestore from '@react-native-firebase/firestore';
 import { rgb } from 'color';
 import { attendEvent } from '../api/Event.js';
 import { withNavigation } from 'react-navigation';
+import {predictApiInit} from '../utilities/GetPredictTime';
 
 
 export default class HomeScreen extends React.Component {

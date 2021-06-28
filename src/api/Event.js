@@ -489,19 +489,30 @@ export async function finishEvent(code) {
             const data = snapshot.data();
 
 
+
             const newHistory ={
                 title: data.title,
                 time: data.date + ' ' + data.time,
                 arrTimeDiff: data.attendeeArrivalTime['userUid'],
             }
-
+           console.log(data.history);
            console.log(newHistory);
 
-            await setProfile({
-                ['my_events.'+code] : firestore.FieldValue.delete(),
-                history:firestore.FieldValue.arrayUnion(newHistory)
+           await setProfile({
+            ['my_events.'+code] : firestore.FieldValue.delete(),
+           
+            history:firestore.FieldValue.arrayUnion(newHistory)
 
-            });    
+        });   
+
+           if(data.history.length >= 10)
+           {
+              await setProfile({
+                history:firestore.FieldValue.arrayRemove(data.history[1])
+              })
+           }
+
+        
 
             await firestore().collection('event').doc(code).delete();
             console.log('delete empty event');
@@ -580,8 +591,22 @@ async function timeDiffCalculate(code) {
     let dura = arrTime.format('x') - curTime.format('x');
     timeDiff = moment.duration(dura);
     return Math.round(timeDiff.minutes());
-  
+}
+
+async function _updateAvgLateTime()
+{
+    const snapshot = await firestore().collection('users').doc(userUid).get();
+    const data = snapshot.data();
+    let eventHistory = data.history;
+
+
+    eventHistory.forEach((history)=>{
+        console.log(history);
+        
+    })
 
 
     
+
+
 }
