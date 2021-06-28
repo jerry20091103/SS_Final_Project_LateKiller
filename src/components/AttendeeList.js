@@ -35,10 +35,12 @@ export default class AttendeeList extends Component {
             OnpressPicture: item.img,
             OnpressAvgLateTime: item.avgLateTime,
             OnpressExp: item.exp,
+            OnpressExpFull: item.expFull,
             showUserInfo: !this.state.showUserInfo,
         });
     }
     renderItem(item) {
+        
         const TimebtnColor = (item.TimebeforeArrive <= 0) ? appColors.btnRed : appColors.btnGreen;
         const TimetextColor = (item.TimebeforeArrive <= 0) ? appColors.textRed : appColors.textGreen;
         const ArriveText = (this.state.myID === item.Uid) ? '離開' : '已到達';
@@ -104,7 +106,7 @@ export default class AttendeeList extends Component {
                                         user={this.state.OnpressName} image={this.state.OnpressPicture}
                                         avgLateTime={this.state.OnpressAvgLateTime}
                                         level={this.state.OnpressLevel}
-                                        exp={this.state.OnpressExp} expFull={100}
+                                        exp={this.state.OnpressExp} expFull={this.state.OnpressExpFull}
                                     />
                                 </ViewOverflow>
                             </View>

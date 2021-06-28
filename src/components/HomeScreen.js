@@ -68,11 +68,11 @@ export default class HomeScreen extends React.Component {
                                 style={styles.bottomSheetText}
                                 onPress={() => { this.BottomSheet.close(); navigate('Meet', { newEvent: true,edit: true }); }}>新增活動</Text>
                             <View style={{ flexDirection: 'row' }}>
-                                <Text style={styles.bottomSheetText}>輸入房間號碼:</Text>
+                                <Text style={[styles.bottomSheetText, {fontSize: 20}]}>輸入房間號碼:</Text>
                                 <Input style={{ fontSize: 22 }} placeholder="room ID" onChangeText={this.onChangeRoomID} />
-                                <View style={{flex:0.3,paddingRight:15,justifyContent: 'center',alignItems:'center'}}>
-                                    <Button style={{width:55,height:40 ,justifyContent: 'center',alignItems:'center',backgroundColor :appColors.appBlue,borderRadius: 14}} onPress={() => this.handleSubmitRoomID()}>
-                                        <Text style={{fontSize:20, color:'white'}}>確定</Text>
+                                <View style={{flex:0.35,paddingRight:15,justifyContent: 'center',alignItems:'center'}}>
+                                    <Button rounded style={{width:60,height:40 ,justifyContent: 'center',alignItems:'center',backgroundColor :appColors.appBlue, marginRight: 5}} onPress={() => this.handleSubmitRoomID()}>
+                                        <Text style={{fontSize:18, color:'white'}}>確定</Text>
                                     </Button>
                                 </View>
                                 {/* <TouchableHighlight
