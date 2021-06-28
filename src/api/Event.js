@@ -563,7 +563,7 @@ export async function finishEvent(code) {
             // update avg late time should be earlier than writing 
             // new history to database.
             let result = await ExpCalculate(newHistory.arrTimeDiff);
-
+            await _updateAvgLateTime(newHistory);
             await setProfile({
                 history:firestore.FieldValue.arrayUnion(newHistory),
                 streak: result.streak,
@@ -583,7 +583,7 @@ export async function finishEvent(code) {
               })
            }
 
-            await _updateAvgLateTime(newHistory);
+            
 
             await firestore().collection('event').doc(code).delete();
             console.log('delete empty event');
