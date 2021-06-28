@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, TouchableHighlight, BackHandler, Alert, TouchableWithoutFeedback, Keyboard, TextInput, Dimensions, ScrollView, Clop } from 'react-native';
+import { StyleSheet, TouchableHighlight, BackHandler, Alert, TouchableWithoutFeedback, Keyboard, TextInput, Dimensions, ScrollView, Linking } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import appColors from '../styles/colors.js';
 import PropTypes from 'prop-types';
@@ -245,7 +245,7 @@ export default class EventScreen extends Component {
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', margin: 10 }}>
                         <Icon type='MaterialCommunityIcons' name={this.getTransitIcon()} style={styles.bottomIcon} onPress={() => this.TransitPicker.open()} />
                         <Text style={{ color: appColors.textGreen, fontSize: 23, marginVertical: 5 }}>{this.state.goTime}</Text>
-                        <Icon type='MaterialCommunityIcons' name='google-maps' style={styles.bottomIcon} />
+                        <Icon type='MaterialCommunityIcons' name='google-maps' style={styles.bottomIcon} onPress={() => this.handleOpenMaps()}/>
                     </View>
                 </View>
                 {/* bottomSheet to select transit mode */}
@@ -494,6 +494,9 @@ export default class EventScreen extends Component {
             duration: 1800
         });
         Clipboard.setString(this.state.eventId);
+    }
+    handleOpenMaps() {
+        Linking.openURL('https://www.google.com/maps/dir/?api=1&destination=' + this.state.placeCoord.lat + ',' + this.state.placeCoord.lng + '&travelmode=' + this.state.transitMode);
     }
     getTransitIcon() {
         switch (this.state.transitMode) {
