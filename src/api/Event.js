@@ -517,17 +517,15 @@ export async function finishEvent(code) {
             });    
            await setProfile({
             ['my_events.'+code] : firestore.FieldValue.delete(),
-           
-            history:firestore.FieldValue.arrayUnion(newHistory)
 
         });   
 
-          /* if(data.history.length >= 10)
+           if(data.history.length >= 10)
            {
               await setProfile({
                 history:firestore.FieldValue.arrayRemove(data.history[0])
               })
-           }*/
+           }
 
         
 
