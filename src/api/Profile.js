@@ -28,6 +28,7 @@ export async function getProfile() {
         username: 'unknown',
         img: '',
         avgLateTime: 0,
+        streak: 0, // be on time consecutively. on time -> positive, late -> negative.
         level: 0,
         exp: 0,
         expFull: 100,
@@ -46,6 +47,7 @@ export async function getProfile() {
         username: GoogleUsername,
         img: GoogleUserImage,
         avgLateTime: 0,
+        streak: 0,   
         level: 0,
         exp: 0,
         expFull: 100,
@@ -57,10 +59,13 @@ export async function getProfile() {
    } else {
     profile = profileRef.data();
     // Handle possible errors like unknown name and image.
-    if(profile.username === 'unknown') {
-        profile.username = await getUsername();
+    // Username and image may change, need to keep track on this and update.
+    let googleUsername = await getUsername();
+    let googleUserImage = await getUserImage();
+    if((profile.username === 'unknown') || (profile.username !== googleUsername)) {
+        profile.username = googleUsername;
         await firestore().collection('users').doc(userUid).update({
-            username: profile.username
+            username: googleUsername
         }).then(() => {
             // console.log('User updated!');
         }).catch((error) => {
@@ -68,10 +73,10 @@ export async function getProfile() {
             throw new Error("Unknown error at getProfile when correcting unknown username.");
         });
     }
-    if(!profile.img) {
-        profile.img = await getUserImage();
+    if((!profile.img) || (profile.img !== googleUserImage)) {
+        profile.img = googleUserImage;
         await firestore().collection('users').doc(userUid).update({
-            img: profile.img
+            img: googleUserImage
         }).then(() => {
             // console.log('User updated!');
         }).catch((error) => {
@@ -79,6 +84,7 @@ export async function getProfile() {
             throw new Error("Unknown error at getProfile when correcting empty user image.");
         });
     }
+
     //console.log(profile);
    }
    

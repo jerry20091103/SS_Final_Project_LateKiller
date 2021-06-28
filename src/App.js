@@ -26,7 +26,7 @@ import SignInScreen from './components/SignInScreen.js'
 import PlaceSelectScreen from './components/PlaceSelectScreen.js'
 import MessageScreen from './components/MessageScreen';
 
-import {StyleProvider} from 'native-base';
+import {Root, StyleProvider} from 'native-base';
 import getTheme from '../native-base-theme/components';
 import commonColor from '../native-base-theme/variables/commonColor.js';
 
@@ -74,7 +74,9 @@ class App extends React.Component {
   render() {
     return (
       <StyleProvider style={getTheme(commonColor)}>
-        <AppContainer />
+        <Root>
+          <AppContainer />
+        </Root>
       </StyleProvider>
     );
   }

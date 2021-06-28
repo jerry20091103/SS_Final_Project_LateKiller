@@ -1,5 +1,6 @@
 import firestore from '@react-native-firebase/firestore';
 import { getUid } from '../utilities/User';
+import{ getProfile, getProfileByUidList, setProfile} from'../api/Profile';
 import{ getProfileByUidList, setProfile} from'../api/Profile';
 import {getPredictTime} from '../utilities/GetPredictTime';
 import moment from 'moment';
@@ -498,6 +499,15 @@ export async function finishEvent(code) {
            console.log(data.history);
            console.log(newHistory);
 
+           let result = await ExpCalculate(newHistory.arrTimeDiff);
+
+            await setProfile({
+                history:firestore.FieldValue.arrayUnion(newHistory),
+                streak: result.streak,
+                level: result.level,
+                exp: result.exp,
+                expFull: result.expFull
+            });    
            await setProfile({
             ['my_events.'+code] : firestore.FieldValue.delete(),
            
@@ -607,6 +617,52 @@ async function _updateAvgLateTime()
 
 
     
+}
+
+async function ExpCalculate(arrTimeDiff) {
+    // recalculate arrive time, let it be >= 1 or <= -1.
+    let roundTime = (arrTimeDiff > 0) ? Math.ceil(arrTimeDiff) : Math.floor(arrTimeDiff);
+    let profile = await getProfile();
+    let result = {
+        streak: profile.streak,
+        level: profile.level,
+        exp: profile.exp,
+        expFull: profile.expFull
+    }
+
+    // Handle exp change.
+    // max punish = -340  
+    // max award = 210 
+    let lateExp = -100 - Math.min(roundTime, 60) * 3;
+    let latePunish = Math.max(profile.streak, -3) * 20;
+    let onTimeExp = 100 + Math.min(-roundTime, 30) * 3;
+    let onTimeAward = Math.min(profile.streak, 1) * 20;
+    
+    if(roundTime > 0) {
+        // late.
+        result.exp = profile.exp + lateExp + ((profile.streak < 0) ? latePunish : 0);
+        result.streak = Math.min(profile.streak, 0) - 1;
+    } else {
+        // on time.
+        result.exp = profile.exp + onTimeExp + ((profile.streak >= 0) ? onTimeAward : 0);
+        result.streak = Math.max(profile.streak, 0) + 1;
+    }
+
+    // Handle level change.
+    // level up.
+    while(result.exp >= result.expFull) {
+        result.level += 1;
+        result.exp -= result.expFull;
+        result.expFull = 100 * ((result.level >= 0) ? (result.level + 1) : 2);
+    }
+    // level down.
+    while(result.exp < 0) {
+        result.level += 1;
+        result.expFull = 100 * ((result.level >= 0) ? (result.level + 1) : 2);
+        result.exp += result.expFull;
+    }
+
+    return result;
 
 
 }
