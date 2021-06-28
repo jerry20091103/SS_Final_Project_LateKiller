@@ -19,7 +19,7 @@ export default class EventList extends React.Component {
         this.onRefresh = this.onRefresh.bind(this);
     }
     componentWillReceiveProps(props){
-        const refresh=this.props;
+        console.log('refresh!');
         this.onRefresh();
     }
     renderItem(item) {

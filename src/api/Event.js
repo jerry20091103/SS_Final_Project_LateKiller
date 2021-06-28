@@ -113,7 +113,8 @@ export async function attendEvent(code) {
                 let p4 = firestore().collection('event').doc(code)
                 .set({
                     "attendeeMessage": {
-                        [userUid]: '(空白)'
+                        // [userUid]: '(空白)'
+                        [userUid]:''
                         
                     }
                 }, { merge: true });

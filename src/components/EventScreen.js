@@ -88,7 +88,7 @@ export default class EventScreen extends Component {
                             </Left>
                             <Body style={{ flex: 3 }}>
                                 {this.state.edit || this.state.newEvent ? (
-                                    <Item underline style={{ marginBottom: 5 }}>
+                                    <Item underline style={{ marginBottom: 4 }}>
                                         <TextInput /* autoFocus={this.state.modified} */
                                             allowFontScaling={true} maxFontSizeMultiplier={0}
                                             placeholder='新增標題'
@@ -549,7 +549,8 @@ const styles = StyleSheet.create({
     titleText: {
         color: appColors.textBlack,
         fontSize: 23,
-        marginVertical: 5
+        marginVertical: 5,
+        paddingLeft: 8,
     },
     detailText: {
         color: appColors.textBlack,
