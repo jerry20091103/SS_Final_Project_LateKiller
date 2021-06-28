@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { StyleSheet, Text, Image, FlatList, RefreshControl, Alert, Dimensions, TouchableOpacity, Modal, TouchableWithoutFeedback,SafeAreaView, LogBox  } from 'react-native';
 import { Container, Header, Title, Button, Left, Right, Body, Icon, View, Item, Input, Fab } from 'native-base';
 import ViewOverflow from 'react-native-view-overflow';
-import  {getEventAttendeeInfo,leaveEven} from '../api/Event';
+import  {getEventAttendeeInfo,leaveEvent} from '../api/Event';
 import { getUid } from '../utilities/User';
 import ProfileHeader from './ProfileHeader.js';
 import {getProfileByUidList, displayProfileImage} from'../api/Profile';

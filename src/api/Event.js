@@ -30,7 +30,7 @@ export async function creatEvent(eventInfo) {
                 })
 
             await attendEvent(code);
-            await setArrivalTime(eventInfo.placeCoord, code, 'driving');
+           
             return;
         }
         catch{
@@ -118,9 +118,17 @@ export async function attendEvent(code) {
                     .update({
                         "my_events": firestore.FieldValue.arrayUnion(code)
                     })
+                let p4 = firestore().collection('event').doc(code).get();
+   
 
 
-                await Promise.all([p1, p2, p3]);
+                let [r1, r2, r3, snapshot]= await Promise.all([p1, p2, p3, p4]);
+
+                const data = snapshot.data();
+
+                console.log(data);
+                console.log('here');
+                await setArrivalTime(data.placeCoord, code, 'driving'); 
 
               
                 return;
@@ -164,9 +172,7 @@ export async function leaveEvent(code) {
                 .collection('users')
                 .doc(userUid)
                 .set({
-                    "my_events": {
-                        [code]: firestore.FieldValue.delete()
-                    },
+                    "my_events":  firestore.FieldValue.arrayRemove(code)
                 },{ merge: true })
             let p4 = firestore()
                 .collection('event')

@@ -72,12 +72,16 @@ export default class EventList extends React.Component {
     componentDidMount() {
 
         this.getData();
+        this.timer = setInterval(()=>{this.getData()},30000);//30 sec update
+    }
+    componentWillUnmount(){
+        if (this.timer) {
+            clearInterval(this.timer)
+        }
     }
 
     getData = async () => {
         await EventApiInit();
-
-        
         const data = await listEvent();
 
         let covertedData = [];
