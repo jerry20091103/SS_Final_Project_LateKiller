@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, Image, FlatList, RefreshControl, SafeAreaView,LogBox } from 'react-native';
+import{getRecord} from '../api/Profile'
 import { Container, Header, Title, Button, Left, Right, Body, Icon, View, Item, Input } from 'native-base';
 import moment from 'moment';
 
@@ -10,14 +11,15 @@ export default class RecordList extends Component {
 
         this.state = {
             loading: false,
-            testdata: []// after api done, this would be replace as []
+            recordData: []// after api done, this would be replace as []
         }
     }
     // renderItem = ({ item }) => (
-    //     <EventListItem id={item.id} title={item.title} time={item.time} LateTime={item.LateTime} />
-    // );
+      //   <EventListItem id={item.id} title={item.title} time={item.time} LateTime={item.LateTime} />
+     //);
     componentDidMount(){
         LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
+        this.getRecordsFromAPI();
     }
     renderItem(item) {
         const LateTimeColor = (this.LateTime > 0) ? appColors.textRed : appColors.textGreen;
@@ -44,7 +46,7 @@ export default class RecordList extends Component {
         return (
             <SafeAreaView style={{ margin: 10 }}>
                 <FlatList
-                    data={this.state.testdata}
+                    data={this.state.recordData}
                     renderItem={({ item }) => this.renderItem(item)}
                     ListHeaderComponent={<Text style={{ fontSize: 25 }}> 活動紀錄</Text>}
                     refreshControl={
@@ -56,6 +58,31 @@ export default class RecordList extends Component {
             </SafeAreaView>
         );
     }
+
+    async getRecordsFromAPI()
+    {
+        let records = [];
+        try
+        {
+            records = await getRecord();
+
+
+                this.setState(
+                    {
+                        ...this.state,
+                        recordData : records
+                    
+                    }
+                )
+          
+
+        }
+        catch
+        {
+            console.log('cannot get attendee from api')
+        }
+    }
+        
 }
 
 // const EventListItem = ({ id, title, time, LateTime, LateTimeColor = (LateTime > 0) ? appColors.textRed : appColors.textGreen }) => (

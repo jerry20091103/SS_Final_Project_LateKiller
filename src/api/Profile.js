@@ -51,8 +51,7 @@ export async function getProfile() {
         exp: 10,
         expFull: 100,
         transportation:'',
-        my_events:[],
-        history:[]
+        my_events:[]
     }
     await firestore().collection('users').doc(userUid).set(profile);
    } else {
@@ -152,6 +151,16 @@ export async function setProfile(profile) {
         console.log(error);
         throw new Error("Unknown error at setProfile.");
     });
+};
+
+
+
+export async function getRecord() {
+    const snapshot = await firestore().collection('users').doc(userUid).get();
+    const data = snapshot.data();
+
+    return data.history;
+
 };
 
 // Get and set Uid.
