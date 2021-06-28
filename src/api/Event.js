@@ -10,15 +10,7 @@ const shortid = require('shortid');
 let userUid = '';
 
 export async function creatEvent(eventInfo) {
-    /*
-     EventInfo should be:
-     {
-         title:
-         location:
-         time:
-     }
-       #tentative 
-    */
+
     if (userUid) {
         let code = _CodeGen();
         try {
@@ -107,7 +99,7 @@ export async function attendEvent(code) {
                 let p4 = firestore().collection('event').doc(code)
                 .set({
                     "attendeeMessage": {
-                        [userUid]: ''
+                        [userUid]: '(空白)'
                         
                     }
                 }, { merge: true });
@@ -167,8 +159,6 @@ export async function leaveEvent(code) {
                     },
                 },{ merge: true })
             
-            /*
-            // Message shouldn't delete, since attendee may leave important messages.
             let p5 = firestore()
             .collection('event')
             .doc(code)
@@ -177,9 +167,9 @@ export async function leaveEvent(code) {
                     [userUid]: firestore.FieldValue.delete()
                 },
             },{ merge: true })
-            */
+            
 
-            let [snapshot, r2, r3, r4] = await Promise.all([p1, p2, p3, p4]);
+            let [snapshot, r2, r3, r4, r5] = await Promise.all([p1, p2, p3, p4, p5]);
 
             let eventInfo = snapshot.data()
             if (eventInfo['attendee'].length <= 1) {
@@ -265,6 +255,7 @@ export async function getEventInfo(eventID) {
         //attendeeStatus: Array of objects. Objects contain attendee's name and he/she arrives or not.
         attendeeStatus: [],
         attendeeMessage: [],
+        nameIsAddress: 'false'
     }
 
     try {
@@ -279,6 +270,7 @@ export async function getEventInfo(eventID) {
         eventInfo.time = data.time;
         eventInfo.placeName = data.placeName;
         eventInfo.placeCoord = data.placeCoord;
+        eventInfo.nameIsAddress = data.nameIsAddress;
         try {
             data.attendee.forEach((id) => {
                 eventInfo.attendeeStatus.push({
@@ -349,7 +341,7 @@ export async function  setArrivalTime(desPos, code, mode) {
         return;
     }
     catch
-    {
+    {+
         console.log("error when set arrival time");
     }
 
@@ -366,6 +358,7 @@ export async function  getEventAttendeeInfo (code) {
         let p1 = _checkEventStatus(code);
         let p2 = _getEventAttendee(code);
         let [active, attendeeList] = await Promise.all([p1, p2]);
+
         let attendeeData = await getProfileByUidList(attendeeList, code);
         let attendeeInfo = [];
 
@@ -398,9 +391,6 @@ export async function  getEventAttendeeInfo (code) {
 
             }
            )
-        
-       //console.log(attendeeInfo);
-
 
         return attendeeInfo;
     }
@@ -421,19 +411,21 @@ export async function arriveEvent(code) {
            
             const timeDiff = await timeDiffCalculate(code);
 
+            console.log(timeDiff);
+
             await firestore().collection('event').doc(code)
             .update({
                 ["attendeeStatus."+userUid]: true,
                 ["attendeeArrivalTime."+userUid]: timeDiff,
             }); 
-            
+        
+            console.log('here2');
             const attendeeStatus = data.attendeeStatus;
             
            for (let key in attendeeStatus)
             {
                 if(attendeeStatus[key] == false)
                 {
-                    
                    return;
                 }
             }
@@ -514,8 +506,8 @@ async function _arrivalTimeCaculate(desPos, mode) {
         const curPos = await getCurrentLocation();
       
   
-        //const travelTime = await getTravelTime({lat:curPos.lat,lng:curPos.lng},desPos,mode); /*prvent overuse*/
-        //arrivalTime = (travelTime.value)/60;    /*prvent overuse*/
+        const travelTime = await getTravelTime({lat:curPos.lat,lng:curPos.lng},desPos,mode); /*prvent overuse*/
+        arrivalTime = (travelTime.value)/60;    /*prvent overuse*/
       
         return arrivalTime;
 
@@ -577,8 +569,8 @@ async function timeDiffCalculate(code) {
     const curTime = moment();
 
     let dura = arrTime.format('x') - curTime.format('x');
-    timeDiff = moment.duration(dura).minute;
-    return timeDiff;
+    timeDiff = moment.duration(dura);
+    return timeDiff.minutes();
   
 
 
