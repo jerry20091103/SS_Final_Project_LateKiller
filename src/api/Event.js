@@ -99,7 +99,7 @@ export async function attendEvent(code) {
                 let p4 = firestore().collection('event').doc(code)
                 .set({
                     "attendeeMessage": {
-                        [userUid]: ''
+                        [userUid]: '(空白)'
                         
                     }
                 }, { merge: true });
@@ -159,8 +159,6 @@ export async function leaveEvent(code) {
                     },
                 },{ merge: true })
             
-            /*
-            // Message shouldn't delete, since attendee may leave important messages.
             let p5 = firestore()
             .collection('event')
             .doc(code)
@@ -169,9 +167,9 @@ export async function leaveEvent(code) {
                     [userUid]: firestore.FieldValue.delete()
                 },
             },{ merge: true })
-            */
+            
 
-            let [snapshot, r2, r3, r4] = await Promise.all([p1, p2, p3, p4]);
+            let [snapshot, r2, r3, r4, r5] = await Promise.all([p1, p2, p3, p4, p5]);
 
             let eventInfo = snapshot.data()
             if (eventInfo['attendee'].length <= 1) {

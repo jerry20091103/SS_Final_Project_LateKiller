@@ -24,6 +24,7 @@ import EventScreen from './components/EventScreen'
 import RecordScreen from './components/RecordScreen'
 import SignInScreen from './components/SignInScreen.js'
 import PlaceSelectScreen from './components/PlaceSelectScreen.js'
+import MessageScreen from './components/MessageScreen';
 
 import {StyleProvider} from 'native-base';
 import getTheme from '../native-base-theme/components';
@@ -34,7 +35,8 @@ const AppNavigator = createStackNavigator(
     Home: { screen: HomeScreen },
     Meet: { screen: EventScreen },
     Record: { screen: RecordScreen },
-    PlaceSelect: { screen: PlaceSelectScreen }
+    PlaceSelect: { screen: PlaceSelectScreen },
+    Message: {screen: MessageScreen}
   },
   {
     initialRouteName: 'Home', //設定預設顯示的page

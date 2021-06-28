@@ -47,7 +47,7 @@ export default class RecordList extends Component {
                 <FlatList
                     data={this.state.recordData}
                     renderItem={({ item }) => this.renderItem(item)}
-                    ListHeaderComponent={<Text style={{ fontSize: 25 }}> 活動紀錄</Text>}
+                    ListHeaderComponent={<Text style={styles.smallText}> 活動紀錄</Text>}
                     refreshControl={
                         <RefreshControl
                             refreshing={this.state.loading}
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         borderWidth: 1,
         backgroundColor: 'white',
-        borderColor: appColors.textBlack,
+        borderColor: appColors.textGray,
         height: 'auto'
     }
 })

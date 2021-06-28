@@ -11,9 +11,9 @@ import { getUid, getUsername } from '../utilities/User.js';
 
 // Unfinished yet.
 // TODO: screen navigation and test
-export default class MessageBoard extends React.Component {
+export default class MessageScreen extends React.Component {
     static propTypes = {
-        eventId: PropTypes.string,
+        
     };
 
     constructor(props) {
@@ -23,6 +23,7 @@ export default class MessageBoard extends React.Component {
             edit: false,
             modified: false,
             loading: false,
+            eventId: this.props.navigation.getParam('eventId', undefined),
             userUid: '',
             message: '新增留言',
             data: []
@@ -33,19 +34,32 @@ export default class MessageBoard extends React.Component {
 
 
     renderItem(item) {
+        // console.log(item);
         return (
             <View style = {{flex: 1}}>
                 {(this.state.edit && (item.userUid === this.state.userUid)) ? (
-                    <TextInput
-                        multiline = {true}
-                        allowFontScaling={true} maxFontSizeMultiplier={0}
-                        placeholder='新增留言'
-                        placeholderTextColor={appColors.textGray}
-                        style={styles.messageInput}
-                        onChangeText={this.onChangeText} 
-                        onEndEditing={this.onEndEditing}/>
+                    <View>
+                        <Text style={styles.nameText}>
+                            {item.username + ": "}
+                        </Text>
+                         <TextInput
+                            multiline = {true}
+                            allowFontScaling={true} maxFontSizeMultiplier={0}
+                            placeholder={'新增留言'}
+                            placeholderTextColor={appColors.textGray}
+                            style={styles.messageInput}
+                            onChangeText={this.onChangeText} 
+                            onEndEditing={this.onEndEditing}/>
+                        <Button style={styles.finishButton} onPress={()=>{this.onEndEditing}}>
+                            <Text style={styles.nameText}>
+                                完成
+                            </Text>
+                        </Button>
+                    </View>
                 ) : (
-                    <Text style={styles.messageText}>{item.username + ": " + item.message}</Text>
+                    <Text style={styles.messageText} onPress={()=>{this.setState({
+                        edit: true,
+                    })}}>{item.username + ":\n" + item.message + "\n"}</Text>
                 )}
             </View>
         );
@@ -57,11 +71,11 @@ export default class MessageBoard extends React.Component {
             <FlatList
                     data={this.state.data}
                     renderItem={({ item }) => this.renderItem(item)}
-                    ListHeaderComponent={<Text style={styles.largeText}> 留言區</Text>}
+                    ListHeaderComponent={<Text style={styles.largeText}> 留言區 {"\n"}</Text>}
                     refreshControl={
                         <RefreshControl
                             refreshing={this.state.loading}
-                            // onRefresh={this.onRefresh}
+                            onRefresh={this.onRefresh}
                         />}
             />
         );
@@ -84,7 +98,7 @@ export default class MessageBoard extends React.Component {
     onEndEditing = () => {
         // push message to database.
         try {
-            firestore().collection('event').doc(this.props.eventId).set({
+            firestore().collection('event').doc(this.state.eventId).set({
                 "attendeeMessage": {
                     [this.state.userUid]: this.state.message
         
@@ -94,18 +108,30 @@ export default class MessageBoard extends React.Component {
             console.log(error);
             throw new Error("Error at onEndEditing when pushing message to database.");
         }
+        this.setState({
+            edit: false,
+            modified: false,
+        });
+        this.onRefresh();
     }
 
     onRefresh = () => {
         // on refresh.
+        this.setState({
+            loading: true,
+        });
+        this.getData();
     }
 
     async getData() {
         // get and process data to meet render's need.
-        let eventInfo = await getEventInfo(this.props.eventId);
+        
+        console.log(this.state.eventId);
+        let eventInfo = await getEventInfo(this.state.eventId);
         let attendeeMessage = eventInfo.attendeeMessage;
+        // console.log(attendeeMessage);
 
-        let attendeeInfo = await getEventAttendeeInfo(this.props.eventId);
+        let attendeeInfo = await getEventAttendeeInfo(this.state.eventId);
     
         let attendeeData = [];
         attendeeInfo.forEach((attendee) => {
@@ -116,7 +142,7 @@ export default class MessageBoard extends React.Component {
             attendeeData.push({       
                 userUid: attendee.Uid,
                 username: attendee.username,
-                message: filtedAttendeeMessage.message
+                message: filtedAttendeeMessage[0].message
             });
         });
 
@@ -126,6 +152,7 @@ export default class MessageBoard extends React.Component {
             ...this.state,
             userUid: profile.Uid,
             data: attendeeData,
+            loading: false,
         });
     }
 }
@@ -134,20 +161,33 @@ export default class MessageBoard extends React.Component {
 const styles = StyleSheet.create({
     largeText: {
         color: appColors.textBlack,
+        fontSize: 28,
+        paddingLeft: 5
+    },
+
+    nameText: {
+        color: appColors.textBlack,
         fontSize: 24,
-        marginTop: 'auto'
+        paddingLeft: 5
     },
 
     messageText: {
         color: appColors.textBlack,
-        fontSize: 16,
-        marginBottom: 10
+        fontSize: 20,
+        paddingLeft: 5
     },
 
     messageInput: {
-        paddingBottom: 5,
-        fontSize: 16,
+        fontSize: 20,
         color: appColors.textBlack,
+        paddingLeft: 5
+    },
+
+    finishButton: {
+        backgroundColor: appColors.appBlue,
+        height: 40,
+        width: 100,
+        marginLeft: 5
     }
 })
 

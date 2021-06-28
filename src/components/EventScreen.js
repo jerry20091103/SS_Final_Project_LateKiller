@@ -239,6 +239,9 @@ export default class EventScreen extends Component {
             renderContentBackground={() =>
                 <View style={{ flex: 1 }}>
                     <AttendeeList navigation={this.props.navigation} roomID = {this.state.eventId}/>
+                    <Button style={styles.messageButton} onPress={()=>{navigate('Message', {eventId: this.state.eventId})}}>
+                        <Text style={styles.titleText}>留言區</Text>
+                    </Button>
                 </View>
             }
             
@@ -502,6 +505,13 @@ const styles = StyleSheet.create({
         height: 40,
         width: 75,
     },
+
+    messageButton: {
+        backgroundColor: appColors.appBlue,
+        height: 60,
+        width: 125,
+    },
+
     titleText: {
         color: appColors.textBlack,
         fontSize: 23,
