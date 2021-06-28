@@ -9,8 +9,6 @@ let userUid = '';
 export async function creatEvent(eventInfo) {
 
     if (userUid) {
-        let result = await ExpCalculate(999);
-        console.log(result);
         let code = _CodeGen();
         try {
             await firestore().collection('event').doc(code)
