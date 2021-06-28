@@ -1,7 +1,6 @@
 import firestore from '@react-native-firebase/firestore';
 import { getUid } from '../utilities/User';
 import{ getProfile, getProfileByUidList, setProfile} from'../api/Profile';
-import{ getProfileByUidList, setProfile} from'../api/Profile';
 import {getPredictTime} from '../utilities/GetPredictTime';
 import moment from 'moment';
 const shortid = require('shortid');
