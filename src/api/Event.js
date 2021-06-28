@@ -1,7 +1,7 @@
 import firestore from '@react-native-firebase/firestore';
 import { getUid } from '../utilities/User';
 import{ getProfile, getProfileByUidList, setProfile} from'../api/Profile';
-import{ getProfileByUidList, setProfile} from'../api/Profile';
+//import{ getProfileByUidList, setProfile} from'../api/Profile';
 import {getPredictTime} from '../utilities/GetPredictTime';
 import moment from 'moment';
 const shortid = require('shortid');
@@ -65,7 +65,7 @@ export async function editEvent(eventInfo, code) {
                 'placeName': eventInfo.placeName,
                 'placeCoord': eventInfo.placeCoord,
                 'nameIsAddress': eventInfo.nameIsAddress,
-                'AttendeeStatus': newAttendeeStatus,
+                'attendeeStatus': newAttendeeStatus,
             })
         return;
 
@@ -288,6 +288,8 @@ export async function getEventInfo(eventID) {
         let data = Snapshot.data();
 
         eventInfo.active = data.active;
+        console.log('here333333333');
+        console.log(data.active);
         eventInfo.title = data.title;
         eventInfo.date = data.date;
         eventInfo.time = data.time;
@@ -441,18 +443,18 @@ export async function arriveEvent(code) {
     if (userUid) {
         try {
           
-            const snapshot = await firestore().collection('event').doc(code).get();
-            const data = snapshot.data();
+
            
             const timeDiff = await timeDiffCalculate(code);
-
-            console.log(timeDiff);
 
             await firestore().collection('event').doc(code)
             .update({
                 ["attendeeStatus."+userUid]: true,
                 ["attendeeArrivalTime."+userUid]: timeDiff,
             }); 
+            
+            const snapshot = await firestore().collection('event').doc(code).get();
+            const data = snapshot.data();
             const attendeeStatus = data.attendeeStatus;
             
            for (let key in attendeeStatus)
@@ -494,9 +496,9 @@ export async function finishEvent(code) {
             const newHistory ={
                 title: data.title,
                 time: data.date + ' ' + data.time,
-                arrTimeDiff: data.attendeeArrivalTime['userUid'],
+                arrTimeDiff: data.attendeeArrivalTime[userUid],
             }
-           console.log(data.history);
+           //console.log(data.history);
            console.log(newHistory);
 
            let result = await ExpCalculate(newHistory.arrTimeDiff);
@@ -515,12 +517,12 @@ export async function finishEvent(code) {
 
         });   
 
-           if(data.history.length >= 10)
+          /* if(data.history.length >= 10)
            {
               await setProfile({
                 history:firestore.FieldValue.arrayRemove(data.history[1])
               })
-           }
+           }*/
 
         
 
@@ -557,12 +559,7 @@ async function _checkEventStatus(code) {
 
   
     console.log(data.attendeeStatus[userUid]);
-    if(data.attendeeStatus[userUid])
-    {
-        
-        return false;
-    }
-    else if(data.active)
+    if(data.active)
     {
         return true;
     }
@@ -571,8 +568,9 @@ async function _checkEventStatus(code) {
 
         let nowPlusAnHour = moment().add(1, 'hour');
         let ans =  nowPlusAnHour.isAfter(data.date  +'T'+  data.time);
+        //console.log('here66666666666666');
         //console.log(ans);
-
+        
         if(ans)
         {
             await firestore().collection('event').doc(code).update({
@@ -598,7 +596,7 @@ async function timeDiffCalculate(code) {
     const arrTime =  moment(data.date  +'T'+  data.time);
     const curTime = moment();
 
-    let dura = arrTime.format('x') - curTime.format('x');
+    let dura = curTime.format('x') - arrTime.format('x');
     timeDiff = moment.duration(dura);
     return Math.round(timeDiff.minutes());
 }
