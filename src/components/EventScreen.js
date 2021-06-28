@@ -44,6 +44,7 @@ export default class EventScreen extends Component {
             transitMode: "driving",// (string) "driving" / "walking" / "bicycling" / "transit"
             goTime: '', 
             active: false,
+            willBeLate: false,
         };
     }
 
@@ -74,7 +75,9 @@ export default class EventScreen extends Component {
 
     render() {
         const { navigate } = this.props.navigation;
-        const addressSize = this.state.placeName.length > 16 ? 15 : 20;     
+        const addressSize = this.state.placeName.length > 16 ? 15 : 20;
+        const mapTextColor = this.state.willBeLate ? appColors.textRed : appColors.textGreen;
+        const mapBackgroundColor = this.state.willBeLate ? appColors.btnRed : appColors.btnGreen;
         return (
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}><Container>
                 {/* header area */}
@@ -243,10 +246,10 @@ export default class EventScreen extends Component {
                 )}
                 </ScrollView>
                 {/* google map area */}
-                <View style={{ flex: 0.15, padding: 10, backgroundColor: appColors.btnGreen, borderTopLeftRadius: 15, borderTopRightRadius: 15, justifyContent: 'center' }}>
+                <View style={{ flex: 0.15, padding: 10, backgroundColor: mapBackgroundColor, borderTopLeftRadius: 15, borderTopRightRadius: 15, justifyContent: 'center' }}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', margin: 10 }}>
                         <Icon type='MaterialCommunityIcons' name={this.getTransitIcon()} style={styles.bottomIcon} onPress={() => this.TransitPicker.open()} />
-                        <Text style={{ color: appColors.textGreen, fontSize: 23, marginVertical: 5 }}>{this.state.goTime}</Text>
+                        <Text style={{ color: mapTextColor, fontSize: 23, marginVertical: 15 }}>{this.state.goTime}</Text>
                         <Icon type='MaterialCommunityIcons' name='google-maps' style={styles.bottomIcon} onPress={() => this.handleOpenMaps()}/>
                     </View>
                 </View>
@@ -392,10 +395,12 @@ export default class EventScreen extends Component {
           
             console.log('herwe2');
             console.log(timeNeed);
+            let ret = convertGoTime(this.state.date+'T'+this.state.time, timeNeed, this.state.active);
             this.setState({
-                goTime: convertGoTime(this.state.date+'T'+this.state.time, timeNeed, this.state.active)
+                goTime: ret.text,
+                willBeLate: ret.late,
             });
-            console.log(convertGoTime(this.state.date+'T'+this.state.time, timeNeed, this.state.active));
+            console.log(ret);
             return;
          
         }
@@ -477,6 +482,7 @@ export default class EventScreen extends Component {
     }
 
     handlePickTime() {
+        console.log(new Date());
         this.setState({
             timeTimestamp: this.state.time ? new Date(moment(this.state.time, 'HH:mm')) : new Date(),
             showPickTime: true
@@ -652,8 +658,16 @@ const styles = StyleSheet.create({
 });
 
 function convertGoTime(wantedTime, timeNeed, active) {
+    let timeText = "";
+    let isLate = false;
     if (!active)
-       return moment(wantedTime).subtract(timeNeed, 'minutes').format('MM-DD HH:mm') + '　出發';
+       timeText = moment(wantedTime).subtract(timeNeed, 'minutes').format('MM-DD HH:mm') + ' 出發';
     else
-        return　moment().add(timeNeed, 'minutes').format('HH:mm') + '　抵達'
+        timeText = moment().add(timeNeed, 'minutes').format('HH:mm') + ' 抵達'
+    if (moment(wantedTime).subtract(timeNeed, 'minutes') < moment())
+        isLate = true;
+    return {
+        text: timeText,
+        late: isLate
+    };
 }
