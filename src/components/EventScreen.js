@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, TouchableHighlight, BackHandler, Alert, TouchableWithoutFeedback, Keyboard, TextInput, Dimensions, ScrollView, Linking } from 'react-native';
+import { StyleSheet, TouchableHighlight, BackHandler, Alert, TouchableWithoutFeedback, Keyboard, TextInput, Animated, ScrollView, Linking } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import appColors from '../styles/colors.js';
 import PropTypes from 'prop-types';
@@ -45,8 +45,10 @@ export default class EventScreen extends Component {
             goTime: '', 
             active: false,
             willBeLate: false,
+            fadeAnim: new Animated.Value(0)
         };
     }
+
 
     componentDidMount() {
         // prevent the OS back control from going back
@@ -246,13 +248,13 @@ export default class EventScreen extends Component {
                 )}
                 </ScrollView>
                 {/* google map area */}
-                <View style={{ flex: 0.15, padding: 10, backgroundColor: mapBackgroundColor, borderTopLeftRadius: 15, borderTopRightRadius: 15, justifyContent: 'center' }}>
+                <Animated.View style={{ flex: 0.15, padding: 10, opacity: this.state.fadeAnim, backgroundColor: mapBackgroundColor, borderTopLeftRadius: 15, borderTopRightRadius: 15, justifyContent: 'center' }}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', margin: 10 }}>
                         <Icon type='MaterialCommunityIcons' name={this.getTransitIcon()} style={styles.bottomIcon} onPress={() => this.TransitPicker.open()} />
                         <Text style={{ color: mapTextColor, fontSize: 23, marginVertical: 15 }}>{this.state.goTime}</Text>
                         <Icon type='MaterialCommunityIcons' name='google-maps' style={styles.bottomIcon} onPress={() => this.handleOpenMaps()}/>
                     </View>
-                </View>
+                </Animated.View>
                 {/* bottomSheet to select transit mode */}
                 <BottomSheet
                     ref={ref => {
@@ -400,6 +402,11 @@ export default class EventScreen extends Component {
                 willBeLate: ret.late,
             });
             console.log(ret);
+            Animated.timing(this.state.fadeAnim, {
+                toValue: 1,
+                duration: 500,
+                useNativeDriver: true
+              }).start();
             return;
          
         }
