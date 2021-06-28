@@ -10,15 +10,7 @@ const shortid = require('shortid');
 let userUid = '';
 
 export async function creatEvent(eventInfo) {
-    /*
-     EventInfo should be:
-     {
-         title:
-         location:
-         time:
-     }
-       #tentative 
-    */
+
     if (userUid) {
         let code = _CodeGen();
         try {
@@ -396,9 +388,6 @@ export async function  getEventAttendeeInfo (code) {
 
             }
            )
-        
-       //console.log(attendeeInfo);
-
 
         return attendeeInfo;
     }
@@ -431,7 +420,6 @@ export async function arriveEvent(code) {
             {
                 if(attendeeStatus[key] == false)
                 {
-                    
                    return;
                 }
             }

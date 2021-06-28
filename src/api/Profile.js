@@ -166,7 +166,6 @@ export async function getRecord() {
 // Get and set Uid.
 export async function ProfileApiInit() {
     userUid = await getUid();
-  // console.log(userUid);
     return;
 }
 
