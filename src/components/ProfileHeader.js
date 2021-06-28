@@ -42,7 +42,9 @@ export default class ProfileHeader extends React.Component {
                     <View style={{flexDirection:'row',}}>
                         <Text style={styles.username} >{this.props.user}</Text>
                         {this.props.enableNavigation &&
-                            <Button  style={{backgroundColor:appColors.appBlue ,height: 30, width: 50, justifyContent: 'center',alignSelf:'center', marginRight: 10, borderRadius: 15}} onPress={()=>{this.handleSignout()}}><Text style={{color:'white',fontSize:13}}>登出</Text></Button>
+                            <Button style={styles.signoutBtn} onPress={()=>{this.handleSignout()}}>
+                                <Text style={{color:'white',fontSize:20}}>登出</Text>
+                            </Button>
                         }
 
                         
@@ -55,7 +57,6 @@ export default class ProfileHeader extends React.Component {
         );
     }
     handleSignout(){
-        // const hi=isUserSignedIn();
         Alert.alert(
             "確定要登出嗎?","",
             [{
@@ -107,13 +108,15 @@ const styles = StyleSheet.create({
         width: 90,
         marginBottom: 5
     },
-
-    // Button: {
-    //     // backgroundColor: '{COLOR}',
-    //     width: 90,
-    //     margin: 10
-    // },
-
+    signoutBtn:{
+        backgroundColor:appColors.appBlue ,
+        height: 'auto', 
+        width: 50, 
+        justifyContent: 'center',
+        alignSelf:'center', 
+        marginRight: 10, 
+        borderRadius: 15,
+    },
 
     avgLateTimeStyle: {
         margin: 'auto'
