@@ -33,7 +33,7 @@ export async function creatEvent(eventInfo) {
                     time: eventInfo.time,
                     attendee: [],
                     attendeeStatus: {},
-                    attendeeMessage:[],
+                    attendeeMessage:{},
                     active: false
                 })
 
@@ -100,7 +100,15 @@ export async function attendEvent(code) {
                         }
                     },{merge:true})
 
-                await Promise.all([p1, p2, p3]);
+                let p4 = firestore().collection('event').doc(code)
+                .set({
+                    "attendeeMessage": {
+                        [userUid]: ''
+                        
+                    }
+                }, { merge: true });
+
+                await Promise.all([p1, p2, p3, p4]);
                 return;
             }
             else {
@@ -154,6 +162,18 @@ export async function leaveEvent(code) {
                         [userUid]: firestore.FieldValue.delete()
                     },
                 },{ merge: true })
+            
+            /*
+            // Message shouldn't delete, since attendee may leave important messages.
+            let p5 = firestore()
+            .collection('event')
+            .doc(code)
+            .set({
+                "attendeeMessage": {
+                    [userUid]: firestore.FieldValue.delete()
+                },
+            },{ merge: true })
+            */
 
             let [snapshot, r2, r3, r4] = await Promise.all([p1, p2, p3, p4]);
 
