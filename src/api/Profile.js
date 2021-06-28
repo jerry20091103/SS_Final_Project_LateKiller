@@ -116,7 +116,6 @@ export async function getProfileByUidList(UidList, code) {
                 profile.level = data.level;
                 profile.exp=data.exp;
                 profile.calTime = data.my_events[code];
-                //console.log(profile.events);
                 profileList.push(profile);
 
          
