@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, TouchableHighlight, BackHandler, Alert, TouchableWithoutFeedback, Keyboard, TextInput } from 'react-native';
+import { StyleSheet, TouchableHighlight, BackHandler, Alert, TouchableWithoutFeedback, Keyboard, TextInput, Dimensions, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import appColors from '../styles/colors.js';
 import PropTypes from 'prop-types';
@@ -49,7 +49,7 @@ export default class EventScreen extends Component {
             eventId: this.props.navigation.getParam('eventId', undefined),
             newEvent: this.props.navigation.getParam('newEvent', false),
             edit: this.props.navigation.getParam('edit', false),
-        }, () => { this.props.newEvent || this.getEventInfoFromAPI();})
+        }, () => { this.props.newEvent || this.getEventInfoFromAPI(); })
 
 
 
@@ -67,17 +67,11 @@ export default class EventScreen extends Component {
 
     render() {
         const { navigate } = this.props.navigation;
+        const windowWidth = Dimensions.get('window').width;
         return (
-        <Container>
-            <ParallaxScrollView
-            parallaxHeaderHeight={290}
-            fadeOutForeground={true}
-            // renderStickyHeader={()=>
-                
-            // }
-            backgroundColor={appColors.backgroundBlue}
-            renderFixedHeader={()=>
-                    <View style={{ backgroundColor: appColors.backgroundBlue, borderBottomLeftRadius: 15, borderBottomRightRadius: 15 }}>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}><Container>
+                {/* header area */}
+                <View style={{ backgroundColor: appColors.backgroundBlue, borderBottomLeftRadius: 15, borderBottomRightRadius: 15 }}>
                         <Header transparent >
                             <Left>
                                 <TouchableHighlight
@@ -100,8 +94,8 @@ export default class EventScreen extends Component {
                                     </Item>
 
                                 ) : (
-                                    <Title style={styles.titleText}>{this.state.title}</Title>
-                                )
+                                        <Title style={styles.titleText}>{this.state.title}</Title>
+                                    )
                                 }
                             </Body>
                             <Right style={{ paddingLeft: 0, flex: 1 }}>
@@ -114,12 +108,9 @@ export default class EventScreen extends Component {
                             </Right>
                         </Header>
                     </View>
-            }
-            renderForeground={()=>
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss}><>
+                <ScrollView style={{flex:1}}>
                 <View style={styles.container}>
-                    {/* header area */}
-                    <View style={{flex:2.5}}></View>
+                    {/* <View style={{flex:2.5}}></View> */}
                     <View style={{ flex: 5, padding: 15, backgroundColor: appColors.backgroundLightBlue, borderTopLeftRadius: 15, borderTopRightRadius: 15 }}>
                         {/* Event details */}
                         <View style={{ flex: 1, marginBottom: 10, marginLeft: 10 }}>
@@ -131,11 +122,11 @@ export default class EventScreen extends Component {
                                         {this.state.date == null ? '新增日期' : this.state.date}
                                     </Text>
                                 ) : (
-                                    // show data from server
-                                    <Text>
-                                        {this.state.date}
-                                    </Text>
-                                )}
+                                        // show data from server
+                                        <Text>
+                                            {this.state.date}
+                                        </Text>
+                                    )}
                             </View>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <Text style={styles.detailText}>時間: </Text>
@@ -145,23 +136,23 @@ export default class EventScreen extends Component {
                                         {this.state.time == null ? '新增時間' : this.state.time}
                                     </Text>
                                 ) : (
-                                    // show data from server
-                                    <Text>
-                                        {this.state.time}
-                                    </Text>
-                                )}
+                                        // show data from server
+                                        <Text>
+                                            {this.state.time}
+                                        </Text>
+                                    )}
                             </View>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <Text style={styles.detailText}>地點: </Text>
                                 {this.state.edit || this.state.newEvent ? (
                                     // location picker
-                                    <Text style={styles.detailTextGray} onPress={() => navigate("PlaceSelect", {coord: this.state.placeCoord, onGoBack: () => this.onChangePlace(), name: this.state.placeName, nameIsAddress: this.state.nameIsAddress})}>{this.state.placeName || "新增地點"}</Text>
+                                    <Text style={styles.detailTextGray} onPress={() => navigate("PlaceSelect", { coord: this.state.placeCoord, onGoBack: () => this.onChangePlace(), name: this.state.placeName, nameIsAddress: this.state.nameIsAddress })}>{this.state.placeName || "新增地點"}</Text>
                                 ) : (
-                                    // show data from server
-                                    <Text>
-                                        {this.state.placeName}
-                                    </Text>
-                                )}
+                                        // show data from server
+                                        <Text>
+                                            {this.state.placeName}
+                                        </Text>
+                                    )}
                             </View>
 
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -175,14 +166,21 @@ export default class EventScreen extends Component {
                                 {this.state.edit || this.state.newEvent ? (
                                     <Text style={styles.detailTextGray}>{this.state.arriveNum}</Text>
                                 ) : (
-                                    // show data from server
-                                    <Text style={styles.detailTextGray}>{this.state.arriveNum}</Text>
-                                )}
+                                        // show data from server
+                                        <Text style={styles.detailTextGray}>{this.state.arriveNum}</Text>
+                                    )}
                             </View>
 
                         </View>
-
+                        <View style={{ flex: 2 }}>
+                            <Button style={[styles.messageButton, {}]} onPress={() => { navigate('Message', { eventId: this.state.eventId }) }}>
+                                <Text style={[styles.titleText, { width: windowWidth - 20 }]}>留言區 . . . . .</Text>
+                            </Button>
+                            <AttendeeList navigation={this.props.navigation} roomID={this.state.eventId} />
+                        </View>
                     </View>
+
+
                 </View>
 
                 {/* bottom sheet pop up for discard warning */}
@@ -233,30 +231,17 @@ export default class EventScreen extends Component {
                         onChange={this.onChangeTime}
                     />
                 )}
-
-            </></TouchableWithoutFeedback>
-            }
-            renderContentBackground={() =>
-                <View style={{ flex: 1 }}>
-                    <AttendeeList navigation={this.props.navigation} roomID = {this.state.eventId}/>
-                    <Button style={styles.messageButton} onPress={()=>{navigate('Message', {eventId: this.state.eventId})}}>
-                        <Text style={styles.titleText}>留言區</Text>
-                    </Button>
-                </View>
-            }
-            
-            >
-            </ParallaxScrollView>
-            {/* google map area */}
-            <View style={{ flex: 0.15, padding: 10, backgroundColor: appColors.btnGreen, borderTopLeftRadius: 15, borderTopRightRadius: 15 , justifyContent: 'center'}}>
-                    <View style={{flexDirection: 'row', justifyContent: 'space-between', margin: 10}}>
-                        <Icon type='MaterialCommunityIcons' name={this.getTransitIcon()} style={styles.bottomIcon} onPress={() => this.TransitPicker.open()}/>
-                        <Text style={{color: appColors.textGreen, fontSize: 23, marginVertical: 5}}>Time</Text>
-                        <Icon type='MaterialCommunityIcons' name='google-maps' style={styles.bottomIcon}/>
+                </ScrollView>
+                {/* google map area */}
+                <View style={{ flex: 0.15, padding: 10, backgroundColor: appColors.btnGreen, borderTopLeftRadius: 15, borderTopRightRadius: 15, justifyContent: 'center' }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', margin: 10 }}>
+                        <Icon type='MaterialCommunityIcons' name={this.getTransitIcon()} style={styles.bottomIcon} onPress={() => this.TransitPicker.open()} />
+                        <Text style={{ color: appColors.textGreen, fontSize: 23, marginVertical: 5 }}>Time</Text>
+                        <Icon type='MaterialCommunityIcons' name='google-maps' style={styles.bottomIcon} />
                     </View>
-            </View>
-            {/* bottomSheet to select transit mode */}
-            <BottomSheet
+                </View>
+                {/* bottomSheet to select transit mode */}
+                <BottomSheet
                     ref={ref => {
                         this.TransitPicker = ref;
                     }}
@@ -273,42 +258,43 @@ export default class EventScreen extends Component {
                     }}
                 >
                     <View style={{ flex: 1, backgroundColor: appColors.backgroundBlue, borderTopLeftRadius: 15, borderTopRightRadius: 15 }}>
-                        <View style={{flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 10}}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 10 }}>
                             <TouchableWithoutFeedback onPress={() => this.handleSelectTransitMode('driving')}>
-                            <View style={{flexDirection: 'row', marginHorizontal: 15}} >
-                                <Icon type='MaterialCommunityIcons' name='car' style={styles.transitSelectIcon}/>
-                                <Text style={styles.transitSelectText}>開車</Text>
-                            </View>
+                                <View style={{ flexDirection: 'row', marginHorizontal: 15 }} >
+                                    <Icon type='MaterialCommunityIcons' name='car' style={styles.transitSelectIcon} />
+                                    <Text style={styles.transitSelectText}>開車</Text>
+                                </View>
                             </TouchableWithoutFeedback>
                             <TouchableWithoutFeedback onPress={() => this.handleSelectTransitMode('walking')}>
-                            <View style={{flexDirection: 'row', marginHorizontal: 15, marginRight: 35}} >
-                                <Icon type='MaterialCommunityIcons' name='walk' style={styles.transitSelectIcon}/>
-                                <Text style={styles.transitSelectText}>步行</Text>
-                            </View>
+                                <View style={{ flexDirection: 'row', marginHorizontal: 15, marginRight: 35 }} >
+                                    <Icon type='MaterialCommunityIcons' name='walk' style={styles.transitSelectIcon} />
+                                    <Text style={styles.transitSelectText}>步行</Text>
+                                </View>
                             </TouchableWithoutFeedback>
                         </View>
-                        <View style={{flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 10}}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 10 }}>
                             <TouchableWithoutFeedback onPress={() => this.handleSelectTransitMode('transit')}>
-                            <View style={{flexDirection: 'row', marginHorizontal: 15}} >
-                                <Icon type='MaterialCommunityIcons' name='subway-variant' style={styles.transitSelectIcon}/>
-                                <Text style={styles.transitSelectText}>大眾運輸</Text>
-                            </View>
+                                <View style={{ flexDirection: 'row', marginHorizontal: 15 }} >
+                                    <Icon type='MaterialCommunityIcons' name='subway-variant' style={styles.transitSelectIcon} />
+                                    <Text style={styles.transitSelectText}>大眾運輸</Text>
+                                </View>
                             </TouchableWithoutFeedback>
                             <TouchableWithoutFeedback onPress={() => this.handleSelectTransitMode('bicycling')}>
-                            <View style={{flexDirection: 'row', marginHorizontal: 15}} >
-                                <Icon type='MaterialCommunityIcons' name='bike' style={styles.transitSelectIcon}/>
-                                <Text style={styles.transitSelectText}>腳踏車</Text>
-                            </View>
+                                <View style={{ flexDirection: 'row', marginHorizontal: 15 }} >
+                                    <Icon type='MaterialCommunityIcons' name='bike' style={styles.transitSelectIcon} />
+                                    <Text style={styles.transitSelectText}>腳踏車</Text>
+                                </View>
                             </TouchableWithoutFeedback>
                         </View>
                     </View>
 
                 </BottomSheet>
-        </Container>
+                
+            </Container></TouchableWithoutFeedback>
         );
     }
-    getDefaultTitle(){
-        if(this.state.newEvent) return "";
+    getDefaultTitle() {
+        if (this.state.newEvent) return "";
         else return this.state.title;
     }
     async handleTopButtonPress() {
@@ -327,7 +313,7 @@ export default class EventScreen extends Component {
             else if (this.state.time === null) Alert.alert("時間不能為空");
             else if (this.state.placeCoord === null) Alert.alert("地點不能為空");
             else {
-                creatEvent({ 'title': this.state.title, 'date' : this.state.date, 'time': this.state.time, 'placeName': this.state.placeName, 'placeCoord':this.state.placeCoord, 'nameIsAddress':this.state.nameIsAddress  });
+                creatEvent({ 'title': this.state.title, 'date': this.state.date, 'time': this.state.time, 'placeName': this.state.placeName, 'placeCoord': this.state.placeCoord, 'nameIsAddress': this.state.nameIsAddress });
                 this.setState({ edit: false, });
                 Alert.alert("已儲存!");
                 this.props.navigation.pop();
@@ -340,7 +326,7 @@ export default class EventScreen extends Component {
             else if (this.state.time === null) Alert.alert("時間不能為空");
             else if (this.state.placeCoord === null) Alert.alert("地點不能為空");
             else {
-                editEvent({ 'title': this.state.title, 'date' : this.state.date,'time': this.state.time, 'placeName': this.state.placeName, 'placeCoord':this.state.placeCoord, 'nameIsAddress':this.state.nameIsAddress }, this.state.eventId);
+                editEvent({ 'title': this.state.title, 'date': this.state.date, 'time': this.state.time, 'placeName': this.state.placeName, 'placeCoord': this.state.placeCoord, 'nameIsAddress': this.state.nameIsAddress }, this.state.eventId);
                 this.setState({ edit: false, });
                 Alert.alert("已儲存!");
                 this.props.navigation.pop();
@@ -358,7 +344,7 @@ export default class EventScreen extends Component {
 
 
                 let info = await getEventInfo(this.state.eventId);
-                this.setArrivalTimeFromAPI(info.placeCoord,this.state.eventId, this.state.transitMode);
+                this.setArrivalTimeFromAPI(info.placeCoord, this.state.eventId, this.state.transitMode);
                 //console.log(info);
                 this.setState({
                     ...this.state,
@@ -393,17 +379,17 @@ export default class EventScreen extends Component {
 
     getArrivedAttendeeNumber(attendeeStatus) {
         let arriveNumber = 0;
-        try{
+        try {
             attendeeStatus.forEach((attendee) => {
                 if (attendee.arrival) {
                     arriveNumber += 1;
                 }
             });
-        } catch(error) {
+        } catch (error) {
             console.log(error);
             throw new Error("Unknown error at getArrivedAttendeeNumber.");
         }
-        
+
         // console.log("Arrive Num: " + arriveNumber);
         return arriveNumber;
     }
@@ -460,7 +446,7 @@ export default class EventScreen extends Component {
         });
     }
     handleGoBack() {
-        if ((!this.state.modified && !this.state.newEvent)||!this.state.edit) {
+        if ((!this.state.modified && !this.state.newEvent) || !this.state.edit) {
             this.props.navigation.pop();
             return;
         }
@@ -508,9 +494,16 @@ const styles = StyleSheet.create({
     },
 
     messageButton: {
-        backgroundColor: appColors.appBlue,
-        height: 60,
-        width: 125,
+        marginVertical: 10,
+        // width:350,
+        borderRadius: 20,
+        borderWidth: 1,
+        backgroundColor: appColors.backgroundBlue,
+        borderColor: appColors.textBlack,
+        height: 'auto',
+        alignSelf: 'center',
+
+
     },
 
     titleText: {
