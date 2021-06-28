@@ -23,7 +23,7 @@ export default class EventList extends React.Component {
         this.onRefresh();
     }
     renderItem(item) {
-
+        const timeTextColor = item.willBeLate ? appColors.textRed : appColors.textGreen;
         return (
             <Button color={appColors.textBlack} style={styles.eventButton} onPress={() => { this.props.navigation.navigate('Meet', { newEvent: false , eventId: item.id}) }}>
                 <View style={{ flex: 1, flexDirection: 'row' }}>
@@ -35,7 +35,7 @@ export default class EventList extends React.Component {
                     {/* time and goTime */}
                     <View style={{ flex: 4, margin: 5 }}>
                         <Text style={styles.titleText}>{item.time}</Text>
-                        <Text style={styles.goTimeText}>{item.goTime}</Text>
+                        <Text style={[styles.goTimeText, {color: timeTextColor}]}>{item.goTime}</Text>
                     </View>
                 </View>
             </Button>
@@ -83,7 +83,9 @@ export default class EventList extends React.Component {
         let covertedData = [];
         data.forEach((event)=>{
             console.log(event);
-            event.goTime = convertGoTime(event.timestamp, event.goTime, event.active);
+            let ret = convertGoTime(event.timestamp, event.goTime, event.active);
+            event.goTime = ret.text;
+            event.willBeLate = ret.late
             covertedData.push(event);
         })
 
@@ -114,10 +116,18 @@ const EventListItem = ({ id, title, time, goTime }) => (
 );
 
 function convertGoTime(wantedTime, timeNeed, active) {
+    let timeText = "";
+    let isLate = false;
     if (!active)
-       return moment(wantedTime).subtract(timeNeed, 'minutes').format('MM-DD HH:mm') + '　出發';
+       timeText = moment(wantedTime).subtract(timeNeed, 'minutes').format('MM-DD HH:mm') + ' 出發';
     else
-        return　moment().add(timeNeed, 'minutes').format('HH:mm') + '　抵達'
+        timeText = moment().add(timeNeed, 'minutes').format('HH:mm') + ' 抵達'
+    if (moment(wantedTime).subtract(timeNeed, 'minutes') < moment())
+        isLate = true;
+    return {
+        text: timeText,
+        late: isLate
+    };
 }
 
 
@@ -135,7 +145,6 @@ const styles = StyleSheet.create({
     },
 
     goTimeText: {
-        color: appColors.textGreen,
         fontSize: 18,
         marginTop: 'auto'
     },
