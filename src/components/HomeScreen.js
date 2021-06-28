@@ -10,6 +10,7 @@ import { ProfileApiInit, getProfile } from '../api/Profile.js'
 import firestore from '@react-native-firebase/firestore';
 import { rgb } from 'color';
 import { attendEvent } from '../api/Event.js';
+import { predictApiInit} from'../utilities/GetPredictTime';
 
 
 export default class HomeScreen extends React.Component {
@@ -118,6 +119,7 @@ export default class HomeScreen extends React.Component {
     }
     componentDidMount() {
         this.getProfileData();
+        predictApiInit();
     }
     async getProfileData() {
         await ProfileApiInit();

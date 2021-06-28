@@ -1,11 +1,8 @@
 import firestore from '@react-native-firebase/firestore';
-import firebase from '@react-native-firebase/app';
 import { getUid } from '../utilities/User';
 import{ getProfileByUidList, setProfile} from'../api/Profile';
-import {getCurrentLocation} from  '../utilities/GetCurrentLocation';
-import { getTravelTime } from  '../utilities/GetTravelTime';
+import {getPredictTime} from '../utilities/GetPredictTime';
 import moment from 'moment';
-import { Item } from 'native-base';
 const shortid = require('shortid');
 let userUid = '';
 
@@ -271,6 +268,7 @@ async function _getEventInfoList(eventIDList) {
 export async function getEventInfo(eventID) {
 
     let eventInfo = {
+        active: false,
         title: 'unknown',
         date: 'unknown',
         location: 'unknown',
@@ -288,7 +286,7 @@ export async function getEventInfo(eventID) {
 
         let data = Snapshot.data();
 
-
+        eventInfo.active = data.active;
         eventInfo.title = data.title;
         eventInfo.date = data.date;
         eventInfo.time = data.time;
@@ -355,11 +353,11 @@ export async function  setArrivalTime(desPos, code, mode) {
         if(active)
         {
             let userArrivalTime = 0;
-             userArrivalTime = await _arrivalTimeCaculate(desPos, mode)
+             userArrivalTime = await getPredictTime(desPos, mode)
             
              console.log( userArrivalTime);
 
-             if(userArrivalTime <= 0.5)
+             if(userArrivalTime >=  0 && userArrivalTime <= 1)
              {
                  console.log('arrive');   
                 arriveEvent(code);
@@ -454,8 +452,6 @@ export async function arriveEvent(code) {
                 ["attendeeStatus."+userUid]: true,
                 ["attendeeArrivalTime."+userUid]: timeDiff,
             }); 
-        
-            console.log('here2');
             const attendeeStatus = data.attendeeStatus;
             
            for (let key in attendeeStatus)
@@ -502,6 +498,7 @@ export async function finishEvent(code) {
            console.log(newHistory);
 
             await setProfile({
+                ['my_events.'+code] : firestore.FieldValue.delete(),
                 history:firestore.FieldValue.arrayUnion(newHistory)
 
             });    
@@ -531,28 +528,7 @@ function _CodeGen() {
     return shortid.generate();
 }
 
-async function _arrivalTimeCaculate(desPos, mode) {
 
-    try
-    {
-      let arrivalTime = 0;
-
-        const curPos = await getCurrentLocation();
-      
-  
-        const travelTime = await getTravelTime({lat:curPos.lat,lng:curPos.lng},desPos,mode); /*prvent overuse*/
-        arrivalTime = Math.round(travelTime.value/60);    /*prvent overuse*/
-        console.log(arrivalTime);
-        return arrivalTime;
-
-    }
-    catch
-    {
-        console.log('arrivalTime Caculation Error')
-    }
-
-    
-}
 
 async function _checkEventStatus(code) {
     const snapshot = await firestore().collection('event').doc(code).get();
