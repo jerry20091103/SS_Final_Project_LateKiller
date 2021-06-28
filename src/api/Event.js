@@ -33,6 +33,7 @@ export async function creatEvent(eventInfo) {
                     time: eventInfo.time,
                     attendee: [],
                     attendeeStatus: {},
+                    attendeeMessage:{},
                     active: false
                 })
 
@@ -99,7 +100,15 @@ export async function attendEvent(code) {
                         }
                     },{merge:true})
 
-                await Promise.all([p1, p2, p3]);
+                let p4 = firestore().collection('event').doc(code)
+                .set({
+                    "attendeeMessage": {
+                        [userUid]: ''
+                        
+                    }
+                }, { merge: true });
+
+                await Promise.all([p1, p2, p3, p4]);
                 return;
             }
             else {
@@ -153,6 +162,18 @@ export async function leaveEvent(code) {
                         [userUid]: firestore.FieldValue.delete()
                     },
                 },{ merge: true })
+            
+            /*
+            // Message shouldn't delete, since attendee may leave important messages.
+            let p5 = firestore()
+            .collection('event')
+            .doc(code)
+            .set({
+                "attendeeMessage": {
+                    [userUid]: firestore.FieldValue.delete()
+                },
+            },{ merge: true })
+            */
 
             let [snapshot, r2, r3, r4] = await Promise.all([p1, p2, p3, p4]);
 
@@ -431,7 +452,7 @@ async function _arrivalTimeCaculate(desPos, mode) {
         const curPos = await getCurrentLocation();
       
   
-       // const travelTime = await getTravelTime({lat:curPos.lat,lng:curPos.lng},desPos,mode); /*prvent overuse*/
+        //const travelTime = await getTravelTime({lat:curPos.lat,lng:curPos.lng},desPos,mode); /*prvent overuse*/
         //arrivalTime = (travelTime.value + 300)/60;    /*prvent overuse*/
       
         return arrivalTime;
@@ -447,12 +468,8 @@ async function _arrivalTimeCaculate(desPos, mode) {
 }
 
 async function _checkEventStatus(code) {
-    console.log('here');
     const snapshot = await firestore().collection('event').doc(code).get();
     const data = snapshot.data();
-    console.log(data.active);
-
-
 
     if(data.active)
     {
@@ -460,9 +477,18 @@ async function _checkEventStatus(code) {
     }
     else
     {
-        if(true)
+
+        let nowPlusAnHour = moment().add(1, 'hour');
+        let ans =  nowPlusAnHour.isAfter(data.date  +'T'+  data.time);
+        console.log(ans);
+
+        if(ans)
         {
-            return true;
+            await firestore().collection('event').doc(code).update({
+                active : true
+            });
+            return true
+
         }
         else
         {

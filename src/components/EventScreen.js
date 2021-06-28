@@ -37,6 +37,7 @@ export default class EventScreen extends Component {
             showPickDate: false, // control popup date picker
             showPickTime: false, // control popup time picker
             arriveNum: 0,
+            transitMode: "driving" // (string) "driving" / "walking" / "bicycling" / "transit"
         };
     }
 
@@ -246,7 +247,7 @@ export default class EventScreen extends Component {
             {/* google map area */}
             <View style={{ flex: 0.15, padding: 10, backgroundColor: appColors.btnGreen, borderTopLeftRadius: 15, borderTopRightRadius: 15 , justifyContent: 'center'}}>
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', margin: 10}}>
-                        <Icon type='MaterialCommunityIcons' name='car' style={styles.bottomIcon} onPress={() => this.TransitPicker.open()}/>
+                        <Icon type='MaterialCommunityIcons' name={this.getTransitIcon()} style={styles.bottomIcon} onPress={() => this.TransitPicker.open()}/>
                         <Text style={{color: appColors.textGreen, fontSize: 23, marginVertical: 5}}>Time</Text>
                         <Icon type='MaterialCommunityIcons' name='google-maps' style={styles.bottomIcon}/>
                     </View>
@@ -258,7 +259,7 @@ export default class EventScreen extends Component {
                     }}
                     height={150}
                     closeOnDragDown={true}
-                    closeDuration={200}
+                    closeDuration={100}
                     openDuration={200}
                     customStyles={{
                         container: {
@@ -270,24 +271,32 @@ export default class EventScreen extends Component {
                 >
                     <View style={{ flex: 1, backgroundColor: appColors.backgroundBlue, borderTopLeftRadius: 15, borderTopRightRadius: 15 }}>
                         <View style={{flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 10}}>
-                            <View style={{flexDirection: 'row', marginHorizontal: 15}}>
+                            <TouchableWithoutFeedback onPress={() => this.handleSelectTransitMode('driving')}>
+                            <View style={{flexDirection: 'row', marginHorizontal: 15}} >
                                 <Icon type='MaterialCommunityIcons' name='car' style={styles.transitSelectIcon}/>
                                 <Text style={styles.transitSelectText}>開車</Text>
                             </View>
-                            <View style={{flexDirection: 'row', marginHorizontal: 15, marginRight: 35}}>
+                            </TouchableWithoutFeedback>
+                            <TouchableWithoutFeedback onPress={() => this.handleSelectTransitMode('walking')}>
+                            <View style={{flexDirection: 'row', marginHorizontal: 15, marginRight: 35}} >
                                 <Icon type='MaterialCommunityIcons' name='walk' style={styles.transitSelectIcon}/>
                                 <Text style={styles.transitSelectText}>步行</Text>
                             </View>
+                            </TouchableWithoutFeedback>
                         </View>
                         <View style={{flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 10}}>
-                            <View style={{flexDirection: 'row', marginHorizontal: 15}}>
+                            <TouchableWithoutFeedback onPress={() => this.handleSelectTransitMode('transit')}>
+                            <View style={{flexDirection: 'row', marginHorizontal: 15}} >
                                 <Icon type='MaterialCommunityIcons' name='subway-variant' style={styles.transitSelectIcon}/>
                                 <Text style={styles.transitSelectText}>大眾運輸</Text>
                             </View>
-                            <View style={{flexDirection: 'row', marginHorizontal: 15}}>
+                            </TouchableWithoutFeedback>
+                            <TouchableWithoutFeedback onPress={() => this.handleSelectTransitMode('bicycling')}>
+                            <View style={{flexDirection: 'row', marginHorizontal: 15}} >
                                 <Icon type='MaterialCommunityIcons' name='bike' style={styles.transitSelectIcon}/>
                                 <Text style={styles.transitSelectText}>腳踏車</Text>
                             </View>
+                            </TouchableWithoutFeedback>
                         </View>
                     </View>
 
@@ -349,7 +358,6 @@ export default class EventScreen extends Component {
                 let info = await getEventInfo(this.state.eventId);
 
                 //console.log(info);
-                this.setArrivalTimeFromAPI(info.placeCoord,this.state.eventId, 'bicycle');
                 this.setState({
                     ...this.state,
                     title: info.title,
@@ -455,6 +463,27 @@ export default class EventScreen extends Component {
         }
         // show discard warning
         this.BottomSheet.open();
+    }
+    getTransitIcon() {
+        switch (this.state.transitMode) {
+            case 'driving':
+                return 'car';
+            case "walking":
+                return 'walk';
+            case "bicycling":
+                return 'bike';
+            case "transit":
+                return 'subway-variant';
+        }
+    }
+    // this function is called after a mode change
+    // mode: (string) "driving" / "walking" / "bicycling" / "transit"
+    handleSelectTransitMode(mode) {
+        this.TransitPicker.close()
+        this.setState({
+            transitMode: mode,
+        });
+        this.setArrivalTimeFromAPI(info.placeCoord,this.state.eventId, mode);
     }
 
 }
