@@ -184,10 +184,10 @@ export default class AttendeeList extends Component {
                     text: "取消",
                     onPress: () => {return},
                   },
-                  { text: "確定", onPress: () => {this.props.navigation.pop() }}
+                  { text: "確定", onPress: () => {this.props.navigation.pop(); leaveEvent(this.props.roomID);}}
                 ]
               );
-            await leaveEvent(this.props.roomID);
+            
         }
         return;
     }
