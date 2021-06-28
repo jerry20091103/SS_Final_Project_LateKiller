@@ -289,8 +289,8 @@ export async function getEventInfo(eventID) {
         let data = Snapshot.data();
 
         eventInfo.active = data.active;
-        console.log('here333333333');
-        console.log(data.active);
+        //console.log('here333333333');
+        //console.log(data.active);
         eventInfo.title = data.title;
         eventInfo.date = data.date;
         eventInfo.time = data.time;
@@ -502,7 +502,11 @@ export async function finishEvent(code) {
            //console.log(data.history);
            console.log(newHistory);
 
-           let result = await ExpCalculate(newHistory.arrTimeDiff);
+            // Event 結算
+            // update avg late time should be earlier than writing 
+            // new history to database.
+            let result = await ExpCalculate(newHistory.arrTimeDiff);
+            await _updateAvgLateTime(newHistory);
 
             await setProfile({
                 history:firestore.FieldValue.arrayUnion(newHistory),
@@ -513,17 +517,15 @@ export async function finishEvent(code) {
             });    
            await setProfile({
             ['my_events.'+code] : firestore.FieldValue.delete(),
-           
-            history:firestore.FieldValue.arrayUnion(newHistory)
 
         });   
 
-          /* if(data.history.length >= 10)
+           if(data.history.length >= 10)
            {
               await setProfile({
-                history:firestore.FieldValue.arrayRemove(data.history[1])
+                history:firestore.FieldValue.arrayRemove(data.history[0])
               })
-           }*/
+           }
 
         
 
@@ -602,20 +604,30 @@ async function timeDiffCalculate(code) {
     return Math.round(timeDiff.minutes());
 }
 
-async function _updateAvgLateTime()
+async function _updateAvgLateTime(newHistory)
 {
     const snapshot = await firestore().collection('users').doc(userUid).get();
     const data = snapshot.data();
-    let eventHistory = data.history;
 
+    let eventHistoryLength = data.history.length;
+    let newAvgLateTime = 0;
 
-    eventHistory.forEach((history)=>{
-        console.log(history);
-        
-    })
-
-
+    // calculate newAvgLateTime.
+    data.history.forEach((record) => {
+        newAvgLateTime += record.arrTimeDiff;
+    });
+    newAvgLateTime += newHistory.arrTimeDiff;
+    newAvgLateTime -= ((eventHistoryLength < 10) ? 0 : data.history[0].arrTimeDiff);
+    newAvgLateTime /= Math.min((eventHistoryLength + 1), 10);
     
+    // Round it to 2 digits after decimal point.
+    // EPSILON is for more accurate.
+    newAvgLateTime += Number.EPSILON;
+    newAvgLateTime = Math.round(newAvgLateTime * 100) / 100;
+
+    await setProfile({
+        avgLateTime: newAvgLateTime
+    });
 }
 
 async function ExpCalculate(arrTimeDiff) {

@@ -355,7 +355,6 @@ export default class EventScreen extends Component {
         try {
             if (!this.state.newEvent) {
 
-
                 return await getEventInfo(this.state.eventId);
                // this.setArrivalTimeFromAPI(info.placeCoord, this.state.eventId, this.state.transitMode);
                 //console.log('here33333');
@@ -450,6 +449,7 @@ export default class EventScreen extends Component {
         }
        
         const info = await this.getEventInfoFromAPI();
+        console.log(info);
          this.setState({
                     ...this.state,
                     active: info.active,

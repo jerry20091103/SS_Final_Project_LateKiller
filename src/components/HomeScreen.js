@@ -114,7 +114,7 @@ export default class HomeScreen extends React.Component {
             try {
                 await attendEvent(this.state.roomID);
                 this.BottomSheet.close();
-                this.props.navigation.navigate('Meet', { newEvent: false });
+                this.props.navigation.navigate('Meet', {eventId:this.state.roomID, newEvent: false });
             }
             catch (err) {
                 alert(err);
