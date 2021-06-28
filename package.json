@@ -12,6 +12,7 @@
   "dependencies": {
     "@monterosa/react-native-parallax-scroll": "^1.8.0",
     "@react-native-community/async-storage": "^1.12.1",
+    "@react-native-community/clipboard": "^1.5.1",
     "@react-native-community/datetimepicker": "^3.5.2",
     "@react-native-community/masked-view": "^0.1.11",
     "@react-native-firebase/app": "^12.1.0",

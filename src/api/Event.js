@@ -1,11 +1,8 @@
 import firestore from '@react-native-firebase/firestore';
-import firebase from '@react-native-firebase/app';
 import { getUid } from '../utilities/User';
-import{ getProfileByUidList, setProfile} from'../api/Profile';
-import {getCurrentLocation} from  '../utilities/GetCurrentLocation';
-import { getTravelTime } from  '../utilities/GetTravelTime';
+import{ getProfile, getProfileByUidList, setProfile} from'../api/Profile';
+import {getPredictTime} from '../utilities/GetPredictTime';
 import moment from 'moment';
-import { Item } from 'native-base';
 const shortid = require('shortid');
 let userUid = '';
 
@@ -271,6 +268,7 @@ async function _getEventInfoList(eventIDList) {
 export async function getEventInfo(eventID) {
 
     let eventInfo = {
+        active: false,
         title: 'unknown',
         date: 'unknown',
         location: 'unknown',
@@ -288,7 +286,7 @@ export async function getEventInfo(eventID) {
 
         let data = Snapshot.data();
 
-
+        eventInfo.active = data.active;
         eventInfo.title = data.title;
         eventInfo.date = data.date;
         eventInfo.time = data.time;
@@ -355,11 +353,11 @@ export async function  setArrivalTime(desPos, code, mode) {
         if(active)
         {
             let userArrivalTime = 0;
-             userArrivalTime = await _arrivalTimeCaculate(desPos, mode)
+             userArrivalTime = await getPredictTime(desPos, mode)
             
              console.log( userArrivalTime);
 
-             if(userArrivalTime <= 0.5)
+             if(userArrivalTime >=  0 && userArrivalTime <= 1)
              {
                  console.log('arrive');   
                 arriveEvent(code);
@@ -454,8 +452,6 @@ export async function arriveEvent(code) {
                 ["attendeeStatus."+userUid]: true,
                 ["attendeeArrivalTime."+userUid]: timeDiff,
             }); 
-        
-            console.log('here2');
             const attendeeStatus = data.attendeeStatus;
             
            for (let key in attendeeStatus)
@@ -493,18 +489,39 @@ export async function finishEvent(code) {
             const data = snapshot.data();
 
 
+
             const newHistory ={
                 title: data.title,
                 time: data.date + ' ' + data.time,
                 arrTimeDiff: data.attendeeArrivalTime['userUid'],
             }
-
+           console.log(data.history);
            console.log(newHistory);
 
-            await setProfile({
-                history:firestore.FieldValue.arrayUnion(newHistory)
+           let result = await ExpCalculate(newHistory.arrTimeDiff);
 
+            await setProfile({
+                history:firestore.FieldValue.arrayUnion(newHistory),
+                streak: result.streak,
+                level: result.level,
+                exp: result.exp,
+                expFull: result.expFull
             });    
+           await setProfile({
+            ['my_events.'+code] : firestore.FieldValue.delete(),
+           
+            history:firestore.FieldValue.arrayUnion(newHistory)
+
+        });   
+
+           if(data.history.length >= 10)
+           {
+              await setProfile({
+                history:firestore.FieldValue.arrayRemove(data.history[1])
+              })
+           }
+
+        
 
             await firestore().collection('event').doc(code).delete();
             console.log('delete empty event');
@@ -531,28 +548,7 @@ function _CodeGen() {
     return shortid.generate();
 }
 
-async function _arrivalTimeCaculate(desPos, mode) {
 
-    try
-    {
-      let arrivalTime = 0;
-
-        const curPos = await getCurrentLocation();
-      
-  
-        const travelTime = await getTravelTime({lat:curPos.lat,lng:curPos.lng},desPos,mode); /*prvent overuse*/
-        arrivalTime = Math.round(travelTime.value/60);    /*prvent overuse*/
-        console.log(arrivalTime);
-        return arrivalTime;
-
-    }
-    catch
-    {
-        console.log('arrivalTime Caculation Error')
-    }
-
-    
-}
 
 async function _checkEventStatus(code) {
     const snapshot = await firestore().collection('event').doc(code).get();
@@ -604,8 +600,68 @@ async function timeDiffCalculate(code) {
     let dura = arrTime.format('x') - curTime.format('x');
     timeDiff = moment.duration(dura);
     return Math.round(timeDiff.minutes());
-  
+}
+
+async function _updateAvgLateTime()
+{
+    const snapshot = await firestore().collection('users').doc(userUid).get();
+    const data = snapshot.data();
+    let eventHistory = data.history;
+
+
+    eventHistory.forEach((history)=>{
+        console.log(history);
+        
+    })
 
 
     
+}
+
+async function ExpCalculate(arrTimeDiff) {
+    // recalculate arrive time, let it be >= 1 or <= -1.
+    let roundTime = (arrTimeDiff > 0) ? Math.ceil(arrTimeDiff) : Math.floor(arrTimeDiff);
+    let profile = await getProfile();
+    let result = {
+        streak: profile.streak,
+        level: profile.level,
+        exp: profile.exp,
+        expFull: profile.expFull
+    }
+
+    // Handle exp change.
+    // max punish = -340  
+    // max award = 210 
+    let lateExp = -100 - Math.min(roundTime, 60) * 3;
+    let latePunish = Math.max(profile.streak, -3) * 20;
+    let onTimeExp = 100 + Math.min(-roundTime, 30) * 3;
+    let onTimeAward = Math.min(profile.streak, 1) * 20;
+    
+    if(roundTime > 0) {
+        // late.
+        result.exp = profile.exp + lateExp + ((profile.streak < 0) ? latePunish : 0);
+        result.streak = Math.min(profile.streak, 0) - 1;
+    } else {
+        // on time.
+        result.exp = profile.exp + onTimeExp + ((profile.streak >= 0) ? onTimeAward : 0);
+        result.streak = Math.max(profile.streak, 0) + 1;
+    }
+
+    // Handle level change.
+    // level up.
+    while(result.exp >= result.expFull) {
+        result.level += 1;
+        result.exp -= result.expFull;
+        result.expFull = 100 * ((result.level >= 0) ? (result.level + 1) : 2);
+    }
+    // level down.
+    while(result.exp < 0) {
+        result.level += 1;
+        result.expFull = 100 * ((result.level >= 0) ? (result.level + 1) : 2);
+        result.exp += result.expFull;
+    }
+
+    return result;
+
+
 }
