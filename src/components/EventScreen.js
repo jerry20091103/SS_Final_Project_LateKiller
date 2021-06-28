@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, TouchableHighlight, BackHandler, Alert, TouchableWithoutFeedback, Keyboard, TextInput, Dimensions, ScrollView, Clop } from 'react-native';
+import { StyleSheet, TouchableHighlight, BackHandler, Alert, TouchableWithoutFeedback, Keyboard, TextInput, Dimensions, ScrollView, Linking } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import appColors from '../styles/colors.js';
 import PropTypes from 'prop-types';
@@ -12,6 +12,7 @@ import { creatEvent, editEvent, getEventInfo, setArrivalTime } from '../api/Even
 import AttendeeList from './AttendeeList.js'
 import {getAdviseTime, getPredictTime} from '../utilities/GetPredictTime';
 import Clipboard from '@react-native-community/clipboard';
+import { createKeyboardAwareNavigator } from 'react-navigation';
 
 
 /* Event Screen
@@ -54,7 +55,7 @@ export default class EventScreen extends Component {
             eventId: this.props.navigation.getParam('eventId', undefined),
             newEvent: this.props.navigation.getParam('newEvent', false),
             edit: this.props.navigation.getParam('edit', false),
-        }, () => { this.props.newEvent || this.getEventInfoFromAPI(); })
+        }, () => { this.props.newEvent || this.handleUpdate(); })
 
 
 
@@ -69,6 +70,7 @@ export default class EventScreen extends Component {
         this.handleGoBack();
         return true;
     }
+    
 
     render() {
         const { navigate } = this.props.navigation;
@@ -88,7 +90,7 @@ export default class EventScreen extends Component {
                             </Left>
                             <Body style={{ flex: 3 }}>
                                 {this.state.edit || this.state.newEvent ? (
-                                    <Item underline style={{ marginBottom: 5 }}>
+                                    <Item underline style={{ marginBottom: 4 }}>
                                         <TextInput /* autoFocus={this.state.modified} */
                                             allowFontScaling={true} maxFontSizeMultiplier={0}
                                             placeholder='新增標題'
@@ -245,7 +247,7 @@ export default class EventScreen extends Component {
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', margin: 10 }}>
                         <Icon type='MaterialCommunityIcons' name={this.getTransitIcon()} style={styles.bottomIcon} onPress={() => this.TransitPicker.open()} />
                         <Text style={{ color: appColors.textGreen, fontSize: 23, marginVertical: 5 }}>{this.state.goTime}</Text>
-                        <Icon type='MaterialCommunityIcons' name='google-maps' style={styles.bottomIcon} />
+                        <Icon type='MaterialCommunityIcons' name='google-maps' style={styles.bottomIcon} onPress={() => this.handleOpenMaps()}/>
                     </View>
                 </View>
                 {/* bottomSheet to select transit mode */}
@@ -351,10 +353,11 @@ export default class EventScreen extends Component {
             if (!this.state.newEvent) {
 
 
-                let info = await getEventInfo(this.state.eventId);
-                this.setArrivalTimeFromAPI(info.placeCoord, this.state.eventId, this.state.transitMode);
-                //console.log(info);
-                this.setState({
+                return await getEventInfo(this.state.eventId);
+               // this.setArrivalTimeFromAPI(info.placeCoord, this.state.eventId, this.state.transitMode);
+                //console.log('here33333');
+                //console.log(info.active);
+               /* this.setState({
                     ...this.state,
                     active: info.active,
                     title: info.title,
@@ -365,7 +368,7 @@ export default class EventScreen extends Component {
                     nameIsAddress: info.nameIsAddress,
                     transitMode: info.transpotation,
                     arriveNum: this.getArrivedAttendeeNumber(info.attendeeStatus)
-                })
+                })*/
             }
         }
         catch (err) {
@@ -375,21 +378,30 @@ export default class EventScreen extends Component {
 
     async getGoTimeFromAPI(placeCoord, mode)
     {
+        console.log(mode);
         try 
         {
             let timeNeed = 0 ; 
+           // console.log('here333');
+            //console.log(this.state.active);
             if(!this.state.active)
                 timeNeed =  await getAdviseTime(placeCoord, mode);
             else
                 timeNeed = await getPredictTime(placeCoord, mode);
 
+          
+            console.log('herwe2');
+            console.log(timeNeed);
             this.setState({
                 goTime: convertGoTime(this.state.date+'T'+this.state.time, timeNeed, this.state.active)
-            })
+            });
+            console.log(convertGoTime(this.state.date+'T'+this.state.time, timeNeed, this.state.active));
+            return;
          
         }
         catch
         {
+            Alert.alert('無法取得交通資料');
             console.log('error when getting goTime');
         }
        
@@ -423,6 +435,29 @@ export default class EventScreen extends Component {
 
         // console.log("Arrive Num: " + arriveNumber);
         return arriveNumber;
+    }
+
+    async handleUpdate(IsdefaultMode = true){
+
+        if(!IsdefaultMode)
+        {
+            await this.setArrivalTimeFromAPI(this.state.placeCoord,this.state.eventId, this.state.transitMode);
+        }
+       
+        const info = await this.getEventInfoFromAPI();
+         this.setState({
+                    ...this.state,
+                    active: info.active,
+                    title: info.title,
+                    date: info.date,
+                    time: info.time,
+                    placeName: info.placeName,
+                    placeCoord: info.placeCoord,
+                    nameIsAddress: info.nameIsAddress,
+                    transitMode: info.transpotation,
+                    arriveNum: this.getArrivedAttendeeNumber(info.attendeeStatus)
+                },()=>this.getGoTimeFromAPI(this.state.placeCoord, this.state.transitMode));
+
     }
 
     handlePickDate() {
@@ -491,6 +526,9 @@ export default class EventScreen extends Component {
         });
         Clipboard.setString(this.state.eventId);
     }
+    handleOpenMaps() {
+        Linking.openURL('https://www.google.com/maps/dir/?api=1&destination=' + this.state.placeCoord.lat + ',' + this.state.placeCoord.lng + '&travelmode=' + this.state.transitMode);
+    }
     getTransitIcon() {
         switch (this.state.transitMode) {
             case 'driving':
@@ -509,10 +547,8 @@ export default class EventScreen extends Component {
         this.TransitPicker.close()
         this.setState({
             transitMode: mode,
-        });
-        await this.setArrivalTimeFromAPI(this.state.placeCoord,this.state.eventId, mode);
-        await this.getGoTimeFromAPI(this.state.placeCoord, mode);
-        await this.getEventInfoFromAPI();
+        },()=>{this.handleUpdate(false)});
+       
 
     }
 
@@ -549,7 +585,8 @@ const styles = StyleSheet.create({
     titleText: {
         color: appColors.textBlack,
         fontSize: 23,
-        marginVertical: 5
+        marginVertical: 5,
+        paddingLeft: 8,
     },
     detailText: {
         color: appColors.textBlack,
@@ -616,7 +653,7 @@ const styles = StyleSheet.create({
 
 function convertGoTime(wantedTime, timeNeed, active) {
     if (!active)
-       return moment(wantedTime).subtract(timeNeed, 'minutes').format('HH:mm') + '　出發';
+       return moment(wantedTime).subtract(timeNeed, 'minutes').format('MM-DD HH:mm') + '　出發';
     else
         return　moment().add(timeNeed, 'minutes').format('HH:mm') + '　抵達'
 }

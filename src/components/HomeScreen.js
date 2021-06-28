@@ -132,6 +132,7 @@ export default class HomeScreen extends React.Component {
             this.setState({
                 EventlistRefresh: !this.state.EventlistRefresh,
             })
+            console.log('go homepage');
         });
         this.getProfileData();
         predictApiInit();

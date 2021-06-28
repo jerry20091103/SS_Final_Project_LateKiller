@@ -46,7 +46,7 @@ export default class MessageScreen extends React.Component {
                         <TextInput
                             multiline={true}
                             allowFontScaling={true} maxFontSizeMultiplier={0}
-                            placeholder={'新增留言'}
+                            placeholder={'新增留言 . . .'}
                             placeholderTextColor={appColors.textGray}
                             defaultValue={item.message}
                             style={styles.messageInput}
@@ -65,7 +65,7 @@ export default class MessageScreen extends React.Component {
                         this.setState({
                             edit: true,
                         })
-                    }}>{(item.message || "新增留言") + "\n"}</Text>
+                    }}>{(item.message || "新增留言 . . .") + "\n"}</Text>
                     </View>
                 )}
             </View>
