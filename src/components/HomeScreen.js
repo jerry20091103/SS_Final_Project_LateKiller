@@ -63,7 +63,7 @@ export default class HomeScreen extends React.Component {
                         <View style={{ flex: 1, backgroundColor: appColors.backgroundBlue, borderTopLeftRadius: 15, borderTopRightRadius: 15 }}>
                             <Text
                                 style={styles.bottomSheetText}
-                                onPress={() => { navigate('Meet', { newEvent: true,edit: true }) }}>新增活動</Text>
+                                onPress={() => { this.BottomSheet.close(); navigate('Meet', { newEvent: true,edit: true }); }}>新增活動</Text>
                             <View style={{ flexDirection: 'row' }}>
                                 <Text style={styles.bottomSheetText}>輸入房間號碼:</Text>
                                 <Input style={{ fontSize: 22 }} placeholder="room ID" onChangeText={this.onChangeRoomID} />
@@ -106,6 +106,7 @@ export default class HomeScreen extends React.Component {
         else {
             try {
                 await attendEvent(this.state.roomID);
+                this.BottomSheet.close();
                 this.props.navigation.navigate('Meet', { newEvent: false });
             }
             catch (err) {
