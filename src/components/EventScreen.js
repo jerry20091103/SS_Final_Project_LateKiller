@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, TouchableHighlight, BackHandler, Alert, TouchableWithoutFeedback, Keyboard, TextInput } from 'react-native';
+import { StyleSheet, TouchableHighlight, BackHandler, Alert, TouchableWithoutFeedback, Keyboard, TextInput,Dimensions } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import appColors from '../styles/colors.js';
 import PropTypes from 'prop-types';
@@ -67,6 +67,7 @@ export default class EventScreen extends Component {
 
     render() {
         const { navigate } = this.props.navigation;
+        const windowWidth = Dimensions.get('window').width;
         return (
         <Container>
             <ParallaxScrollView
@@ -238,10 +239,11 @@ export default class EventScreen extends Component {
             }
             renderContentBackground={() =>
                 <View style={{ flex: 1 }}>
-                    <AttendeeList navigation={this.props.navigation} roomID = {this.state.eventId}/>
-                    <Button style={styles.messageButton} onPress={()=>{navigate('Message', {eventId: this.state.eventId})}}>
-                        <Text style={styles.titleText}>留言區</Text>
+                    <Button style={[styles.messageButton,{}]} onPress={()=>{navigate('Message', {eventId: this.state.eventId})}}>
+                        <Text style={[styles.titleText,{width:windowWidth-20}]}>留言區 . . . . .</Text>
                     </Button>
+                    <AttendeeList navigation={this.props.navigation} roomID = {this.state.eventId}/>
+                    
                 </View>
             }
             
@@ -340,7 +342,6 @@ export default class EventScreen extends Component {
             else if (this.state.time === null) Alert.alert("時間不能為空");
             else if (this.state.placeCoord === null) Alert.alert("地點不能為空");
             else {
-                console.log("saved!");
                 editEvent({ 'title': this.state.title, 'date' : this.state.date,'time': this.state.time, 'placeName': this.state.placeName, 'placeCoord':this.state.placeCoord, 'nameIsAddress':this.state.nameIsAddress }, this.state.eventId);
                 this.setState({ edit: false, });
                 Alert.alert("已儲存!");
@@ -507,9 +508,16 @@ const styles = StyleSheet.create({
     },
 
     messageButton: {
-        backgroundColor: appColors.appBlue,
-        height: 60,
-        width: 125,
+        // marginVertical: 10,
+        // width:350,
+        borderRadius: 20,
+        borderWidth: 1,
+        backgroundColor: appColors.backgroundBlue,
+        borderColor: appColors.textBlack,
+        height: 'auto',
+        alignSelf:'center',
+        
+        
     },
 
     titleText: {

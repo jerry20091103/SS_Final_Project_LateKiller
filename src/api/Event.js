@@ -255,6 +255,7 @@ export async function getEventInfo(eventID) {
         //attendeeStatus: Array of objects. Objects contain attendee's name and he/she arrives or not.
         attendeeStatus: [],
         attendeeMessage: [],
+        nameIsAddress: 'false'
     }
 
     try {
@@ -269,6 +270,7 @@ export async function getEventInfo(eventID) {
         eventInfo.time = data.time;
         eventInfo.placeName = data.placeName;
         eventInfo.placeCoord = data.placeCoord;
+        eventInfo.nameIsAddress = data.nameIsAddress;
         try {
             data.attendee.forEach((id) => {
                 eventInfo.attendeeStatus.push({
