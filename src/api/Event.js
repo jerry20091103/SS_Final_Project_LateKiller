@@ -287,22 +287,6 @@ async function _getEventInfoList(eventIDList) {
                     goTime: 'unkown'
 
                 }
-
-                const attendeeStatus = data.attendeeStatus;
-                console.log(attendeeStatus);
-
- 
-                for (let key in attendeeStatus)
-                {
-                    if(attendeeStatus[key] == false)
-                    {
-                      
-                    }
-                }
-
-                  await  finishEvent(code);
-                    
-
               
                 const data = doc.data();
                 eventInfo.active = data.active;
