@@ -431,7 +431,7 @@ export default class EventScreen extends Component {
             modified: true,
             title: newTitle
         });
-        console.log(newTitle);
+        // console.log(newTitle);
     }
     async onChangePlace() {
         let coordTemp = await AsyncStorage.getItem('coord');
