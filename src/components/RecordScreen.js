@@ -28,7 +28,7 @@ export default class RecordScreen extends Component {
                 <TouchableHighlight
                   activeOpacity={0.6}
                   underlayColor={BtnColor}
-                  onPress={() => this.props.navigation.replace('Home')}>
+                  onPress={() => this.props.navigation.pop()}>
                   <Icon style={{ color: appColors.textBlack }} name='arrow-back' />
                 </TouchableHighlight>
               </Left>
