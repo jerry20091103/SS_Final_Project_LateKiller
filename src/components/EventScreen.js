@@ -359,7 +359,7 @@ export default class EventScreen extends Component {
 
 
                 let info = await getEventInfo(this.state.eventId);
-                this.setArrivalTimeFromAPI(info.placeCoord,this.state.eventId, 'car');
+                this.setArrivalTimeFromAPI(info.placeCoord,this.state.eventId, this.state.transitMode);
                 //console.log(info);
                 this.setState({
                     ...this.state,
@@ -486,7 +486,7 @@ export default class EventScreen extends Component {
         this.setState({
             transitMode: mode,
         });
-        this.setArrivalTimeFromAPI(info.placeCoord,this.state.eventId, mode);
+        this.setArrivalTimeFromAPI(this.state.placeCoord,this.state.eventId, this.state.transitMode);
     }
 
 }

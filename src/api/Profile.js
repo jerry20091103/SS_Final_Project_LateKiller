@@ -29,10 +29,9 @@ export async function getProfile() {
         img: '',
         avgLateTime: 0,
         level: 0,
-        exp: 10,
+        exp: 0,
         expFull: 100,
-        transportation:'',
-        my_events:[],
+        my_events:{},
         history:[]
     }
 
@@ -48,10 +47,10 @@ export async function getProfile() {
         img: GoogleUserImage,
         avgLateTime: 0,
         level: 0,
-        exp: 10,
+        exp: 0,
         expFull: 100,
-        transportation:'',
-        my_events:[]
+        my_events:{},
+        history:[]
     }
     await firestore().collection('users').doc(userUid).set(profile);
    } else {
