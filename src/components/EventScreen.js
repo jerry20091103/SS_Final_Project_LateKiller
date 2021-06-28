@@ -439,7 +439,7 @@ export default class EventScreen extends Component {
 
     handlePickTime() {
         this.setState({
-            timeTimestamp: this.state.time ? new Date(moment(this.state.time, 'hh:mm')) : new Date(),
+            timeTimestamp: this.state.time ? new Date(moment(this.state.time, 'HH:mm')) : new Date(),
             showPickTime: true
         });
     }
@@ -449,7 +449,7 @@ export default class EventScreen extends Component {
             modified: true,
             showPickTime: false,
             timeTimestamp: selectedTime || this.state.timeTimestamp,
-            time: moment(selectedTime || this.state.timeTimestamp).format('hh:mm')
+            time: moment(selectedTime || this.state.timeTimestamp).format('HH:mm')
         });
     }
 
@@ -605,7 +605,7 @@ const styles = StyleSheet.create({
 
 function convertGoTime(wantedTime, timeNeed, active) {
     if (!active)
-       return moment(wantedTime).subtract(timeNeed, 'minutes').format('hh:mm') + '　出發';
+       return moment(wantedTime).subtract(timeNeed, 'minutes').format('HH:mm') + '　出發';
     else
-        return　moment().add(timeNeed, 'minutes').format('hh:mm') + '　抵達'
+        return　moment().add(timeNeed, 'minutes').format('HH:mm') + '　抵達'
 }
