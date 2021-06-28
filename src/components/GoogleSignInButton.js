@@ -43,12 +43,13 @@ export default class GoogleSignInButton extends React.Component {
 
     async googleSignIn() {
         prepareSignInWithGoogle();
-        signInFireBase();
+        
         if(!this.state.isSigninInProgress) {
             this.setState({
                 isSigninInProgress: true,
             });
             var user = await signInWithGoogle();
+            await signInFireBase();
 
             this.setState({
                 isSigninInProgress: false,
