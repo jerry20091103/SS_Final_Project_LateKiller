@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, Image, Alert, Button, TouchableHighlight } from 'react-native'
-import { Container, Header, View, Icon, Fab, Content, Body, Thumbnail, Input } from 'native-base';
+import { StyleSheet, Text, Image, Alert, TouchableHighlight } from 'react-native'
+import { Container, Header, View, Icon, Fab, Content, Body, Thumbnail, Input,Button } from 'native-base';
 import BottomSheet from 'react-native-raw-bottom-sheet';
 import ProfileHeader from './ProfileHeader.js';
 import appColors from '../styles/colors.js';
@@ -69,14 +69,18 @@ export default class HomeScreen extends React.Component {
                             <View style={{ flexDirection: 'row' }}>
                                 <Text style={styles.bottomSheetText}>輸入房間號碼:</Text>
                                 <Input style={{ fontSize: 22 }} placeholder="room ID" onChangeText={this.onChangeRoomID} />
-
-                                <TouchableHighlight
+                                <View style={{flex:0.3,paddingRight:15,justifyContent: 'center',alignItems:'center'}}>
+                                    <Button style={{width:55,height:40 ,justifyContent: 'center',alignItems:'center',backgroundColor :appColors.appBlue,borderRadius: 14}} onPress={() => this.handleSubmitRoomID()}>
+                                        <Text style={{fontSize:20, color:'white'}}>確定</Text>
+                                    </Button>
+                                </View>
+                                {/* <TouchableHighlight
                                     activeOpacity={0.6}
                                     style={{}}
                                     underlayColor="#DDDDDD"
                                     onPress={() => this.handleSubmitRoomID()}>
                                     <Text style={styles.sureButton}>確定</Text>
-                                </TouchableHighlight>
+                                </TouchableHighlight> */}
                             </View>
                         </View>
 
@@ -127,7 +131,6 @@ export default class HomeScreen extends React.Component {
             this.setState({
                 EventlistRefresh: !this.state.EventlistRefresh,
             })
-            console.log('back to home');
         });
         this.getProfileData();
     }

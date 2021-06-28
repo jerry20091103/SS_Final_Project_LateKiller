@@ -104,7 +104,7 @@ export default class AttendeeList extends Component {
                                         user={this.state.OnpressName} image={this.state.OnpressPicture}
                                         avgLateTime={this.state.OnpressAvgLateTime}
                                         level={this.state.OnpressLevel}
-                                        exp={this.state.OnpressExp} expFull={1000}
+                                        exp={this.state.OnpressExp} expFull={100}
                                     />
                                 </ViewOverflow>
                             </View>
