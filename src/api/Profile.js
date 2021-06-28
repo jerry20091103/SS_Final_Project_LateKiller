@@ -51,7 +51,7 @@ export async function getProfile() {
         level: 0,
         exp: 0,
         expFull: 100,
-        my_events:{},
+        my_events:[],
         history:[],
         transportation:'',
     }
@@ -125,7 +125,6 @@ export async function getProfileByUidList(UidList, code) {
                     level: 0,
                     exp: 0, 
                     expFull: 100,
-                    calTime:0, //預估時間
                 };
                 profile.Uid =  data.Uid;
                 profile.username = data.username;
@@ -133,7 +132,6 @@ export async function getProfileByUidList(UidList, code) {
                 profile.avgLateTime = data.avgLateTime;
                 profile.level = data.level;
                 profile.exp=data.exp;
-                profile.calTime = data.my_events[code];
                 profileList.push(profile);
 
          

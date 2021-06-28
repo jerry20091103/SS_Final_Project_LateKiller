@@ -35,7 +35,7 @@ export default class EventList extends React.Component {
                     {/* time and goTime */}
                     <View style={{ flex: 4, margin: 5 }}>
                         <Text style={styles.titleText}>{item.time}</Text>
-                        <Text style={styles.goTimeText}>{convertGoTime(item.goTime)}</Text>
+                        <Text style={styles.goTimeText}>{item.goTime}</Text>
                     </View>
                 </View>
             </Button>
@@ -76,10 +76,20 @@ export default class EventList extends React.Component {
 
     getData = async () => {
         await EventApiInit();
+
+        
         const data = await listEvent();
+
+        let covertedData = [];
+        data.forEach((event)=>{
+            console.log(event);
+            event.goTime = convertGoTime(event.timestamp, event.goTime, event.active);
+            covertedData.push(event);
+        })
+
         this.setState({
             loading: false,
-            data: data
+            data: covertedData
         })//測試用
     }
 
@@ -103,11 +113,11 @@ const EventListItem = ({ id, title, time, goTime }) => (
     </Button>
 );
 
-function convertGoTime(goTime) {
-    if (goTime < 60)
-        return goTime + ' min ' + ' 抵達';
+function convertGoTime(wantedTime, timeNeed, active) {
+    if (!active)
+       return moment(wantedTime).subtract(timeNeed, 'minutes').format('MM-DD HH:mm') + '　出發';
     else
-        return moment().add(goTime, 'minutes').format('hh:mm') + '  出發';
+        return　moment().add(timeNeed, 'minutes').format('HH:mm') + '　抵達'
 }
 
 
