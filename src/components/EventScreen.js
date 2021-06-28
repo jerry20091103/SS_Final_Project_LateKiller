@@ -67,9 +67,9 @@ export default class EventScreen extends Component {
     render() {
         const { navigate } = this.props.navigation;
         return (
-        <>
+        <Container>
             <ParallaxScrollView
-            parallaxHeaderHeight={280}
+            parallaxHeaderHeight={290}
             fadeOutForeground={true}
             // renderStickyHeader={()=>
                 
@@ -115,7 +115,7 @@ export default class EventScreen extends Component {
                     </View>
             }
             renderForeground={()=>
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss}><Container>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}><>
                 <View style={styles.container}>
                     {/* header area */}
                     <View style={{flex:2}}></View>
@@ -233,7 +233,7 @@ export default class EventScreen extends Component {
                     />
                 )}
 
-            </Container></TouchableWithoutFeedback>
+            </></TouchableWithoutFeedback>
             }
             renderContentBackground={() =>
                 <View style={{ flex: 1 }}>
@@ -292,7 +292,7 @@ export default class EventScreen extends Component {
                     </View>
 
                 </BottomSheet>
-        </>
+        </Container>
         );
     }
     getDefaultTitle(){
@@ -301,6 +301,7 @@ export default class EventScreen extends Component {
     }
     async handleTopButtonPress() {
         Keyboard.dismiss();
+        // console.log('place:',this.state.placeCoord);
         if (!this.state.edit) {
             this.setState({
                 edit: true,
