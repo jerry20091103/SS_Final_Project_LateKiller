@@ -179,9 +179,11 @@ export default class EventScreen extends Component {
 
                         </View>
                         <View style={{ flex: 2 }}>
-                            <Button block style={[styles.messageButton, {}]} onPress={() => { navigate('Message', { eventId: this.state.eventId }) }}>
-                                <Text style={[styles.detailTextGray, { margin: 10, color: appColors.textBlack}]}>留言區 . . . . .</Text>
-                            </Button>
+                            { !this.state.newEvent &&
+                                <Button block style={[styles.messageButton, {}]} onPress={() => { navigate('Message', { eventId: this.state.eventId }) }}>
+                                    <Text style={[styles.detailTextGray, { margin: 10, color: appColors.textBlack}]}>留言區 . . . . .</Text>
+                                </Button>
+                            }
                             <AttendeeList navigation={this.props.navigation} roomID={this.state.eventId} />
                         </View>
                     </View>

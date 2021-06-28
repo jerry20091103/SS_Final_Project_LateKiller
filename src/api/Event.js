@@ -191,13 +191,13 @@ export async function leaveEvent(code) {
             
 
             let [snapshot, r2, r3, r4, r5] = await Promise.all([p1, p2, p3, p4, p5]);
-
+            
             let eventInfo = snapshot.data()
             if (eventInfo['attendee'].length <= 1) {
                 await firestore().collection('event').doc(code).delete();
                 console.log('delete empty event')
             }
-
+            
             return;
         }
         catch{
@@ -619,7 +619,7 @@ async function _updateAvgLateTime()
 
 async function ExpCalculate(arrTimeDiff) {
     // recalculate arrive time, let it be >= 1 or <= -1.
-    let roundTime = (arrTimeDiff > 0) ? Math.ceil(arrTimeDiff) : Math.floor(arrTimeDiff);
+    let roundTime = (arrTimeDiff > 0) ? Math.floor(arrTimeDiff) : Math.ceil(arrTimeDiff);
     let profile = await getProfile();
     let result = {
         streak: profile.streak,
@@ -655,7 +655,7 @@ async function ExpCalculate(arrTimeDiff) {
     }
     // level down.
     while(result.exp < 0) {
-        result.level += 1;
+        result.level -= 1;
         result.expFull = 100 * ((result.level >= 0) ? (result.level + 1) : 2);
         result.exp += result.expFull;
     }
