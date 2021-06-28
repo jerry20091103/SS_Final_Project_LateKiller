@@ -30,7 +30,7 @@ export async function creatEvent(eventInfo) {
                 })
 
             await attendEvent(code);
-            await setArrivalTime(eventInfo.placeCoord, code, 'car');
+            await setArrivalTime(eventInfo.placeCoord, code, 'driving');
             return;
         }
         catch{
