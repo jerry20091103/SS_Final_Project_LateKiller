@@ -1,11 +1,9 @@
 import firestore from '@react-native-firebase/firestore';
-import firebase from '@react-native-firebase/app';
 import { getUid } from '../utilities/User';
 import{ getProfile, getProfileByUidList, setProfile} from'../api/Profile';
-import {getCurrentLocation} from  '../utilities/GetCurrentLocation';
-import { getTravelTime } from  '../utilities/GetTravelTime';
+import{ getProfileByUidList, setProfile} from'../api/Profile';
+import {getPredictTime} from '../utilities/GetPredictTime';
 import moment from 'moment';
-import { Item } from 'native-base';
 const shortid = require('shortid');
 let userUid = '';
 
@@ -271,6 +269,7 @@ async function _getEventInfoList(eventIDList) {
 export async function getEventInfo(eventID) {
 
     let eventInfo = {
+        active: false,
         title: 'unknown',
         date: 'unknown',
         location: 'unknown',
@@ -288,7 +287,7 @@ export async function getEventInfo(eventID) {
 
         let data = Snapshot.data();
 
-
+        eventInfo.active = data.active;
         eventInfo.title = data.title;
         eventInfo.date = data.date;
         eventInfo.time = data.time;
@@ -355,11 +354,11 @@ export async function  setArrivalTime(desPos, code, mode) {
         if(active)
         {
             let userArrivalTime = 0;
-             userArrivalTime = await _arrivalTimeCaculate(desPos, mode)
+             userArrivalTime = await getPredictTime(desPos, mode)
             
              console.log( userArrivalTime);
 
-             if(userArrivalTime <= 0.5)
+             if(userArrivalTime >=  0 && userArrivalTime <= 1)
              {
                  console.log('arrive');   
                 arriveEvent(code);
@@ -454,8 +453,6 @@ export async function arriveEvent(code) {
                 ["attendeeStatus."+userUid]: true,
                 ["attendeeArrivalTime."+userUid]: timeDiff,
             }); 
-        
-            console.log('here2');
             const attendeeStatus = data.attendeeStatus;
             
            for (let key in attendeeStatus)
@@ -493,12 +490,13 @@ export async function finishEvent(code) {
             const data = snapshot.data();
 
 
+
             const newHistory ={
                 title: data.title,
                 time: data.date + ' ' + data.time,
                 arrTimeDiff: data.attendeeArrivalTime['userUid'],
             }
-
+           console.log(data.history);
            console.log(newHistory);
 
            let result = await ExpCalculate(newHistory.arrTimeDiff);
@@ -510,6 +508,21 @@ export async function finishEvent(code) {
                 exp: result.exp,
                 expFull: result.expFull
             });    
+           await setProfile({
+            ['my_events.'+code] : firestore.FieldValue.delete(),
+           
+            history:firestore.FieldValue.arrayUnion(newHistory)
+
+        });   
+
+           if(data.history.length >= 10)
+           {
+              await setProfile({
+                history:firestore.FieldValue.arrayRemove(data.history[1])
+              })
+           }
+
+        
 
             await firestore().collection('event').doc(code).delete();
             console.log('delete empty event');
@@ -536,28 +549,7 @@ function _CodeGen() {
     return shortid.generate();
 }
 
-async function _arrivalTimeCaculate(desPos, mode) {
 
-    try
-    {
-      let arrivalTime = 0;
-
-        const curPos = await getCurrentLocation();
-      
-  
-        const travelTime = await getTravelTime({lat:curPos.lat,lng:curPos.lng},desPos,mode); /*prvent overuse*/
-        arrivalTime = Math.round(travelTime.value/60);    /*prvent overuse*/
-        console.log(arrivalTime);
-        return arrivalTime;
-
-    }
-    catch
-    {
-        console.log('arrivalTime Caculation Error')
-    }
-
-    
-}
 
 async function _checkEventStatus(code) {
     const snapshot = await firestore().collection('event').doc(code).get();
@@ -609,7 +601,19 @@ async function timeDiffCalculate(code) {
     let dura = arrTime.format('x') - curTime.format('x');
     timeDiff = moment.duration(dura);
     return Math.round(timeDiff.minutes());
-  
+}
+
+async function _updateAvgLateTime()
+{
+    const snapshot = await firestore().collection('users').doc(userUid).get();
+    const data = snapshot.data();
+    let eventHistory = data.history;
+
+
+    eventHistory.forEach((history)=>{
+        console.log(history);
+        
+    })
 
 
     
@@ -659,4 +663,6 @@ async function ExpCalculate(arrTimeDiff) {
     }
 
     return result;
+
+
 }

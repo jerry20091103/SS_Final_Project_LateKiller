@@ -59,8 +59,8 @@ export default class AttendeeList extends Component {
                         </View>
 
                         <View style={{ flex: 3, justifyContent: 'center' }}>
-                        <Button style={[styles.arriveButton, { backgroundColor: TimebtnColor }]} onPress={() => this.handleLeaveEvent(item.Uid)}>
-                                <Text style={{ color: TimetextColor, fontSize: 25 }}>
+                        <Button rounded style={[styles.arriveButton, { backgroundColor: TimebtnColor }]} onPress={() => this.handleLeaveEvent(item.Uid)}>
+                                <Text style={{ color: TimetextColor, fontSize: 20 }}>
                                     {item.TimebeforeArrive <= 0 ? ArriveText : ConvertLateTime(item.TimebeforeArrive)}
                                 </Text>
                             </Button>
@@ -205,12 +205,12 @@ const styles = StyleSheet.create({
         borderRadius: 40,
         borderWidth: 5,
         borderColor: appColors.backgroundBlue,
-        height: 70,
-        width: 70,
+        height: 60,
+        width: 60,
         // marginBottom: 5
     },
     profileHeader: {
-        borderRadius: 100,
+        borderRadius: 30,
         position: 'absolute',
         height: 180,
         backgroundColor: appColors.backgroundBlue
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
 
     infoText: {
         color: appColors.textBlack,
-        fontSize: 22,
+        fontSize: 20,
         // justifyContent: 'flex-end'
     },
     lvText: {
@@ -232,16 +232,15 @@ const styles = StyleSheet.create({
     },
     arriveButton: {
         justifyContent: 'center',
-        borderRadius: 20,
         width: 90
         // marginTop: 'auto',
     },
     UserButton: {
         marginVertical: 10,
-        borderRadius: 20,
+        borderRadius: 15,
         borderWidth: 1,
         backgroundColor: 'white',
-        borderColor: appColors.textBlack,
+        borderColor: appColors.textGray,
         height: 'auto'
     }
 })
