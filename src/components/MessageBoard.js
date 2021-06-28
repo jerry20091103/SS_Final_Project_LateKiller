@@ -10,7 +10,7 @@ import { getProfile, profileApiInit } from '../api/Profile.js';
 import { getUid, getUsername } from '../utilities/User.js';
 
 // Unfinished yet.
-// TODO: onEndEditing and test.
+// TODO: screen navigation and test
 export default class MessageBoard extends React.Component {
     static propTypes = {
         eventId: PropTypes.string,
@@ -83,7 +83,21 @@ export default class MessageBoard extends React.Component {
 
     onEndEditing = () => {
         // push message to database.
-        // TODO
+        try {
+            firestore().collection('event').doc(this.props.eventId).set({
+                "attendeeMessage": {
+                    [this.state.userUid]: this.state.message
+        
+                }
+            }, { merge: true });
+        } catch(error) {
+            console.log(error);
+            throw new Error("Error at onEndEditing when pushing message to database.");
+        }
+    }
+
+    onRefresh = () => {
+        // on refresh.
     }
 
     async getData() {
