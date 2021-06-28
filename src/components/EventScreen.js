@@ -67,7 +67,7 @@ export default class EventScreen extends Component {
 
     render() {
         const { navigate } = this.props.navigation;
-        const windowWidth = Dimensions.get('window').width;
+        const addressSize = this.state.placeName.length > 16 ? 15 : 20;     
         return (
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}><Container>
                 {/* header area */}
@@ -111,70 +111,70 @@ export default class EventScreen extends Component {
                 <ScrollView style={{flex:1}}>
                 <View style={styles.container}>
                     {/* <View style={{flex:2.5}}></View> */}
-                    <View style={{ flex: 5, padding: 15, backgroundColor: appColors.backgroundLightBlue, borderTopLeftRadius: 15, borderTopRightRadius: 15 }}>
+                    <View style={{ flex: 1, padding: 15, backgroundColor: appColors.backgroundLightBlue, borderTopLeftRadius: 15, borderTopRightRadius: 15 }}>
                         {/* Event details */}
                         <View style={{ flex: 1, marginBottom: 10, marginLeft: 10 }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <Text style={styles.detailText}>日期: </Text>
+                                <Text style={styles.detailTextBold}>日期: </Text>
                                 {this.state.edit || this.state.newEvent ? (
                                     // pick date button
-                                    <Text style={styles.detailTextGray} onPress={() => this.handlePickDate()}>
+                                    <Text style={[styles.detailTextGray, {textDecorationLine: 'underline'}]} onPress={() => this.handlePickDate()}>
                                         {this.state.date == null ? '新增日期' : this.state.date}
                                     </Text>
                                 ) : (
                                         // show data from server
-                                        <Text>
+                                        <Text style={styles.detailText}>
                                             {this.state.date}
                                         </Text>
                                     )}
                             </View>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <Text style={styles.detailText}>時間: </Text>
+                                <Text style={styles.detailTextBold}>時間: </Text>
                                 {this.state.edit || this.state.newEvent ? (
                                     // pick time button
-                                    <Text style={styles.detailTextGray} onPress={() => this.handlePickTime()}>
+                                    <Text style={[styles.detailTextGray, {textDecorationLine: 'underline'}]} onPress={() => this.handlePickTime()}>
                                         {this.state.time == null ? '新增時間' : this.state.time}
                                     </Text>
                                 ) : (
                                         // show data from server
-                                        <Text>
+                                        <Text style={styles.detailText}>
                                             {this.state.time}
                                         </Text>
                                     )}
                             </View>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <Text style={styles.detailText}>地點: </Text>
+                                <Text style={styles.detailTextBold}>地點: </Text>
                                 {this.state.edit || this.state.newEvent ? (
                                     // location picker
-                                    <Text style={styles.detailTextGray} onPress={() => navigate("PlaceSelect", { coord: this.state.placeCoord, onGoBack: () => this.onChangePlace(), name: this.state.placeName, nameIsAddress: this.state.nameIsAddress })}>{this.state.placeName || "新增地點"}</Text>
+                                    <Text style={[styles.detailTextGray, {fontSize: addressSize, maxWidth: 305, textDecorationLine: 'underline'}]} onPress={() => navigate("PlaceSelect", { coord: this.state.placeCoord, onGoBack: () => this.onChangePlace(), name: this.state.placeName, nameIsAddress: this.state.nameIsAddress })}>{this.state.placeName || "新增地點"}</Text>
                                 ) : (
                                         // show data from server
-                                        <Text>
+                                        <Text style={[styles.detailText, {fontSize: addressSize}]}>
                                             {this.state.placeName}
                                         </Text>
                                     )}
                             </View>
 
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <Text style={styles.detailText}>房間號碼: </Text>
+                                <Text style={styles.detailTextBold}>房間號碼: </Text>
                                 {/* 新房間的號碼也直接由firebase提供? */}
-                                <Text style={styles.detailTextGray}>{this.state.eventId}</Text>
+                                <Text style={styles.detailText}>{this.state.eventId}</Text>
                             </View>
 
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <Text style={styles.detailText}>已到人數: </Text>
+                                <Text style={styles.detailTextBold}>已到人數: </Text>
                                 {this.state.edit || this.state.newEvent ? (
-                                    <Text style={styles.detailTextGray}>{this.state.arriveNum}</Text>
+                                    <Text style={styles.detailText}>{this.state.arriveNum}</Text>
                                 ) : (
                                         // show data from server
-                                        <Text style={styles.detailTextGray}>{this.state.arriveNum}</Text>
+                                        <Text style={styles.detailText}>{this.state.arriveNum}</Text>
                                     )}
                             </View>
 
                         </View>
                         <View style={{ flex: 2 }}>
-                            <Button style={[styles.messageButton, {}]} onPress={() => { navigate('Message', { eventId: this.state.eventId }) }}>
-                                <Text style={[styles.titleText, { width: windowWidth - 20 }]}>留言區 . . . . .</Text>
+                            <Button block style={[styles.messageButton, {}]} onPress={() => { navigate('Message', { eventId: this.state.eventId }) }}>
+                                <Text style={[styles.detailTextGray, { margin: 10, color: appColors.textBlack}]}>留言區 . . . . .</Text>
                             </Button>
                             <AttendeeList navigation={this.props.navigation} roomID={this.state.eventId} />
                         </View>
@@ -494,14 +494,14 @@ const styles = StyleSheet.create({
     },
 
     messageButton: {
-        marginVertical: 10,
         // width:350,
-        borderRadius: 20,
+        borderRadius: 15,
         borderWidth: 1,
         backgroundColor: appColors.backgroundBlue,
-        borderColor: appColors.textBlack,
+        borderColor: appColors.textGray,
         height: 'auto',
-        alignSelf: 'center',
+        margin: 10,
+        justifyContent: 'flex-start'
 
 
     },
@@ -512,6 +512,11 @@ const styles = StyleSheet.create({
         marginVertical: 5
     },
     detailText: {
+        color: appColors.textBlack,
+        fontSize: 20,
+        marginVertical: 5,
+    },
+    detailTextBold: {
         color: appColors.textBlack,
         fontSize: 20,
         marginVertical: 5,
