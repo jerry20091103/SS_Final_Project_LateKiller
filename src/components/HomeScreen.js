@@ -10,7 +10,7 @@ import { ProfileApiInit, getProfile } from '../api/Profile.js'
 import firestore from '@react-native-firebase/firestore';
 import { rgb } from 'color';
 import { attendEvent } from '../api/Event.js';
-import { predictApiInit} from'../utilities/GetPredictTime';
+import { withNavigation } from 'react-navigation';
 
 
 export default class HomeScreen extends React.Component {
@@ -23,7 +23,8 @@ export default class HomeScreen extends React.Component {
             level: 0,
             exp: 1,
             expFull: 1,
-            roomID: ''
+            roomID: '',
+            EventlistRefresh: false
         };
     }
     onChangeInput = (inputText) => {
@@ -42,7 +43,7 @@ export default class HomeScreen extends React.Component {
                 </View>
                 <View style={{ flex: 3, backgroundColor: appColors.backgroundLightBlue, borderTopLeftRadius: 15, borderTopRightRadius: 15 }}>
                     {/* show list of upcoming events */}
-                    <EventList navigation={this.props.navigation} />
+                    <EventList navigation={this.props.navigation} Ref={this.state.EventlistRefresh} />
                     {/* bottom sheet that pop up when fab is pressed */}
                     <BottomSheet
                         ref={ref => {
@@ -117,7 +118,17 @@ export default class HomeScreen extends React.Component {
 
         return;
     }
+    componentWillUnmount() {
+        this.focusListener.remove();
+      }
     componentDidMount() {
+        const { navigation } = this.props;
+        this.focusListener = navigation.addListener('didFocus', () => {
+            this.setState({
+                EventlistRefresh: !this.state.EventlistRefresh,
+            })
+            console.log('back to home');
+        });
         this.getProfileData();
         predictApiInit();
     }
