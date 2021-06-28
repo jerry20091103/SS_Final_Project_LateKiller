@@ -202,9 +202,7 @@ function ConvertLateTime(time) {
 const styles = StyleSheet.create({
     profilePic: {
         // margin: 10,
-        borderRadius: 40,
-        borderWidth: 5,
-        borderColor: appColors.backgroundBlue,
+        borderRadius: 60,
         height: 60,
         width: 60,
         // marginBottom: 5

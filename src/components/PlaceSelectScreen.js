@@ -56,7 +56,7 @@ export default class PlaceSelectScreen extends Component {
                         <MapView
                             ref={ref => { this.MapView = ref }}
                             style={{ flex: 1 }}
-                            initialRegion={{
+                            initialRegion={this.state.resultRegion || {
                                 latitude: 24.79602428409072,
                                 longitude: 120.99213309502275,
                                 latitudeDelta: 0.1,
@@ -101,8 +101,7 @@ export default class PlaceSelectScreen extends Component {
                                         latitudeDelta: 0.01,
                                         longitudeDelta: 0.01
                                     }
-                                });
-                                this.MapView.animateToRegion(this.state.resultRegion, 1000);
+                                }, () => this.MapView.animateToRegion(this.state.resultRegion, 1500));                                
                             }}
                             query={{
                                 key: browserApiKey,
