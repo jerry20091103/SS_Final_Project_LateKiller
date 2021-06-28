@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { StyleSheet, Text, Image, FlatList, RefreshControl, Alert, Dimensions, TouchableOpacity, Modal, TouchableWithoutFeedback,SafeAreaView, LogBox  } from 'react-native';
 import { Container, Header, Title, Button, Left, Right, Body, Icon, View, Item, Input, Fab } from 'native-base';
 import ViewOverflow from 'react-native-view-overflow';
-import  {getEventAttendeeInfo,leaveEvent} from '../api/Event';
+import  {getEventAttendeeInfo,leaveEven} from '../api/Event';
 import { getUid } from '../utilities/User';
 import ProfileHeader from './ProfileHeader.js';
 import {getProfileByUidList, displayProfileImage} from'../api/Profile';
@@ -158,6 +158,7 @@ export default class AttendeeList extends Component {
            let attendeeProfiles = await getEventAttendeeInfo(this.props.roomID);
 
 
+
                 this.setState(
                     {
                         ...this.state,
@@ -202,9 +203,7 @@ function ConvertLateTime(time) {
 const styles = StyleSheet.create({
     profilePic: {
         // margin: 10,
-        borderRadius: 40,
-        borderWidth: 5,
-        borderColor: appColors.backgroundBlue,
+        borderRadius: 60,
         height: 60,
         width: 60,
         // marginBottom: 5

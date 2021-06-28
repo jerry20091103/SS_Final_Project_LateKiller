@@ -2,7 +2,7 @@ import firestore from '@react-native-firebase/firestore';
 import { getUid } from '../utilities/User';
 import{ getProfile, getProfileByUidList, setProfile} from'../api/Profile';
 //import{ getProfileByUidList, setProfile} from'../api/Profile';
-import {getPredictTime} from '../utilities/GetPredictTime';
+import {getPredictTime, getAdviseTime} from '../utilities/GetPredictTime';
 import moment from 'moment';
 const shortid = require('shortid');
 let userUid = '';
@@ -26,9 +26,11 @@ export async function creatEvent(eventInfo) {
                     attendeeMessage:{},
                     active: false,
                     attendeeTransportation:{},
+                    attendeePredictTime:{},
                 })
 
-            attendEvent(code);
+            await attendEvent(code);
+            await setArrivalTime(eventInfo.placeCoord, code, 'driving');
             return;
         }
         catch{
@@ -100,27 +102,27 @@ export async function attendEvent(code) {
                         },
                         "attendeeTransportation":{
                             [userUid] : 'driving'
+                        },
+                        "attendeePredictTime":{
+                            [userUid] :  0
+                        },
+                        "attendeeMessage": {
+                            // [userUid]: '(空白)'
+                            [userUid]:''
+                                
                         }
                     },{ merge: true });
 
 
                 let p3 = firestore().collection('users').doc(userUid)
-                    .set({
-                        "my_events": {
-                            [code] : null
-                        }
-                    },{merge:true})
+                    .update({
+                        "my_events": firestore.FieldValue.arrayUnion(code)
+                    })
 
-                let p4 = firestore().collection('event').doc(code)
-                .set({
-                    "attendeeMessage": {
-                        // [userUid]: '(空白)'
-                        [userUid]:''
-                        
-                    }
-                }, { merge: true });
 
-                await Promise.all([p1, p2, p3, p4]);
+                await Promise.all([p1, p2, p3]);
+
+              
                 return;
             }
             else {
@@ -178,6 +180,9 @@ export async function leaveEvent(code) {
                     },
                     "attendeeTransportation":{
                         [userUid] : firestore.FieldValue.delete()
+                    },
+                    "attendeePredictTime":{
+                        [userUid] : firestore.FieldValue.delete()
                     }
                 },{ merge: true })
             
@@ -220,13 +225,12 @@ export async function listEvent() {
             let eventList = []
             const snapshot = await firestore().collection('users').doc(userUid).get();
             const data = snapshot.data();
-            let events = data.my_events;
-            let infoList = await _getEventInfoList(Object.keys(events));
+            let infoList = await _getEventInfoList(data.my_events);
             return infoList;
         }
         catch (err) {
             console.log(err);
-            throw new Error("damaged userProfile");
+            throw new Error("error when list event");
         }
     }
     else {
@@ -235,26 +239,55 @@ export async function listEvent() {
 
 }
 
+/*export async function getAttendeePredictTime(code) {
+
+    if (userUid) {
+        // console.log(userUid);
+        try {
+          
+            const snapshot = await firestore().collection('event').doc(code).get();
+            const data = snapshot.data();
+            return data.attendeePredictTime;
+        }
+        catch (err) {
+            console.log(err);
+            throw new Error("error when  get attendee predict time");
+        }
+    }
+    else {
+        throw new Error("not existed user");
+    }
+
+}*/
+
 async function _getEventInfoList(eventIDList) {
     let eventList = [];
 
+    
     try {
         if (eventIDList.length) {
+   
             let querySnapshot = await firestore().collection('event').where(firestore.FieldPath.documentId(), 'in', eventIDList).get()
             querySnapshot.forEach((doc) => {
 
                 let eventInfo = {
+                    active: false,
                     id: 'unknown',
                     title: 'unknown',
                     time: 'unknown',
+                    timestamp:'unknown',
                     goTime: 'unkown'
 
                 }
 
+              
                 const data = doc.data();
+                eventInfo.active = data.active;
                 eventInfo.id = data.id;
                 eventInfo.title = data.title;
-                eventInfo.time = data.date + ' ' + data.time;
+                eventInfo.time = data.date +' '+ data.time;
+                eventInfo.timestamp = data.date +'T'+ data.time;
+                eventInfo.goTime = data.attendeePredictTime[userUid];
                 eventList.push(eventInfo);
             });
         }
@@ -262,7 +295,7 @@ async function _getEventInfoList(eventIDList) {
 
     }
     catch{
-        throw new Error("error when get eventInfo");
+        throw new Error("error when get eventInfo List");
     }
 }
 
@@ -289,8 +322,6 @@ export async function getEventInfo(eventID) {
         let data = Snapshot.data();
 
         eventInfo.active = data.active;
-        //console.log('here333333333');
-        //console.log(data.active);
         eventInfo.title = data.title;
         eventInfo.date = data.date;
         eventInfo.time = data.time;
@@ -354,12 +385,13 @@ export async function  setArrivalTime(desPos, code, mode) {
           
        },{ merge: true });
 
-        if(active)
-        {
+       
+        if(active){
+
             let userArrivalTime = 0;
              userArrivalTime = await getPredictTime(desPos, mode)
             
-             console.log( userArrivalTime);
+            // console.log( userArrivalTime);
 
              if(userArrivalTime >=  0 && userArrivalTime <= 1)
              {
@@ -367,19 +399,34 @@ export async function  setArrivalTime(desPos, code, mode) {
                 arriveEvent(code);
              }
              
-            let p2 = firestore().collection('users').doc(userUid)
+            let p2 = firestore().collection('event').doc(code)
             .update({
-                ["my_events."+code]: userArrivalTime,
+                ["attendeePredictTime."+userUid]: userArrivalTime,
             });
 
             return Promise.all([p1,p2]);
 
         }
+        else
+        {
 
-        return Promise.all([p1]);
+             userArrivalTime = await getAdviseTime(desPos, mode)
+            
+            console.log( userArrivalTime);
+             
+            let p2 = firestore().collection('event').doc(code)
+            .update({
+                ["attendeePredictTime."+userUid]: userArrivalTime,
+            });
+
+            return Promise.all([p1,p2]);
+        
+        }
+
+      
     }
     catch
-    {+
+    {
         console.log("error when set arrival time");
     }
 
@@ -395,11 +442,15 @@ export async function  getEventAttendeeInfo (code) {
 
         let p1 = _checkEventStatus(code);
         let p2 = _getEventAttendee(code);
-        let [active, attendeeList] = await Promise.all([p1, p2]);
+        let p3 = firestore().collection('event').doc(code).get();
 
+        let [active, attendeeList, snapshot] = await Promise.all([p1, p2, p3]);
+
+        const data = snapshot.data();
+        let attendeePredictTime = data.attendeePredictTime;
         let attendeeData = await getProfileByUidList(attendeeList, code);
         let attendeeInfo = [];
-
+        
        
             attendeeData.forEach((attendee)=>{
 
@@ -418,7 +469,7 @@ export async function  getEventAttendeeInfo (code) {
                 info.username = attendee.username;
                 info.img = attendee.img;
                 if(active)
-                    info.TimebeforeArrive = attendee.calTime;
+                    info.TimebeforeArrive = attendeePredictTime[attendee.Uid];
                 else
                     info.TimebeforeArrive = attendee.avgLateTime;
                 info.avgLateTime = attendee.avgLateTime;
@@ -561,7 +612,6 @@ async function _checkEventStatus(code) {
     const data = snapshot.data();
 
   
-    console.log(data.attendeeStatus[userUid]);
     if(data.active)
     {
         return true;
@@ -571,8 +621,6 @@ async function _checkEventStatus(code) {
 
         let nowPlusAnHour = moment().add(1, 'hour');
         let ans =  nowPlusAnHour.isAfter(data.date  +'T'+  data.time);
-        //console.log('here66666666666666');
-        //console.log(ans);
         
         if(ans)
         {
