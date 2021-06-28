@@ -563,7 +563,6 @@ export async function finishEvent(code) {
             // update avg late time should be earlier than writing 
             // new history to database.
             let result = await ExpCalculate(newHistory.arrTimeDiff);
-            await _updateAvgLateTime(newHistory);
 
             await setProfile({
                 history:firestore.FieldValue.arrayUnion(newHistory),
@@ -584,7 +583,7 @@ export async function finishEvent(code) {
               })
            }
 
-        
+            await _updateAvgLateTime(newHistory);
 
             await firestore().collection('event').doc(code).delete();
             console.log('delete empty event');
@@ -663,17 +662,20 @@ async function _updateAvgLateTime(newHistory)
     const snapshot = await firestore().collection('users').doc(userUid).get();
     const data = snapshot.data();
 
-    let eventHistoryLength = data.history.length;
+    // let eventHistoryLength = data.history.length;
     let newAvgLateTime = 0;
 
     // calculate newAvgLateTime.
     data.history.forEach((record) => {
         newAvgLateTime += record.arrTimeDiff;
     });
+    newAvgLateTime /= 10;
+    /*
     newAvgLateTime += newHistory.arrTimeDiff;
     newAvgLateTime -= ((eventHistoryLength < 10) ? 0 : data.history[0].arrTimeDiff);
     newAvgLateTime /= Math.min((eventHistoryLength + 1), 10);
-    
+    */
+
     // Round it to 2 digits after decimal point.
     // EPSILON is for more accurate.
     newAvgLateTime += Number.EPSILON;
