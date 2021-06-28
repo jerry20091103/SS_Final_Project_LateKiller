@@ -12,6 +12,7 @@ import { creatEvent, editEvent, getEventInfo, setArrivalTime } from '../api/Even
 import AttendeeList from './AttendeeList.js'
 import {getAdviseTime, getPredictTime} from '../utilities/GetPredictTime';
 import Clipboard from '@react-native-community/clipboard';
+import { createKeyboardAwareNavigator } from 'react-navigation';
 
 
 /* Event Screen
@@ -54,7 +55,7 @@ export default class EventScreen extends Component {
             eventId: this.props.navigation.getParam('eventId', undefined),
             newEvent: this.props.navigation.getParam('newEvent', false),
             edit: this.props.navigation.getParam('edit', false),
-        }, () => { this.props.newEvent || this.getEventInfoFromAPI(); })
+        }, () => { this.props.newEvent || this.handleUpdate(); })
 
 
 
@@ -69,6 +70,7 @@ export default class EventScreen extends Component {
         this.handleGoBack();
         return true;
     }
+    
 
     render() {
         const { navigate } = this.props.navigation;
@@ -351,11 +353,11 @@ export default class EventScreen extends Component {
             if (!this.state.newEvent) {
 
 
-                let info = await getEventInfo(this.state.eventId);
-                this.setArrivalTimeFromAPI(info.placeCoord, this.state.eventId, this.state.transitMode);
-                console.log('here33333');
-                console.log(info.active);
-                this.setState({
+                return await getEventInfo(this.state.eventId);
+               // this.setArrivalTimeFromAPI(info.placeCoord, this.state.eventId, this.state.transitMode);
+                //console.log('here33333');
+                //console.log(info.active);
+               /* this.setState({
                     ...this.state,
                     active: info.active,
                     title: info.title,
@@ -366,7 +368,7 @@ export default class EventScreen extends Component {
                     nameIsAddress: info.nameIsAddress,
                     transitMode: info.transpotation,
                     arriveNum: this.getArrivedAttendeeNumber(info.attendeeStatus)
-                })
+                })*/
             }
         }
         catch (err) {
@@ -376,6 +378,7 @@ export default class EventScreen extends Component {
 
     async getGoTimeFromAPI(placeCoord, mode)
     {
+        console.log(mode);
         try 
         {
             let timeNeed = 0 ; 
@@ -386,9 +389,14 @@ export default class EventScreen extends Component {
             else
                 timeNeed = await getPredictTime(placeCoord, mode);
 
+          
+            console.log('herwe2');
+            console.log(timeNeed);
             this.setState({
                 goTime: convertGoTime(this.state.date+'T'+this.state.time, timeNeed, this.state.active)
-            })
+            });
+            console.log(convertGoTime(this.state.date+'T'+this.state.time, timeNeed, this.state.active));
+            return;
          
         }
         catch
@@ -427,6 +435,29 @@ export default class EventScreen extends Component {
 
         // console.log("Arrive Num: " + arriveNumber);
         return arriveNumber;
+    }
+
+    async handleUpdate(IsdefaultMode = true){
+
+        if(!IsdefaultMode)
+        {
+            await this.setArrivalTimeFromAPI(this.state.placeCoord,this.state.eventId, this.state.transitMode);
+        }
+       
+        const info = await this.getEventInfoFromAPI();
+         this.setState({
+                    ...this.state,
+                    active: info.active,
+                    title: info.title,
+                    date: info.date,
+                    time: info.time,
+                    placeName: info.placeName,
+                    placeCoord: info.placeCoord,
+                    nameIsAddress: info.nameIsAddress,
+                    transitMode: info.transpotation,
+                    arriveNum: this.getArrivedAttendeeNumber(info.attendeeStatus)
+                },()=>this.getGoTimeFromAPI(this.state.placeCoord, this.state.transitMode));
+
     }
 
     handlePickDate() {
@@ -513,10 +544,8 @@ export default class EventScreen extends Component {
         this.TransitPicker.close()
         this.setState({
             transitMode: mode,
-        });
-        await this.setArrivalTimeFromAPI(this.state.placeCoord,this.state.eventId, mode);
-        await this.getEventInfoFromAPI();
-        await this.getGoTimeFromAPI(this.state.placeCoord, mode);
+        },()=>{this.handleUpdate(false)});
+       
 
     }
 
