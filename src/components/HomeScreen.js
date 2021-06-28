@@ -134,8 +134,9 @@ export default class HomeScreen extends React.Component {
             })
             console.log('go homepage');
         });
-        this.getProfileData();
+        ;
         predictApiInit();
+       
     }
     async getProfileData() {
         await ProfileApiInit();
