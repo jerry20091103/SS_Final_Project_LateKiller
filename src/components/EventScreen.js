@@ -10,6 +10,8 @@ import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import moment from 'moment';
 import { creatEvent, editEvent, getEventInfo, setArrivalTime } from '../api/Event.js'
 import AttendeeList from './AttendeeList.js'
+import {getAdviseTime, getPredictTime} from '../utilities/GetPredictTime';
+
 
 /* Event Screen
     Event details are stored in this.state .
@@ -37,7 +39,9 @@ export default class EventScreen extends Component {
             showPickDate: false, // control popup date picker
             showPickTime: false, // control popup time picker
             arriveNum: 0,
-            transitMode: "driving" // (string) "driving" / "walking" / "bicycling" / "transit"
+            transitMode: "driving",// (string) "driving" / "walking" / "bicycling" / "transit"
+            goTime: '', 
+            active: false,
         };
     }
 
@@ -236,7 +240,7 @@ export default class EventScreen extends Component {
                 <View style={{ flex: 0.15, padding: 10, backgroundColor: appColors.btnGreen, borderTopLeftRadius: 15, borderTopRightRadius: 15, justifyContent: 'center' }}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', margin: 10 }}>
                         <Icon type='MaterialCommunityIcons' name={this.getTransitIcon()} style={styles.bottomIcon} onPress={() => this.TransitPicker.open()} />
-                        <Text style={{ color: appColors.textGreen, fontSize: 23, marginVertical: 5 }}>Time</Text>
+                        <Text style={{ color: appColors.textGreen, fontSize: 23, marginVertical: 5 }}>{this.state.goTime}</Text>
                         <Icon type='MaterialCommunityIcons' name='google-maps' style={styles.bottomIcon} />
                     </View>
                 </View>
@@ -348,6 +352,7 @@ export default class EventScreen extends Component {
                 //console.log(info);
                 this.setState({
                     ...this.state,
+                    active: info.active,
                     title: info.title,
                     date: info.date,
                     time: info.time,
@@ -362,6 +367,28 @@ export default class EventScreen extends Component {
         catch (err) {
             console.log(err);
         }
+    }
+
+    async getGoTimeFromAPI(placeCoord, mode)
+    {
+        try 
+        {
+            let timeNeed = 0 ; 
+            if(!this.state.active)
+                timeNeed =  await getAdviseTime(placeCoord, mode);
+            else
+                timeNeed = await getPredictTime(placeCoord, mode);
+
+            this.setState({
+                goTime: convertGoTime(this.state.date+'T'+this.state.time, timeNeed, this.state.active)
+            })
+         
+        }
+        catch
+        {
+            console.log('error when getting goTime');
+        }
+       
     }
 
 
@@ -473,7 +500,9 @@ export default class EventScreen extends Component {
             transitMode: mode,
         });
         await this.setArrivalTimeFromAPI(this.state.placeCoord,this.state.eventId, mode);
+        await this.getGoTimeFromAPI(this.state.placeCoord, mode);
         await this.getEventInfoFromAPI();
+
     }
 
 }
@@ -569,3 +598,9 @@ const styles = StyleSheet.create({
     },
 });
 
+function convertGoTime(wantedTime, timeNeed, active) {
+    if (!active)
+       return moment(wantedTime).subtract(timeNeed, 'minutes').format('hh:mm') + '　出發';
+    else
+        return　moment().add(timeNeed, 'minutes').format('hh:mm') + '　抵達'
+}
