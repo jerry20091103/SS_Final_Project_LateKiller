@@ -9,9 +9,7 @@ let userUid = '';
 export async function creatEvent(eventInfo) {
 
     if (userUid) {
-        let result = await ExpCalculate(25.7);
-        console.log(result);
-        result = await ExpCalculate(-5.8);
+        let result = await ExpCalculate(999);
         console.log(result);
         let code = _CodeGen();
         try {

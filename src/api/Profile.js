@@ -84,6 +84,17 @@ export async function getProfile() {
             throw new Error("Unknown error at getProfile when correcting empty user image.");
         });
     }
+    if(profile.streak === undefined) {
+        profile.streak = 0;
+        await firestore().collection('users').doc(userUid).update({
+            streak: 0
+        }).then(() => {
+            // console.log('User updated!');
+        }).catch((error) => {
+            console.log(error);
+            throw new Error("Unknown error at getProfile when correcting undefined streak.");
+        });
+    }
 
     //console.log(profile);
    }
