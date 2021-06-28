@@ -4,10 +4,11 @@ import { Animated, Easing, StyleSheet, Text, Image, Alert, Button, TouchableHigh
 import { Container, Header, View, Icon, Fab, Content, Body, Thumbnail, Input } from 'native-base';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import appMetrics from '../styles/metrics.js';
-export default class parallaxContainer extends React.Component {
+export default class ParallaxContainer extends React.Component {
     static propsTypes = {
         renderHeaderContent: PropTypes.func.isRequired,
-        renderScroller: PropTypes.func.isRequired
+        renderScroller: PropTypes.func.isRequired,
+        
     };
 
     constructor(props) {
@@ -61,7 +62,7 @@ export default class parallaxContainer extends React.Component {
                         ]
                     }
                 ]}>{renderHeaderContent({})}</Animated.View>
-
+            {this.props.children}
             </SafeAreaView>
         );
     }

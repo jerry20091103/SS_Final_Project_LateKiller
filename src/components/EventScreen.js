@@ -119,7 +119,7 @@ export default class EventScreen extends Component {
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}><>
                 <View style={styles.container}>
                     {/* header area */}
-                    <View style={{flex:2}}></View>
+                    <View style={{flex:2.5}}></View>
                     <View style={{ flex: 5, padding: 15, backgroundColor: appColors.backgroundLightBlue, borderTopLeftRadius: 15, borderTopRightRadius: 15 }}>
                         {/* Event details */}
                         <View style={{ flex: 1, marginBottom: 10, marginLeft: 10 }}>
@@ -208,7 +208,7 @@ export default class EventScreen extends Component {
                             onPress={() => { this.BottomSheet.close() }}>繼續編輯</Text>
                         <Text
                             style={styles.bottomSheetRedText}
-                            onPress={() => { this.props.navigation.replace('Home') }}>捨棄</Text>
+                            onPress={() => { this.props.navigation.pop() }}>捨棄</Text>
                     </View>
 
                 </BottomSheet>
@@ -330,7 +330,7 @@ export default class EventScreen extends Component {
                 creatEvent({ 'title': this.state.title, 'date' : this.state.date, 'time': this.state.time, 'placeName': this.state.placeName, 'placeCoord':this.state.placeCoord, 'nameIsAddress':this.state.nameIsAddress  });
                 this.setState({ edit: false, });
                 Alert.alert("已儲存!");
-                this.props.navigation.replace('Home');
+                this.props.navigation.pop();
             }
 
         }
@@ -344,7 +344,7 @@ export default class EventScreen extends Component {
                 editEvent({ 'title': this.state.title, 'date' : this.state.date,'time': this.state.time, 'placeName': this.state.placeName, 'placeCoord':this.state.placeCoord, 'nameIsAddress':this.state.nameIsAddress }, this.state.eventId);
                 this.setState({ edit: false, });
                 Alert.alert("已儲存!");
-                this.props.navigation.replace('Home');
+                this.props.navigation.pop();
             };// modify event in firebase
         }
         else {
@@ -359,7 +359,7 @@ export default class EventScreen extends Component {
 
 
                 let info = await getEventInfo(this.state.eventId);
-
+                this.setArrivalTimeFromAPI(info.placeCoord,this.state.eventId, 'car');
                 //console.log(info);
                 this.setState({
                     ...this.state,
@@ -461,7 +461,7 @@ export default class EventScreen extends Component {
     }
     handleGoBack() {
         if ((!this.state.modified && !this.state.newEvent)||!this.state.edit) {
-            this.props.navigation.replace('Home');
+            this.props.navigation.pop();
             return;
         }
         // show discard warning

@@ -184,7 +184,7 @@ export default class AttendeeList extends Component {
                     text: "取消",
                     onPress: () => {return},
                   },
-                  { text: "確定", onPress: () => {this.props.navigation.replace('Home') }}
+                  { text: "確定", onPress: () => {this.props.navigation.pop() }}
                 ]
               );
             await leaveEvent(this.props.roomID);
