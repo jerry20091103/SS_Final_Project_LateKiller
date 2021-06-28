@@ -340,7 +340,6 @@ export default class EventScreen extends Component {
             else if (this.state.time === null) Alert.alert("時間不能為空");
             else if (this.state.placeCoord === null) Alert.alert("地點不能為空");
             else {
-                console.log("saved!");
                 editEvent({ 'title': this.state.title, 'date' : this.state.date,'time': this.state.time, 'placeName': this.state.placeName, 'placeCoord':this.state.placeCoord, 'nameIsAddress':this.state.nameIsAddress }, this.state.eventId);
                 this.setState({ edit: false, });
                 Alert.alert("已儲存!");
