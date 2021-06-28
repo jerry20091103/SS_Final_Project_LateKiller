@@ -55,8 +55,8 @@ async function _timePredict(desPos, mode) {
         const curPos = await getCurrentLocation();
       
   
-        const travelTime = await getTravelTime({lat:curPos.lat,lng:curPos.lng},desPos,mode); /*prvent overuse*/
-        arrivalTime = Math.round(travelTime.value/60);    /*prvent overuse*/
+        //const travelTime = await getTravelTime({lat:curPos.lat,lng:curPos.lng},desPos,mode); /*prvent overuse*/
+        //arrivalTime = Math.round(travelTime.value/60);    /*prvent overuse*/
         console.log(arrivalTime);
         return arrivalTime;
 
