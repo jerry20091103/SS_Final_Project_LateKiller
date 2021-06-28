@@ -289,8 +289,8 @@ export async function getEventInfo(eventID) {
         let data = Snapshot.data();
 
         eventInfo.active = data.active;
-        console.log('here333333333');
-        console.log(data.active);
+        //console.log('here333333333');
+        //console.log(data.active);
         eventInfo.title = data.title;
         eventInfo.date = data.date;
         eventInfo.time = data.time;
