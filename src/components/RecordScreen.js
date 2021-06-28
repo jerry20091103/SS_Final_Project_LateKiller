@@ -14,16 +14,19 @@ export default class RecordScreen extends Component {
   }
   render() {
     const BtnColor = (this.state.avgLateTime >= 0 ? appColors.btnRed : appColors.btnGreen);
+    const BackgroundLightColor = (this.state.avgLateTime >= 0 ? appColors.backgroundLightRed : appColors.backgroundLightGreen)
     const TextColor = (this.state.avgLateTime >= 0 ? appColors.textRed : appColors.textGreen);
     const LateMins = ((this.state.avgLateTime > 0 ? '+ ' : '') + this.state.avgLateTime + ' Min');
     return (
       <Container>
         <ParallaxScrollView
-          parallaxHeaderHeight={250}
+          parallaxHeaderHeight={210}
           fadeOutForeground={true}
           backgroundColor={BtnColor}
+          borderRadius={15}
           renderFixedHeader={() =>
-            <Header transparent style={{ backgroundColor: BtnColor }}>
+            <View style={{ backgroundColor: BtnColor}}>
+            <Header transparent >
               <Left>
                 <TouchableHighlight
                   activeOpacity={0.6}
@@ -33,17 +36,18 @@ export default class RecordScreen extends Component {
                 </TouchableHighlight>
               </Left>
               <Body style={{ flex: 3 }}>
-                <Text style={{ fontSize: 25 }}>平均抵達時間</Text>
+                <Text style={styles.titleText}>平均抵達時間</Text>
               </Body>
             </Header>
+            </View>
           }
           renderForeground={() =>
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end' }}>
-              <Text style={{ fontSize: 50, margin: 35, color: TextColor }}>{LateMins}</Text>
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: 40}}>
+              <Text style={{ fontSize: 40, margin: 10, color: TextColor }}>{LateMins}</Text>
             </View>
           }
           renderContentBackground={() =>
-            <View style={{ flex: 1, backgroundColor: BtnColor, borderBottomLeftRadius: 15, borderBottomRightRadius: 15 }}>
+            <View style={{ flex: 1, backgroundColor: BackgroundLightColor}}>
               <View style={{ flex: 4 }}>
                 <RecordList />
               </View>
@@ -57,5 +61,9 @@ export default class RecordScreen extends Component {
   }
 }
 const styles = StyleSheet.create({
-
+  titleText: {
+    color: appColors.textBlack,
+    fontSize: 23,
+    marginVertical: 5
+},
 });
