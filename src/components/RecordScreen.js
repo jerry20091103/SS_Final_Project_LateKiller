@@ -5,17 +5,32 @@ import appColors from '../styles/colors.js';
 import RecordList from './RecordList.js'
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import { container } from 'react-native-parallax-scroll-view/src/styles';
+import { ProfileApiInit, getProfile } from '../api/Profile.js'
 export default class RecordScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      avgLateTime: 5
+      avgLateTime: 0
     };
   }
+  componentDidMount(){
+    this.getProfileData();
+  }
+  async getProfileData() {
+    await ProfileApiInit();
+    let profile = await getProfile();
+
+    this.setState(
+        {
+          avgLateTime: profile.avgLateTime,
+        }
+    )
+
+}
   render() {
-    const BtnColor = (this.state.avgLateTime >= 0 ? appColors.btnRed : appColors.btnGreen);
-    const BackgroundLightColor = (this.state.avgLateTime >= 0 ? appColors.backgroundLightRed : appColors.backgroundLightGreen)
-    const TextColor = (this.state.avgLateTime >= 0 ? appColors.textRed : appColors.textGreen);
+    const BtnColor = (this.state.avgLateTime > 0 ? appColors.btnRed : appColors.btnGreen);
+    const BackgroundLightColor = (this.state.avgLateTime > 0 ? appColors.backgroundLightRed : appColors.backgroundLightGreen)
+    const TextColor = (this.state.avgLateTime > 0 ? appColors.textRed : appColors.textGreen);
     const LateMins = ((this.state.avgLateTime > 0 ? '+ ' : '') + this.state.avgLateTime + ' Min');
     return (
       <Container>
