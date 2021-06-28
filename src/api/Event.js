@@ -9,6 +9,10 @@ let userUid = '';
 export async function creatEvent(eventInfo) {
 
     if (userUid) {
+        let result = await ExpCalculate(25.7);
+        console.log(result);
+        result = await ExpCalculate(-5.8);
+        console.log(result);
         let code = _CodeGen();
         try {
             await firestore().collection('event').doc(code)
@@ -190,13 +194,13 @@ export async function leaveEvent(code) {
             
 
             let [snapshot, r2, r3, r4, r5] = await Promise.all([p1, p2, p3, p4, p5]);
-
+            
             let eventInfo = snapshot.data()
             if (eventInfo['attendee'].length <= 1) {
                 await firestore().collection('event').doc(code).delete();
                 console.log('delete empty event')
             }
-
+            
             return;
         }
         catch{
@@ -656,7 +660,7 @@ async function ExpCalculate(arrTimeDiff) {
     }
     // level down.
     while(result.exp < 0) {
-        result.level += 1;
+        result.level -= 1;
         result.expFull = 100 * ((result.level >= 0) ? (result.level + 1) : 2);
         result.exp += result.expFull;
     }
