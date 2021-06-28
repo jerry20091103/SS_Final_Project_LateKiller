@@ -10,7 +10,7 @@ export default class RecordList extends Component {
 
         this.state = {
             loading: false,
-            testdata: sampleData// after api done, this would be replace as []
+            testdata: []// after api done, this would be replace as []
         }
     }
     // renderItem = ({ item }) => (

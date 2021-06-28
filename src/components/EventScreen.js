@@ -119,7 +119,7 @@ export default class EventScreen extends Component {
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}><Container>
                 <View style={styles.container}>
                     {/* header area */}
-                    <View style={{flex:2}}></View>
+                    <View style={{flex:2.5}}></View>
                     <View style={{ flex: 5, padding: 15, backgroundColor: appColors.backgroundLightBlue, borderTopLeftRadius: 15, borderTopRightRadius: 15 }}>
                         {/* Event details */}
                         <View style={{ flex: 1, marginBottom: 10, marginLeft: 10 }}>
@@ -355,7 +355,7 @@ export default class EventScreen extends Component {
 
 
                 let info = await getEventInfo(this.state.eventId);
-
+                this.setArrivalTimeFromAPI(info.placeCoord,this.state.eventId, 'car');
                 //console.log(info);
                 this.setState({
                     ...this.state,
