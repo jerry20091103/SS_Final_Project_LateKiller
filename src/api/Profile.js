@@ -132,6 +132,7 @@ export async function getProfileByUidList(UidList, code) {
                 profile.avgLateTime = data.avgLateTime;
                 profile.level = data.level;
                 profile.exp=data.exp;
+                profile.expFull = data.expFull;
                 profileList.push(profile);
 
          
