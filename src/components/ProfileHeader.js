@@ -40,11 +40,11 @@ export default class ProfileHeader extends React.Component {
                 {/* Right side (name, lv, exp, bar) */}
                 <View style={{ flex: 2 }}>
                     <View style={{flexDirection:'row',}}>
-                        <Text style={[styles.username,{flex:1}]} >{this.props.user}</Text>
+                        <Text style={styles.username} >{this.props.user}</Text>
                         {this.props.enableNavigation &&
-                            <Button style={{flex:1,backgroundColor:appColors.appBlue ,borderRadius:20,height: 40, justifyContent: 'center',alignSelf:'center'}} onPress={()=>{this.handleSignout()}}><Text style={{color:'white',fontSize:20}}>SignOut</Text></Button>
+                            <Button  style={{backgroundColor:appColors.appBlue ,height: 30, width: 50, justifyContent: 'center',alignSelf:'center', marginRight: 10, borderRadius: 15}} onPress={()=>{this.handleSignout()}}><Text style={{color:'white',fontSize:13}}>登出</Text></Button>
                         }
-                        <View style={{flex:1}}></View>
+
                         
                     </View>
                     <Text style={styles.levelText}>{'LV. ' + this.props.level}</Text>
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
         fontSize: 25,
         marginVertical: 10,
         marginLeft: 0,
-        marginRight: 'auto',
+        marginRight: 10,
         color: appColors.textBlack
     },
 
