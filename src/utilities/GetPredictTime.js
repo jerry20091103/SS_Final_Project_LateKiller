@@ -10,14 +10,8 @@ export  async function getPredictTime(desPos, mode)
 {
     const predictTime = await _timePredict(desPos, mode);
 
-    if(predictTime >= 0)
-    {
-        return  predictTime;
-    }
-    else
-    {
-        throw new Error;
-    }
+    console.log(predictTime);
+    return predictTime;
 }
 
 
@@ -27,7 +21,6 @@ export  async function getAdviseTime(desPos, mode)
     {
 
         const predictTime = await _timePredict(desPos, mode);
-
         if(predictTime >= 0)
         {
             return avgLateTime + predictTime;
@@ -47,6 +40,7 @@ export async function predictApiInit(){
     const snapshot = await firestore().collection('users').doc(userUid).get();
     const data = snapshot.data();
     avgLateTime = data.avgLateTime;
+    console.log(avgLateTime);
     return;
 }
 
