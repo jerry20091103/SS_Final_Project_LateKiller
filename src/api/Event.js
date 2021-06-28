@@ -624,7 +624,7 @@ async function _updateAvgLateTime()
 
 async function ExpCalculate(arrTimeDiff) {
     // recalculate arrive time, let it be >= 1 or <= -1.
-    let roundTime = (arrTimeDiff > 0) ? Math.ceil(arrTimeDiff) : Math.floor(arrTimeDiff);
+    let roundTime = (arrTimeDiff > 0) ? Math.floor(arrTimeDiff) : Math.ceil(arrTimeDiff);
     let profile = await getProfile();
     let result = {
         streak: profile.streak,
