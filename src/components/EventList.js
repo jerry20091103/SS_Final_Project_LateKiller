@@ -72,12 +72,12 @@ export default class EventList extends React.Component {
     componentDidMount() {
 
         this.getData();
-        this.timer = setInterval(()=>{this.getData()},30000);//30 sec update
+        //this.timer = setInterval(()=>{this.getData()},30000);//30 sec update
     }
     componentWillUnmount(){
-        if (this.timer) {
+       /* if (this.timer) {
             clearInterval(this.timer)
-        }
+        }*/
     }
 
     getData = async () => {
