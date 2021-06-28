@@ -68,9 +68,9 @@ export default class EventScreen extends Component {
     render() {
         const { navigate } = this.props.navigation;
         return (
-        <>
+        <Container>
             <ParallaxScrollView
-            parallaxHeaderHeight={280}
+            parallaxHeaderHeight={290}
             fadeOutForeground={true}
             // renderStickyHeader={()=>
                 
@@ -116,7 +116,7 @@ export default class EventScreen extends Component {
                     </View>
             }
             renderForeground={()=>
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss}><Container>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}><>
                 <View style={styles.container}>
                     {/* header area */}
                     <View style={{flex:2.5}}></View>
@@ -208,7 +208,7 @@ export default class EventScreen extends Component {
                             onPress={() => { this.BottomSheet.close() }}>繼續編輯</Text>
                         <Text
                             style={styles.bottomSheetRedText}
-                            onPress={() => { this.props.navigation.replace('Home') }}>捨棄</Text>
+                            onPress={() => { this.props.navigation.pop() }}>捨棄</Text>
                     </View>
 
                 </BottomSheet>
@@ -234,7 +234,7 @@ export default class EventScreen extends Component {
                     />
                 )}
 
-            </Container></TouchableWithoutFeedback>
+            </></TouchableWithoutFeedback>
             }
             renderContentBackground={() =>
                 <View style={{ flex: 1 }}>
@@ -301,7 +301,7 @@ export default class EventScreen extends Component {
                     </View>
 
                 </BottomSheet>
-        </>
+        </Container>
         );
     }
     getDefaultTitle(){
@@ -310,6 +310,7 @@ export default class EventScreen extends Component {
     }
     async handleTopButtonPress() {
         Keyboard.dismiss();
+        // console.log('place:',this.state.placeCoord);
         if (!this.state.edit) {
             this.setState({
                 edit: true,
@@ -326,7 +327,7 @@ export default class EventScreen extends Component {
                 creatEvent({ 'title': this.state.title, 'date' : this.state.date, 'time': this.state.time, 'placeName': this.state.placeName, 'placeCoord':this.state.placeCoord, 'nameIsAddress':this.state.nameIsAddress  });
                 this.setState({ edit: false, });
                 Alert.alert("已儲存!");
-                this.props.navigation.replace('Home');
+                this.props.navigation.pop();
             }
 
         }
@@ -340,7 +341,7 @@ export default class EventScreen extends Component {
                 editEvent({ 'title': this.state.title, 'date' : this.state.date,'time': this.state.time, 'placeName': this.state.placeName, 'placeCoord':this.state.placeCoord, 'nameIsAddress':this.state.nameIsAddress }, this.state.eventId);
                 this.setState({ edit: false, });
                 Alert.alert("已儲存!");
-                this.props.navigation.replace('Home');
+                this.props.navigation.pop();
             };// modify event in firebase
         }
         else {
@@ -457,7 +458,7 @@ export default class EventScreen extends Component {
     }
     handleGoBack() {
         if ((!this.state.modified && !this.state.newEvent)||!this.state.edit) {
-            this.props.navigation.replace('Home');
+            this.props.navigation.pop();
             return;
         }
         // show discard warning
