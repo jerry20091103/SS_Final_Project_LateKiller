@@ -29,13 +29,12 @@ export default class RecordList extends Component {
                     {/* title and room number */}
                     <View style={{ flex: 3, margin: 5 }}>
                         <Text style={styles.titleText}>{item.title}</Text>
-                        <Text style={styles.smallText}>{'# ' + item.id}</Text>
                     </View>
                     {/* time and LateTime */}
                     <View style={{ flex: 4, margin: 5 }}>
                         <Text style={styles.titleText}>{item.time}</Text>
                         <Text style={/* styles.LateTimeText */{ color: LateTimeColor, fontSize: 18, marginTop: 'auto' }}>
-                            {ConvertLateTime(item.LateTime)}
+                            {ConvertLateTime(item.arrTimeDiff)}
                         </Text>
                     </View>
                 </View>
