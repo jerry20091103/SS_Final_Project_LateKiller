@@ -1,7 +1,7 @@
 import firestore from '@react-native-firebase/firestore';
 import firebase from '@react-native-firebase/app';
 import { getUid } from '../utilities/User';
-import{ getProfileByUidList} from'../api/Profile';
+import{ getProfileByUidList, setProfile} from'../api/Profile';
 import {getCurrentLocation} from  '../utilities/GetCurrentLocation';
 import { getTravelTime } from  '../utilities/GetTravelTime';
 import moment from 'moment';
@@ -55,6 +55,7 @@ export async function editEvent(eventInfo, code) {
     try {
         await firestore().collection('event').doc(code)
             .update({
+                'active':false,
                 'title': eventInfo.title,
                 'date': eventInfo.date,
                 'time': eventInfo.time,
@@ -89,6 +90,9 @@ export async function attendEvent(code) {
                         "attendeeStatus": {
                             [userUid]: false
                             
+                        },
+                        "attendeeArrivalTime":{
+                            [userUid]:0
                         }
                     }, { merge: true });
 
@@ -258,7 +262,7 @@ export async function getEventInfo(eventID) {
         date: 'unknown',
         location: 'unknown',
         arrival: NaN,
-        // attendeeStatus: Array of objects. Objects contain attendee's name and he/she arrives or not.
+        //attendeeStatus: Array of objects. Objects contain attendee's name and he/she arrives or not.
         attendeeStatus: [],
         attendeeMessage: [],
     }
@@ -322,15 +326,18 @@ export async function  setArrivalTime(desPos, code, mode) {
     try {
         let active = false;
        active = await _checkEventStatus(code);
-        
-        active = true;//test
 
-        console.log(userUid);
+       console.log(active);
         if(active)
         {
             let userArrivalTime = 0;
              userArrivalTime = await _arrivalTimeCaculate(desPos, mode)
             
+             console.log( userArrivalTime);
+             if(userArrivalTime <= 0.5)
+             {
+                arriveEvent(code);
+             }
              
             await firestore().collection('users').doc(userUid)
             .update({
@@ -392,7 +399,7 @@ export async function  getEventAttendeeInfo (code) {
             }
            )
         
-       console.log(attendeeInfo);
+       //console.log(attendeeInfo);
 
 
         return attendeeInfo;
@@ -404,27 +411,82 @@ export async function  getEventAttendeeInfo (code) {
     
 }
 
-export async function finishEvent(code) {
+
+export async function arriveEvent(code) {
     if (userUid) {
         try {
-            let p1 = firestore()
-                .collection('event')
-                .doc(code)
-                .update({
-                    "attendee": firestore.FieldValue.arrayRemove(userUid)
-                })
+          
+            const snapshot = await firestore().collection('event').doc(code).get();
+            const data = snapshot.data();
+           
+            const timeDiff = await timeDiffCalculate(code);
 
-            let p2 = firestore().collection('event').doc(code)
-                .set({
-                    "attendeeStatus": {
-                        [userUid]: false
-                    }
-                }, { merge: true });
+            await firestore().collection('event').doc(code)
+            .update({
+                ["attendeeStatus."+userUid]: true,
+                ["attendeeArrivalTime."+userUid]: timeDiff,
+            }); 
+            
+            const attendeeStatus = data.attendeeStatus;
+            
+           for (let key in attendeeStatus)
+            {
+                if(attendeeStatus[key] == false)
+                {
+                    
+                   return;
+                }
+            }
+
+           finishEvent(code);
+
+
+
+
 
         }
         catch (err) {
             console.log(err);
-            throw new Error("damaged userProfile");
+            throw new Error("cannot arrive event");
+        }
+    }
+    else {
+        throw new Error("not existed user");
+    }
+
+}
+
+export async function finishEvent(code) {
+    if (userUid) {
+        try {
+ 
+           console.log('here6666');
+
+            let snapshot = await firestore().collection('event').doc(code).get();
+        
+            const data = snapshot.data();
+
+
+            const newHistory ={
+                title: data.title,
+                time: data.date + ' ' + data.time,
+                arrTimeDiff: data.attendeeArrivalTime['userUid'],
+            }
+
+           console.log(newHistory);
+
+            await setProfile({
+                history:firestore.FieldValue.arrayUnion(newHistory)
+
+            });    
+
+            await firestore().collection('event').doc(code).delete();
+            console.log('delete empty event');
+
+        }
+        catch (err) {
+            console.log(err);
+            throw new Error("error when leaving event");
         }
     }
     else {
@@ -453,7 +515,7 @@ async function _arrivalTimeCaculate(desPos, mode) {
       
   
         //const travelTime = await getTravelTime({lat:curPos.lat,lng:curPos.lng},desPos,mode); /*prvent overuse*/
-        //arrivalTime = (travelTime.value + 300)/60;    /*prvent overuse*/
+        //arrivalTime = (travelTime.value)/60;    /*prvent overuse*/
       
         return arrivalTime;
 
@@ -471,7 +533,14 @@ async function _checkEventStatus(code) {
     const snapshot = await firestore().collection('event').doc(code).get();
     const data = snapshot.data();
 
-    if(data.active)
+  
+    console.log(data.attendeeStatus[userUid]);
+    if(data.attendeeStatus[userUid])
+    {
+        
+        return false;
+    }
+    else if(data.active)
     {
         return true;
     }
@@ -495,6 +564,23 @@ async function _checkEventStatus(code) {
             return false;
         }
     }
+
+    
+}
+
+async function timeDiffCalculate(code) {
+    let timeDiff = 0;
+    const snapshot = await firestore().collection('event').doc(code).get();
+    const data = snapshot.data();
+    
+    const arrTime =  moment(data.date  +'T'+  data.time);
+    const curTime = moment();
+
+    let dura = arrTime.format('x') - curTime.format('x');
+    timeDiff = moment.duration(dura).minute;
+    return timeDiff;
+  
+
 
     
 }
