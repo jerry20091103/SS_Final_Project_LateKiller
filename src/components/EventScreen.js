@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { StyleSheet, TouchableHighlight, BackHandler, Alert, TouchableWithoutFeedback, Keyboard, TextInput, Dimensions, ScrollView } from 'react-native';
+import { StyleSheet, TouchableHighlight, BackHandler, Alert, TouchableWithoutFeedback, Keyboard, TextInput, Dimensions, ScrollView, Clop } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import appColors from '../styles/colors.js';
 import PropTypes from 'prop-types';
-import { Container, Header, Title, Button, Left, Right, Body, Icon, Text, View, Item, Input } from 'native-base';
+import { Container, Header, Title, Button, Left, Right, Body, Icon, Text, View, Item, Input, Toast } from 'native-base';
 import BottomSheet from 'react-native-raw-bottom-sheet';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
@@ -11,6 +11,7 @@ import moment from 'moment';
 import { creatEvent, editEvent, getEventInfo, setArrivalTime } from '../api/Event.js'
 import AttendeeList from './AttendeeList.js'
 import {getAdviseTime, getPredictTime} from '../utilities/GetPredictTime';
+import Clipboard from '@react-native-community/clipboard';
 
 
 /* Event Screen
@@ -163,6 +164,7 @@ export default class EventScreen extends Component {
                                 <Text style={styles.detailTextBold}>房間號碼: </Text>
                                 {/* 新房間的號碼也直接由firebase提供? */}
                                 <Text style={styles.detailText}>{this.state.eventId}</Text>
+                                <Icon type="MaterialCommunityIcons" name='content-copy' style={{fontSize: 22, backgroundColor: 'transparent', marginHorizontal: 10, color: appColors.textBlack}} onPress={() => this.onCopyRoomId()} />
                             </View>
 
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -479,6 +481,13 @@ export default class EventScreen extends Component {
         }
         // show discard warning
         this.BottomSheet.open();
+    }
+    onCopyRoomId() {
+        Toast.show({
+            text: "已複製到剪貼簿",
+            duration: 1800
+        });
+        Clipboard.setString(this.state.eventId);
     }
     getTransitIcon() {
         switch (this.state.transitMode) {
