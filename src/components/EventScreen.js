@@ -60,15 +60,12 @@ export default class EventScreen extends Component {
             edit: this.props.navigation.getParam('edit', false),
         }, () => { this.props.newEvent || this.handleUpdate(); })
 
-        this.timer = setInterval(()=>{this.handleUpdate(false);},15000);//15 sec update
+
 
     }
 
     componentWillUnmount() {
         this.backHandler.remove();
-         if (this.timer) {
-            clearInterval(this.timer)
-        }
     }
 
     // things to do when press back in OS

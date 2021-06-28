@@ -156,22 +156,25 @@ export async function leaveEvent(code) {
     if (userUid) {
         try {
 
-  
-
             let p1 = firestore()
+                .collection('event')
+                .doc(code)
+                .get()
+
+            let p2 = firestore()
                 .collection('event')
                 .doc(code)
                 .update({
                     "attendee": firestore.FieldValue.arrayRemove(userUid)
                 })
 
-            let p2 = firestore()
+            let p3 = firestore()
                 .collection('users')
                 .doc(userUid)
                 .set({
                     "my_events":  firestore.FieldValue.arrayRemove(code)
                 },{ merge: true })
-            let p3 = firestore()
+            let p4 = firestore()
                 .collection('event')
                 .doc(code)
                 .set({
@@ -186,31 +189,26 @@ export async function leaveEvent(code) {
                     },
                     "attendeePredictTime":{
                         [userUid] : firestore.FieldValue.delete()
-                    },
-                    "attendeeMessage": {
-                        [userUid]: firestore.FieldValue.delete()
-                    },
+                    }
                 },{ merge: true })
-
+            
+            let p5 = firestore()
+            .collection('event')
+            .doc(code)
+            .set({
+                "attendeeMessage": {
+                    [userUid]: firestore.FieldValue.delete()
+                },
+            },{ merge: true })
             
 
-                await Promise.all([p1, p2, p3]);
-
-                console.log('here');
-                const snapshot = await firestore().collection('event').doc(code).get();
-
-               let eventInfo = snapshot.data()
-
-              
-
-               if (eventInfo['attendee'].length == 0) {
-                 await firestore().collection('event').doc(code).delete();
-                 console.log('delete empty event')
-                 return;
-                }
-
-
-
+            let [snapshot, r2, r3, r4, r5] = await Promise.all([p1, p2, p3, p4, p5]);
+            
+            let eventInfo = snapshot.data()
+            if (eventInfo['attendee'].length <= 1) {
+                await firestore().collection('event').doc(code).delete();
+                console.log('delete empty event')
+            }
             
             return;
         }
@@ -287,6 +285,7 @@ async function _getEventInfoList(eventIDList) {
                     goTime: 'unkown'
 
                 }
+
               
                 const data = doc.data();
                 eventInfo.active = data.active;
@@ -398,15 +397,14 @@ export async function  setArrivalTime(desPos, code, mode) {
             let userArrivalTime = 0;
              userArrivalTime = await getPredictTime(desPos, mode)
             
-             console.log( userArrivalTime);
+            // console.log( userArrivalTime);
 
-             if(userArrivalTime >=  0 && userArrivalTime <= 1 && data.attendeeStatus[userUid])
+             if(userArrivalTime >=  0 && userArrivalTime <= 1)
              {
                  console.log('arrive');   
-                 arriveEvent(code);
+                arriveEvent(code);
              }
              
-         
             let p2 = firestore().collection('event').doc(code)
             .update({
                 ["attendeePredictTime."+userUid]: userArrivalTime,
@@ -621,8 +619,7 @@ async function _checkEventStatus(code) {
   
     if(data.active)
     {
-
-            return true;
+        return true;
     }
     else
     {
