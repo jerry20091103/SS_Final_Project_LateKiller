@@ -26,7 +26,8 @@ export async function creatEvent(eventInfo) {
                     attendee: [],
                     attendeeStatus: {},
                     attendeeMessage:{},
-                    active: false
+                    active: false,
+                    attendeeTransportation:{},
                 })
 
             attendEvent(code);
@@ -45,6 +46,18 @@ export async function creatEvent(eventInfo) {
 export async function editEvent(eventInfo, code) {
 
     try {
+
+        const snapshot = await firestore().collection('event').doc(code).get();
+        const data = snapshot.data();
+        let newAttendeeStatus = data.attendeeStatus;
+        
+        for(let attendee in newAttendeeStatus)
+        {
+            newAttendeeStatus[attendee] = false;
+        }
+        
+        console.log(newAttendeeStatus);
+
         await firestore().collection('event').doc(code)
             .update({
                 'active':false,
@@ -54,6 +67,7 @@ export async function editEvent(eventInfo, code) {
                 'placeName': eventInfo.placeName,
                 'placeCoord': eventInfo.placeCoord,
                 'nameIsAddress': eventInfo.nameIsAddress,
+                'AttendeeStatus': newAttendeeStatus,
             })
         return;
 
@@ -85,8 +99,11 @@ export async function attendEvent(code) {
                         },
                         "attendeeArrivalTime":{
                             [userUid]:0
+                        },
+                        "attendeeTransportation":{
+                            [userUid] : 'driving'
                         }
-                    }, { merge: true });
+                    },{ merge: true });
 
 
                 let p3 = firestore().collection('users').doc(userUid)
@@ -157,6 +174,12 @@ export async function leaveEvent(code) {
                     "attendeeStatus": {
                         [userUid]: firestore.FieldValue.delete()
                     },
+                    "attendeeArrivalTime":{
+                        [userUid]: firestore.FieldValue.delete()
+                    },
+                    "attendeeTransportation":{
+                        [userUid] : firestore.FieldValue.delete()
+                    }
                 },{ merge: true })
             
             let p5 = firestore()
@@ -255,7 +278,8 @@ export async function getEventInfo(eventID) {
         //attendeeStatus: Array of objects. Objects contain attendee's name and he/she arrives or not.
         attendeeStatus: [],
         attendeeMessage: [],
-        nameIsAddress: 'false'
+        nameIsAddress: 'false',
+        transpotation:'driving'
     }
 
     try {
@@ -271,6 +295,7 @@ export async function getEventInfo(eventID) {
         eventInfo.placeName = data.placeName;
         eventInfo.placeCoord = data.placeCoord;
         eventInfo.nameIsAddress = data.nameIsAddress;
+        eventInfo.transpotation = data.attendeeTransportation[userUid];
         try {
             data.attendee.forEach((id) => {
                 eventInfo.attendeeStatus.push({
@@ -319,26 +344,37 @@ export async function  setArrivalTime(desPos, code, mode) {
         let active = false;
        active = await _checkEventStatus(code);
 
-       console.log(active);
+       let p1 = firestore().collection('event').doc(code)
+       .set({
+           "attendeeTransportation":{
+               [userUid]: mode
+           },
+          
+       },{ merge: true });
+
         if(active)
         {
             let userArrivalTime = 0;
              userArrivalTime = await _arrivalTimeCaculate(desPos, mode)
             
              console.log( userArrivalTime);
+
              if(userArrivalTime <= 0.5)
              {
+                 console.log('arrive');   
                 arriveEvent(code);
              }
              
-            await firestore().collection('users').doc(userUid)
+            let p2 = firestore().collection('users').doc(userUid)
             .update({
                 ["my_events."+code]: userArrivalTime,
             });
 
+            return Promise.all([p1,p2]);
+
         }
 
-        return;
+        return Promise.all([p1]);
     }
     catch
     {+
@@ -451,8 +487,6 @@ export async function arriveEvent(code) {
 export async function finishEvent(code) {
     if (userUid) {
         try {
- 
-           console.log('here6666');
 
             let snapshot = await firestore().collection('event').doc(code).get();
         
@@ -507,15 +541,14 @@ async function _arrivalTimeCaculate(desPos, mode) {
       
   
         const travelTime = await getTravelTime({lat:curPos.lat,lng:curPos.lng},desPos,mode); /*prvent overuse*/
-        arrivalTime = (travelTime.value)/60;    /*prvent overuse*/
-      
+        arrivalTime = Math.round(travelTime.value/60);    /*prvent overuse*/
+        console.log(arrivalTime);
         return arrivalTime;
 
     }
     catch
     {
         console.log('arrivalTime Caculation Error')
-        return 0;
     }
 
     
@@ -541,7 +574,7 @@ async function _checkEventStatus(code) {
 
         let nowPlusAnHour = moment().add(1, 'hour');
         let ans =  nowPlusAnHour.isAfter(data.date  +'T'+  data.time);
-        console.log(ans);
+        //console.log(ans);
 
         if(ans)
         {
@@ -570,7 +603,7 @@ async function timeDiffCalculate(code) {
 
     let dura = arrTime.format('x') - curTime.format('x');
     timeDiff = moment.duration(dura);
-    return timeDiff.minutes();
+    return Math.round(timeDiff.minutes());
   
 
 

@@ -32,7 +32,7 @@ export async function getProfile() {
         exp: 0,
         expFull: 100,
         my_events:{},
-        history:[]
+        history:[],
     }
 
    const profileRef = await firestore().collection('users').doc(userUid).get();
@@ -50,7 +50,8 @@ export async function getProfile() {
         exp: 0,
         expFull: 100,
         my_events:{},
-        history:[]
+        history:[],
+        transportation:'',
     }
     await firestore().collection('users').doc(userUid).set(profile);
    } else {

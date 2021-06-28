@@ -368,6 +368,7 @@ export default class EventScreen extends Component {
                     placeName: info.placeName,
                     placeCoord: info.placeCoord,
                     nameIsAddress: info.nameIsAddress,
+                    transitMode: info.transpotation,
                     arriveNum: this.getArrivedAttendeeNumber(info.attendeeStatus)
                 })
             }
@@ -381,7 +382,7 @@ export default class EventScreen extends Component {
     async setArrivalTimeFromAPI(placeCoord, code, mode){
         try
         {
-            setArrivalTime(placeCoord, code, mode);
+           await setArrivalTime(placeCoord, code, mode);
         }
         catch
         {
@@ -480,12 +481,13 @@ export default class EventScreen extends Component {
     }
     // this function is called after a mode change
     // mode: (string) "driving" / "walking" / "bicycling" / "transit"
-    handleSelectTransitMode(mode) {
+   async handleSelectTransitMode(mode) {
         this.TransitPicker.close()
         this.setState({
             transitMode: mode,
         });
-        this.setArrivalTimeFromAPI(this.state.placeCoord,this.state.eventId, this.state.transitMode);
+        await this.setArrivalTimeFromAPI(this.state.placeCoord,this.state.eventId, mode);
+        await this.getEventInfoFromAPI();
     }
 
 }
