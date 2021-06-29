@@ -1,3 +1,5 @@
 1. React-Native Firebase Third Party Sign In: https://rnfirebase.io/auth/social-auth
     1.1 Google
         https://github.com/react-native-google-signin/google-signin
+
+2. Demo Video: https://drive.google.com/file/d/1zoGky-lplWWryo-N0M7PcTr5nyCtzEkQ/view
