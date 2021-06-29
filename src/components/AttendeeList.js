@@ -41,8 +41,8 @@ export default class AttendeeList extends Component {
     }
     renderItem(item) {
         
-        const TimebtnColor = (item.TimebeforeArrive <= 0) ? appColors.btnRed : appColors.btnGreen;
-        const TimetextColor = (item.TimebeforeArrive <= 0) ? appColors.textRed : appColors.textGreen;
+        const TimebtnColor = (item.TimebeforeArrive > 0) ? appColors.btnRed : appColors.btnGreen;
+        const TimetextColor = (item.TimebeforeArrive > 0) ? appColors.textRed : appColors.textGreen;
         const ArriveText = (this.state.myID === item.Uid) ? '離開' : '已到達';
         return (
             <SafeAreaView style={{ flex: 1 }}>
