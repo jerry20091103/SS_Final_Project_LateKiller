@@ -469,6 +469,7 @@ export async function  getEventAttendeeInfo (code) {
                     level: 0,
                     exp: 0, 
                     expFull: 100,
+                    status: false,
                 }
 
                 info.Uid =  attendee.Uid;
@@ -478,10 +479,13 @@ export async function  getEventAttendeeInfo (code) {
                     info.TimebeforeArrive = attendeePredictTime[attendee.Uid];
                 else
                     info.TimebeforeArrive = attendee.avgLateTime;
+
+                console.log(info.TimebeforeArrive);
                 info.avgLateTime = attendee.avgLateTime;
                 info.level = attendee.level;
                 info.exp = attendee.exp;
                 info.expFull = attendee.expFull;
+                info.status = data.attendeeStatus[attendee.Uid];
                 attendeeInfo.push(info);
 
             }

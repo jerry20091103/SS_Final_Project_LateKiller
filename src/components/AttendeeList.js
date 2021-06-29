@@ -43,7 +43,7 @@ export default class AttendeeList extends Component {
         
         const TimebtnColor = (item.TimebeforeArrive <= 0) ? appColors.btnRed : appColors.btnGreen;
         const TimetextColor = (item.TimebeforeArrive <= 0) ? appColors.textRed : appColors.textGreen;
-        const ArriveText = (this.state.myID === item.Uid) ? '離開' : '已到達';
+        //const ArriveText = (this.state.myID === item.Uid) ? '離開' : '已到達';
         return (
             <SafeAreaView style={{ flex: 1 }}>
                 <Button color={appColors.textBlack} style={styles.UserButton} onPress={() => this.showOthersInfo(item)}>
@@ -63,7 +63,7 @@ export default class AttendeeList extends Component {
                         <View style={{ flex: 3, justifyContent: 'center' }}>
                         <Button rounded style={[styles.arriveButton, { backgroundColor: TimebtnColor }]} onPress={() => this.handleLeaveEvent(item.Uid)}>
                                 <Text style={{ color: TimetextColor, fontSize: 20 }}>
-                                    {item.TimebeforeArrive <= 0 ? ArriveText : ConvertLateTime(item.TimebeforeArrive)}
+                                    {(item.staus)?'已到達':ConvertLateTime(item.TimebeforeArrive)}
                                 </Text>
                             </Button>
                         </View>
