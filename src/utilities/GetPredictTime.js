@@ -46,7 +46,7 @@ export async function predictApiInit(){
     const snapshot = await firestore().collection('users').doc(userUid).get();
     const data = snapshot.data();
     avgLateTime = data.avgLateTime;
-    console.log(avgLateTime);
+    // console.log(avgLateTime);
     return;
 }
 
@@ -59,11 +59,10 @@ async function _timePredict(desPos, mode) {
       let arrivalTime = 0;
 
         const curPos = await getCurrentLocation();
-      
   
         const travelTime = await getTravelTime({lat:curPos.lat,lng:curPos.lng},desPos,mode); /*prvent overuse*/
         arrivalTime = Math.round(travelTime.value/60);    /*prvent overuse*/
-        console.log(arrivalTime);
+        // console.log(arrivalTime);
         return arrivalTime;
 
     }

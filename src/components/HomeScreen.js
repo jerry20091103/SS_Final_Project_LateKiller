@@ -32,7 +32,7 @@ export default class HomeScreen extends React.Component {
         this.setState({
             roomID: inputText
         });
-        console.log(this.state.roomID);
+        // console.log(this.state.roomID);
     }
     render() {
         const { navigate } = this.props.navigation;
@@ -132,12 +132,11 @@ export default class HomeScreen extends React.Component {
             this.setState({
                 EventlistRefresh: !this.state.EventlistRefresh,
             })
-            console.log(this.state.username);
-            console.log('go homepage');
+            // console.log('go homepage');
         });
         this.getProfileData();
         predictApiInit();
-       
+
     }
     async getProfileData() {
         await ProfileApiInit();

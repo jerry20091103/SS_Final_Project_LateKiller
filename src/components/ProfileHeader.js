@@ -64,7 +64,7 @@ export default class ProfileHeader extends React.Component {
                 onPress: () => {return},
               },
               { text: "確定", onPress: () => {
-                console.log('signout:');
+                // console.log('signout:');
                 if(!this.state.isSignoutInProgress) {
                     this.setState({
                         isSignoutInProgress: true,
