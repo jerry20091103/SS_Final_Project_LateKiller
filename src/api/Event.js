@@ -165,15 +165,16 @@ export async function leaveEvent(code) {
                 .collection('event')
                 .doc(code)
                 .update({
-                    "attendee": firestore.FieldValue.arrayRemove(userUid)
+                    "attendee": firestore.FieldValue.arrayRemove(userUid),
+                   
                 })
 
             let p3 = firestore()
                 .collection('users')
                 .doc(userUid)
-                .set({
-                    "my_events":  firestore.FieldValue.arrayRemove(code)
-                },{ merge: true })
+                .update({
+                    "my_events":  firestore.FieldValue.arrayRemove(code)   
+                })
             let p4 = firestore()
                 .collection('event')
                 .doc(code)
@@ -576,7 +577,7 @@ export async function finishEvent(code) {
                 expFull: result.expFull
             });    
            await setProfile({
-            'my_events' : firestore.FieldValue.delete(code),
+            'my_events' : firestore.FieldValue.arrayRemove(code),
 
         });   
 
