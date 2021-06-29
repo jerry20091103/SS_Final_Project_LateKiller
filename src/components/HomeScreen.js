@@ -129,9 +129,12 @@ export default class HomeScreen extends React.Component {
     componentDidMount() {
         const { navigation } = this.props;
         this.focusListener = navigation.addListener('didFocus', () => {
-            this.setState({
-                EventlistRefresh: !this.state.EventlistRefresh,
-            })
+            setTimeout(() => {
+                this.setState({
+                    EventlistRefresh: !this.state.EventlistRefresh,
+                })    
+            }, 1000);
+            
             // console.log('go homepage');
         });
         this.getProfileData();
