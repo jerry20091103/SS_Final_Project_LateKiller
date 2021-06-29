@@ -123,10 +123,27 @@ export default class AttendeeList extends Component {
     componentDidMount() 
     {
         LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
-        //this.getUidFromAPI();
+        this.getUidFromAPI();
         //this.getAttendeeFromAPI();
     }
 
+    async getUidFromAPI()
+    {
+        try
+        {
+            let Uid = await getUid();
+            this.setState( {
+                ...this.state,
+                myID : Uid
+            })
+           
+        }
+        catch
+        {
+            console.log('cannot get Uid from api')
+        }
+    }
+    
     componentDidUpdate(prevProps, prevState)
     {
         if(this.props.roomID!==prevProps.roomID)
