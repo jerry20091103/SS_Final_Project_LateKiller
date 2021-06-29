@@ -29,7 +29,15 @@ export  async function getAdviseTime(desPos, mode)
         const predictTime = await _timePredict(desPos, mode);
         if(predictTime >= 0)
         {
-            return avgLateTime + predictTime;
+            if(avgLateTime > 0)
+            {
+                return avgLateTime + predictTime;
+            }
+            else
+            {
+                return predictTime + 2;
+            }
+          
         }
         else
         {
