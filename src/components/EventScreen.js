@@ -58,7 +58,10 @@ export default class EventScreen extends Component {
             eventId: this.props.navigation.getParam('eventId', undefined),
             newEvent: this.props.navigation.getParam('newEvent', false),
             edit: this.props.navigation.getParam('edit', false),
-        }, () => { this.props.newEvent || this.handleUpdate(); })
+        }, () => { this.props.newEvent || this.handleUpdate();    this.timer = setInterval(()=>{ if(!this.state.newEvent){this.handleUpdate(); console.log('test')}},60000);/*60 sec update */})
+
+
+     
 
 
 
@@ -66,6 +69,9 @@ export default class EventScreen extends Component {
 
     componentWillUnmount() {
         this.backHandler.remove();
+        if (this.timer) {
+            clearInterval(this.timer);
+        }
     }
 
     // things to do when press back in OS
@@ -382,7 +388,7 @@ export default class EventScreen extends Component {
 
     async getGoTimeFromAPI(placeCoord, mode)
     {
-        console.log(mode);
+        // console.log(mode);
         try 
         {
             let timeNeed = 0 ; 
@@ -394,14 +400,14 @@ export default class EventScreen extends Component {
                 timeNeed = await getPredictTime(placeCoord, mode);
 
           
-            console.log('herwe2');
+            // console.log('herwe2');
             console.log(timeNeed);
             let ret = convertGoTime(this.state.date+'T'+this.state.time, timeNeed, this.state.active);
             this.setState({
                 goTime: ret.text,
                 willBeLate: ret.late,
             });
-            console.log(ret);
+            // console.log(ret);
             Animated.timing(this.state.fadeAnim, {
                 toValue: 1,
                 duration: 500,
@@ -456,7 +462,7 @@ export default class EventScreen extends Component {
         }
        
         const info = await this.getEventInfoFromAPI();
-        console.log(info);
+        // console.log(info);
          this.setState({
                     ...this.state,
                     active: info.active,
