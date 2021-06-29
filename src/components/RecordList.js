@@ -22,7 +22,7 @@ export default class RecordList extends Component {
         this.getRecordsFromAPI();
     }
     renderItem(item) {
-        const LateTimeColor = (this.LateTime > 0) ? appColors.textRed : appColors.textGreen;
+        const LateTimeColor = (item.arrTimeDiff > 0) ? appColors.textRed : appColors.textGreen;
         return (
             <Button color={appColors.textBlack} style={styles.eventButton}>
                 <View style={{ flex: 1, flexDirection: 'row' }}>

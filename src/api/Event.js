@@ -572,9 +572,13 @@ export async function finishEvent(code) {
                 expFull: result.expFull
             });    
            await setProfile({
-            ['my_events.'+code] : firestore.FieldValue.delete(),
+            'my_events' : firestore.FieldValue.delete(code),
 
         });   
+
+        
+        await firestore().collection('event').doc(code).delete();
+        console.log('delete empty event');
 
            if(data.history.length >= 10)
            {
@@ -585,8 +589,6 @@ export async function finishEvent(code) {
 
             
 
-            await firestore().collection('event').doc(code).delete();
-            console.log('delete empty event');
 
         }
         catch (err) {
