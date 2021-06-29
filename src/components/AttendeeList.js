@@ -26,6 +26,7 @@ export default class AttendeeList extends Component {
             showUserInfo: false,
 
         }
+        this.onRefresh = this.onRefresh.bind(this);
     }
     showOthersInfo(item/* name,level,picture,avgLateTime */) {
         this.setState({
@@ -64,7 +65,7 @@ export default class AttendeeList extends Component {
                         <View style={{ flex: 3, justifyContent: 'center' }}>
                         <Button rounded style={[styles.arriveButton, { backgroundColor: TimebtnColor }]} onPress={() => this.handleLeaveEvent(item.Uid)}>
                                 <Text style={{ color: TimetextColor, fontSize: 20 }}>
-                                    {(item.staus)?'已到達':ConvertLateTime(item.TimebeforeArrive)}
+                                    {(item.status)?'已到達':ConvertLateTime(item.TimebeforeArrive)}
                                 </Text>
                             </Button>
                         </View>
@@ -87,7 +88,7 @@ export default class AttendeeList extends Component {
                     refreshControl={
                         <RefreshControl
                             refreshing={this.state.loading}
-                        // onRefresh={this.onRefresh}
+                            onRefresh={this.onRefresh}
                         />}
                 />
                 <Modal
@@ -122,7 +123,7 @@ export default class AttendeeList extends Component {
     componentDidMount() 
     {
         LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
-        this.getUidFromAPI();
+        //this.getUidFromAPI();
         //this.getAttendeeFromAPI();
     }
 
@@ -135,23 +136,11 @@ export default class AttendeeList extends Component {
 
     }
 
-
-    async getUidFromAPI()
-    {
-        try
-        {
-            let Uid = await getUid();
-            this.setState( {
-                ...this.state,
-                myID : Uid
-            })
-           
-        }
-        catch
-        {
-            console.log('cannot get Uid from api')
-        }
+    onRefresh() {
+        this.getAttendeeFromAPI();
+        console.log('update');
     }
+
 
     async getAttendeeFromAPI()
     {
