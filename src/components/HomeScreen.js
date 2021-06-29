@@ -133,7 +133,7 @@ export default class HomeScreen extends React.Component {
                 this.setState({
                     EventlistRefresh: !this.state.EventlistRefresh,
                 })    
-            }, 1000);
+            }, 500);
             
             // console.log('go homepage');
         });

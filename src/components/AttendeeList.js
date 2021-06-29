@@ -52,21 +52,19 @@ export default class AttendeeList extends Component {
                     <View style={{ flex: 1, flexDirection: 'row' }}>
 
                         <View style={{ flex: 2, margin: 5 }}>
-                            {/* api做好後，要記得把item.picture直接寫成load好的圖片，不是一段url而已 */}
                             <Image source={{uri: item.img}} style={styles.profilePic} />
                         </View>
 
                         <View style={{ flex: 4, margin: 5 }}>
                             <View style={{ flex: 1 }}><Text style={styles.infoText}>{item.username}</Text></View>
                             <View style={{ flex: 1 }}><Text style={styles.lvText}> LV.{item.level}</Text></View>
-
                         </View>
 
                         <View style={{ flex: 3, justifyContent: 'center' }}>
-                        <Button rounded style={[styles.arriveButton, { backgroundColor: TimebtnColor }]} onPress={() => this.handleLeaveEvent(item.Uid)}>
-                                <Text style={{ color: TimetextColor, fontSize: 20 }}>
-                                    {(item.status)?'已到達':ConvertLateTime(item.TimebeforeArrive)}
-                                </Text>
+                            <Button rounded style={[styles.arriveButton, { backgroundColor: TimebtnColor }]} onPress={() => this.handleLeaveEvent(item.Uid)}>
+                                    <Text style={{ color: TimetextColor, fontSize: 20 }}>
+                                        {(item.status)?'已到達':ConvertLateTime(item.TimebeforeArrive)}
+                                    </Text>
                             </Button>
                         </View>
 
@@ -205,7 +203,7 @@ export default class AttendeeList extends Component {
 
 function ConvertLateTime(time) {
     var str = '';
-    str += (time < 60) ? (time + ' min') : ((time / 60).toFixed(1) + ' hr');
+    str += (time < 60) ? (time.toFixed(1) + ' min') : ((time / 60).toFixed(1) + ' hr');
     return str;
 }
 
