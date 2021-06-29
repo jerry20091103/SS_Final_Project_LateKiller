@@ -155,7 +155,7 @@ export default class MessageScreen extends React.Component {
     async getData() {
         // get and process data to meet render's need.
 
-        console.log(this.state.eventId);
+        // console.log(this.state.eventId);
         let eventInfo = await getEventInfo(this.state.eventId);
         let attendeeMessage = eventInfo.attendeeMessage;
         // console.log(attendeeMessage);

@@ -56,7 +56,7 @@ export async function editEvent(eventInfo, code) {
             newAttendeeStatus[attendee] = false;
         }
         
-        console.log(newAttendeeStatus);
+        // console.log(newAttendeeStatus);
 
         await firestore().collection('event').doc(code)
             .update({
@@ -126,8 +126,8 @@ export async function attendEvent(code) {
 
                 const data = snapshot.data();
 
-                console.log(data);
-                console.log('here');
+                // console.log(data);
+                // console.log('here');
                 await setArrivalTime(data.placeCoord, code, 'driving'); 
 
               
@@ -418,7 +418,7 @@ export async function  setArrivalTime(desPos, code, mode) {
 
              userArrivalTime = await getAdviseTime(desPos, mode)
             
-            console.log( userArrivalTime);
+            // console.log( userArrivalTime);
              
             let p2 = firestore().collection('event').doc(code)
             .update({
@@ -561,7 +561,7 @@ export async function finishEvent(code) {
                 arrTimeDiff: data.attendeeArrivalTime[userUid],
             }
            //console.log(data.history);
-           console.log(newHistory);
+        //    console.log(newHistory);
 
             // Event 結算
             // update avg late time should be earlier than writing 
